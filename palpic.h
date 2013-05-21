@@ -76,5 +76,9 @@ static inline unsigned palpic_getspritewidth(const struct palpic* p) {
 	return p->width;
 }
 
+static inline uint8_t* palpic_getspritedata(const struct palpic* p, uint8_t spritenum) {
+	return palpic_getdata(p) + (spritenum * palpic_getspriteheight(p) * palpic_getspritewidth(p));
+}
+
 #endif
 

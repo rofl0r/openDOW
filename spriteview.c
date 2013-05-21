@@ -53,7 +53,11 @@ static sdl_rgb_t convert_prgb(prgb col) {
 
 #define SCALE 4
 
-void blit_sprite(unsigned x_pos, unsigned y_pos, void *video_mem, unsigned videomem_pitch, unsigned sprite_width, unsigned sprite_height, const prgb* palette, const uint8_t *bitmap) {
+void blit_sprite(unsigned x_pos, unsigned y_pos, void *video_mem, unsigned videomem_pitch, const struct palpic* pic, uint8_t spritenum) {
+	unsigned sprite_width = palpic_getspritewidth(pic);
+	unsigned sprite_height = palpic_getspriteheight(pic);
+	const prgb* palette = palpic_getpalette(pic);
+	const uint8_t *bitmap = palpic_getspritedata(pic, spritenum);
 	unsigned int scale_y, scale_x, y, x;
 	unsigned lineoffset = y_pos * (videomem_pitch / 4);
 	unsigned pixel_start = 0;
@@ -116,9 +120,7 @@ void redraw_bg(SDL_Surface *surface) {
 
 void redraw(SDL_Surface *surface, int startx, int starty) {
 	redraw_bg(surface);
-	blit_sprite(startx, starty, surface->pixels, surface->pitch,
-	            palpic_getspritewidth(&players.header), palpic_getspriteheight(&players.header),
-	            players.palette, players.data);
+	blit_sprite(startx, starty, surface->pixels, surface->pitch, &players.header, 1);
 	SDL_UpdateRect(surface, 0 ,0, VMODE_W, VMODE_H);
 	//SDL_UpdateRect(surface, startx ,starty, SPRITE_WIDTH * SCALE, palpic_getspriteheight(&players.header) * SCALE);
 }
