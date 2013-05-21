@@ -1,19 +1,16 @@
 #include "palpic.h"
 #define PAL_COUNT 15
-#define PIXEL_COUNT 73600
 #define SPRITE_COUNT 92
 #define WIDTH 32
 #define HEIGHT 2300
-#define SPRITE_WIDTH 32
-#define SPRITE_HEIGHT 25
 #define STRUCT_NAME players
 
 static const struct {
 	struct palpic header;
 	prgb palette[PAL_COUNT];
-	uint8_t data[PIXEL_COUNT];
+	uint8_t data[WIDTH * HEIGHT];
 } STRUCT_NAME = { 
-	{ {'p', 'P', 'i', 'C', }, 1, PAL_COUNT, 0, 0, WIDTH, HEIGHT, 0 },
+	{ {'p', 'P', 'i', 'C', }, 1, PAL_COUNT, SPRITE_COUNT, 0, WIDTH, HEIGHT, 0 },
 	{
 		PRGB(  0,   0,   0), 
 		PRGB(149, 149, 125), 
@@ -2338,7 +2335,7 @@ static const struct {
 };
 
 #undef PAL_COUNT
-#undef PIXEL_COUNT
+#undef SPRITE_COUNT
 #undef WIDTH
 #undef HEIGHT
 #undef STRUCT_NAME
