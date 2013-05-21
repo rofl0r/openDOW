@@ -116,11 +116,12 @@ void redraw_bg(SDL_Surface *surface) {
 
 void redraw(SDL_Surface *surface, int startx, int starty) {
 	redraw_bg(surface);
-	blit_sprite(startx, starty, surface->pixels, surface->pitch, SPRITE_WIDTH, SPRITE_HEIGHT, players.palette, players.data);
+	blit_sprite(startx, starty, surface->pixels, surface->pitch,
+	            palpic_getspritewidth(&players.header), palpic_getspriteheight(&players.header),
+	            players.palette, players.data);
 	SDL_UpdateRect(surface, 0 ,0, VMODE_W, VMODE_H);
-	//SDL_UpdateRect(surface, startx ,starty, SPRITE_WIDTH * SCALE, SPRITE_HEIGHT * SCALE);
+	//SDL_UpdateRect(surface, startx ,starty, SPRITE_WIDTH * SCALE, palpic_getspriteheight(&players.header) * SCALE);
 }
-
 
 enum cursor {
 	c_down,
@@ -155,10 +156,10 @@ int main() {
 	};
 	
 	struct { int *target; int dir; int max;} moves[] = {
-		[c_up] = {&starty, SCALE * -1, VMODE_H - (SPRITE_HEIGHT * SCALE)},
-		[c_down] = {&starty, SCALE, VMODE_H - (SPRITE_HEIGHT * SCALE)},
-		[c_left] = {&startx, SCALE * -1, VMODE_W - (SPRITE_WIDTH * SCALE)},
-		[c_right] = {&startx, SCALE, VMODE_W - (SPRITE_WIDTH* SCALE)},
+		[c_up] = {&starty, SCALE * -1, VMODE_H - (palpic_getspriteheight(&players.header) * SCALE)},
+		[c_down] = {&starty, SCALE, VMODE_H - (palpic_getspriteheight(&players.header) * SCALE)},
+		[c_left] = {&startx, SCALE * -1, VMODE_W - (palpic_getspritewidth(&players.header) * SCALE)},
+		[c_right] = {&startx, SCALE, VMODE_W - (palpic_getspritewidth(&players.header) * SCALE)},
 	};
 	
 	SDL_Delay(1);

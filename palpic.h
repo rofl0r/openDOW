@@ -26,7 +26,7 @@ typedef struct palpic {
 	char magic[4];
 	uint8_t version;
 	uint8_t palcount;
-	uint8_t reserved1;
+	uint8_t spritecount;
 	uint8_t reserved2;
 	uint16_t width;
 	uint16_t height;
@@ -66,6 +66,14 @@ static inline uint8_t* palpic_getdata(struct palpic* p) {
 
 static inline uint32_t palpic_getfilesize(struct palpic* p) {
 	return sizeof(palpic) + (sizeof(prgb) * p->palcount) + (p->width * p->height);
+}
+
+static inline unsigned palpic_getspriteheight(const struct palpic* p) {
+	return p->height / p->spritecount;
+}
+
+static inline unsigned palpic_getspritewidth(const struct palpic* p) {
+	return p->width;
 }
 
 #endif

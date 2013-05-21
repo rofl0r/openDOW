@@ -95,6 +95,7 @@ int main(int argc, char** argv) {
 	
 	unsigned sprites_per_row = w / sprite_w;
 	
+	/* we always align sprites vertically */
 	pp.height = sprite_h * sprite_count;
 	pp.width = sprite_w;
 	
@@ -146,28 +147,22 @@ int main(int argc, char** argv) {
 		snprintf(buf, sizeof(buf), 
 			 "#include \"palpic.h\"\n"
 			 "#define PAL_COUNT %d\n"
-			 "#define PIXEL_COUNT %d\n"
 			 "#define SPRITE_COUNT %d\n"
 			 "#define WIDTH %d\n"
 			 "#define HEIGHT %d\n"
-			 "#define SPRITE_WIDTH %d\n"
-			 "#define SPRITE_HEIGHT %d\n"
 			 
 			 "#define STRUCT_NAME %s\n\n"
 			 "static const struct {\n"
 			 "\tstruct palpic header;\n"
 			 "\tprgb palette[PAL_COUNT];\n"
-			 "\tuint8_t data[PIXEL_COUNT];\n"
+			 "\tuint8_t data[WIDTH * HEIGHT];\n"
 			 "} STRUCT_NAME = { \n"
-			 "\t{ {'p', 'P', 'i', 'C', }, 1, PAL_COUNT, 0, 0, WIDTH, HEIGHT, 0 },\n"
+			 "\t{ {'p', 'P', 'i', 'C', }, 1, PAL_COUNT, SPRITE_COUNT, 0, WIDTH, HEIGHT, 0 },\n"
 			 "\t{\n\t\t",
 			 (int) pp.palcount,
-			 (int) pp.width * pp.height, 
 			 (int) sprite_count, 
 			 (int) pp.width, 
 			 (int) pp.height,
-			 (int) sprite_w,
-			 (int) sprite_h,
 			 struct_name
 		);
 		fwrite(buf, strlen(buf), 1, outfile);
@@ -214,7 +209,7 @@ int main(int argc, char** argv) {
 		snprintf(buf, sizeof(buf), 
 			 "};\n\n"
 			 "#undef PAL_COUNT\n"
-			 "#undef PIXEL_COUNT\n"
+			 "#undef SPRITE_COUNT\n"
 			 "#undef WIDTH\n"
 			 "#undef HEIGHT\n"
 			 "#undef STRUCT_NAME\n\n");
