@@ -59,6 +59,11 @@ int main(int argc, char** argv) {
 	unsigned sprite_w, sprite_h;
 	unsigned sprite_count;
 	int to_c = (cp = strrchr(out_filename, '.')) && cp == out_filename + strlen(out_filename) - 2 && cp[1] == 'c';
+	char struct_name[256];
+	if(to_c) {
+		size_t l = snprintf(struct_name, sizeof struct_name, "%s", out_filename);
+		struct_name[l-2] = 0;
+	}
 	
 	
 	infile = pixRead(in_filename);
@@ -163,7 +168,7 @@ int main(int argc, char** argv) {
 			 (int) pp.height,
 			 (int) sprite_w,
 			 (int) sprite_h,
-			 "my_pic"
+			 struct_name
 		);
 		fwrite(buf, strlen(buf), 1, outfile);
 		
