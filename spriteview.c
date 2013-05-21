@@ -118,9 +118,11 @@ void redraw_bg(SDL_Surface *surface) {
 	}
 }
 
+static uint8_t sprite_number = 0;
+
 void redraw(SDL_Surface *surface, int startx, int starty) {
 	redraw_bg(surface);
-	blit_sprite(startx, starty, surface->pixels, surface->pitch, &players.header, 1);
+	blit_sprite(startx, starty, surface->pixels, surface->pitch, &players.header, sprite_number);
 	SDL_UpdateRect(surface, 0 ,0, VMODE_W, VMODE_H);
 	//SDL_UpdateRect(surface, startx ,starty, SPRITE_WIDTH * SCALE, palpic_getspriteheight(&players.header) * SCALE);
 }
@@ -167,6 +169,7 @@ int main() {
 	SDL_Delay(1);
 	SDL_Event sdl_event;
 	while(1) {
+		unsigned need_redraw = 0;
 		while (SDL_PollEvent(&sdl_event)) {
 			switch (sdl_event.type) {
 				case SDL_QUIT:
@@ -179,6 +182,17 @@ int main() {
 						case SDLK_LEFT:
 							cursors_pressed[cursor_lut[sdl_event.key.keysym.sym]] = 1;
 							break;
+						case SDLK_KP_PLUS:
+							sprite_number++;
+							sprite_number_overflow_check:
+							if(sprite_number >= palpic_getspritecount(&players.header))
+								sprite_number = 0;
+							printf("%d\n", sprite_number);
+							need_redraw = 1;
+							break;
+						case SDLK_KP_MINUS:
+							sprite_number--;
+							goto sprite_number_overflow_check;
 						default:
 							break;
 					}
@@ -199,7 +213,6 @@ int main() {
 			}
 		}
 		unsigned i;
-		unsigned need_redraw = 0;
 		for (i = 0; i < ARRAY_SIZE(cursors_pressed); i++) {
 			if(cursors_pressed[i]) {
 				*moves[i].target += moves[i].dir;
