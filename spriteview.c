@@ -53,7 +53,7 @@ static sdl_rgb_t convert_prgb(prgb col) {
 
 #define SCALE 4
 
-void blit_sprite(unsigned x_pos, unsigned y_pos, void *video_mem, unsigned videomem_pitch, const struct palpic* pic, uint8_t spritenum) {
+void blit_sprite(unsigned x_pos, unsigned y_pos, void *video_mem, unsigned videomem_pitch, const struct palpic* pic, uint16_t spritenum) {
 	unsigned sprite_width = palpic_getspritewidth(pic);
 	unsigned sprite_height = palpic_getspriteheight(pic);
 	const prgb* palette = palpic_getpalette(pic);
@@ -118,7 +118,7 @@ void redraw_bg(SDL_Surface *surface) {
 	}
 }
 
-static uint8_t sprite_number = 0;
+static uint16_t sprite_number = 0;
 
 void redraw(SDL_Surface *surface, int startx, int starty) {
 	redraw_bg(surface);

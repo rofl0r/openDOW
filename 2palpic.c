@@ -160,7 +160,7 @@ int main(int argc, char** argv) {
 			 "\tprgb palette[PAL_COUNT];\n"
 			 "\tuint8_t data[WIDTH * HEIGHT];\n"
 			 "} STRUCT_NAME = { \n"
-			 "\t{ {'p', 'P', 'i', 'C', }, 1, PAL_COUNT, SPRITE_COUNT, 0, WIDTH, HEIGHT, 0 },\n"
+			 "\t{ {'p', 'P', 'i', 'C', }, 1, PAL_COUNT, SPRITE_COUNT, WIDTH, HEIGHT, 0 },\n"
 			 "\t{\n\t\t",
 			 (int) pp.palcount,
 			 (int) sprite_count, 

@@ -26,8 +26,7 @@ typedef struct palpic {
 	char magic[4];
 	uint8_t version;
 	uint8_t palcount;
-	uint8_t spritecount;
-	uint8_t reserved2;
+	uint16_t spritecount;
 	uint16_t width;
 	uint16_t height;
 	uint32_t padding;
@@ -35,7 +34,7 @@ typedef struct palpic {
 	//uint8_t data[];
 } palpic;
 
-#define palpic_empty { {'p', 'P', 'i', 'C', }, 1, 0, 0, 0, 0, 0, 0 }
+#define palpic_empty { {'p', 'P', 'i', 'C', }, 1, 0, 0, 0, 0, 0 }
 
 #ifdef IS_LITTLE_ENDIAN
 #define RGB(x,y,z) ((rgb_t) {{0, z, y, x}})
@@ -80,7 +79,7 @@ static inline unsigned palpic_getspritecount(const struct palpic* p) {
 	return p->spritecount;
 }
 
-static inline uint8_t* palpic_getspritedata(const struct palpic* p, uint8_t spritenum) {
+static inline uint8_t* palpic_getspritedata(const struct palpic* p, uint16_t spritenum) {
 	return palpic_getdata(p) + (spritenum * palpic_getspriteheight(p) * palpic_getspritewidth(p));
 }
 
