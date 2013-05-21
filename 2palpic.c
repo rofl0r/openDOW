@@ -49,7 +49,8 @@ int main(int argc, char** argv) {
 	for(; startarg < (unsigned) argc; startarg++)
 		if(memcmp(argv[startarg], STRSZ("-sprite="))) break;
 	if(startarg == argc) {
-		printf("syntax: %s -sprite=WxH infile outfile\n", argv[0]);
+		printf("syntax: %s -sprite=WxH infile outfile\n"
+		       "where WxH denotes the dimensions of a single picture in the spritesheet\n", argv[0]);
 		return 1;
 	}
 	char *in_filename = argv[startarg];
@@ -138,8 +139,7 @@ int main(int argc, char** argv) {
 	} else {
 		char buf[1024];
 		snprintf(buf, sizeof(buf), 
-			 "#include <palpic.h>\n"
-			 "#include <bitarray.h>\n"
+			 "#include \"palpic.h\"\n"
 			 "#define PAL_COUNT %d\n"
 			 "#define PIXEL_COUNT %d\n"
 			 "#define SPRITE_COUNT %d\n"
@@ -153,7 +153,6 @@ int main(int argc, char** argv) {
 			 "\tstruct palpic header;\n"
 			 "\tprgb palette[PAL_COUNT];\n"
 			 "\tuint8_t data[PIXEL_COUNT];\n"
-			 "\tuint8_t sprite_mask[SPRITE_COUNT][BA_SIZE_REQUIRED(SPRITE_WIDTH * SPRITE_HEIGHT)];\n"
 			 "} STRUCT_NAME = { \n"
 			 "\t{ {'p', 'P', 'i', 'C', }, 1, PAL_COUNT, 0, 0, WIDTH, HEIGHT, 0 },\n"
 			 "\t{\n\t\t",
@@ -206,44 +205,7 @@ int main(int argc, char** argv) {
 		}
 
 		fwrite(STRSZ("\n\t},\n"), 1, outfile);
-		fwrite(STRSZ("\t{\n"), 1, outfile);
-		
-		for(sprite = 0; sprite < sprite_count; sprite++) {
-			counter = 0;
-			fprintf(outfile, "\t\t{\n\t\t\tBYTEL(");
-			for(y = 0; y < sprite_h; y++) {
-				unsigned sprite_start_y = get_sprite_start(sprite, y, sprite_w, sprites_per_row);
-				assert(sprite_start_y + sprite_w <= h * w);
-				bufptr = &((prgb*) pix32->data)[sprite_start_y];
-				
-				for(x = 0; x < sprite_w; x++) {
-					unsigned bit = 0;
-					if(pal[0].val == bufptr->val)
-						bit = 1;
-					fprintf(outfile, "%d", bit);
-					if(counter != (sprite_w * sprite_h) - 1) {
-						if(counter % 8 == 7)
-							fprintf(outfile, "),\n\t\t\tBYTEL(");
-						else
-							fprintf(outfile, ",");
-					}
-					bufptr++;
-					counter++;
-				}
-			}
-			if(counter % 8)
-				fprintf(outfile, ",");
-			while(counter % 8) {
-				fprintf(outfile, "0");
-				counter++;
-				if(counter % 8)
-					fprintf(outfile, ",");
-			}
-			fprintf(outfile, ")\n\t\t},\n");
-		}
-		
-		fprintf(outfile, "\n\t}\n");
-		
+
 		snprintf(buf, sizeof(buf), 
 			 "};\n\n"
 			 "#undef PAL_COUNT\n"

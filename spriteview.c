@@ -53,9 +53,8 @@ static sdl_rgb_t convert_prgb(prgb col) {
 
 #define SCALE 4
 
-void blit_sprite(unsigned x_pos, unsigned y_pos, void *video_mem, unsigned videomem_pitch, unsigned sprite_width, unsigned sprite_height, const uint8_t *sprite_mask, const prgb* palette, const uint8_t *bitmap) {
+void blit_sprite(unsigned x_pos, unsigned y_pos, void *video_mem, unsigned videomem_pitch, unsigned sprite_width, unsigned sprite_height, const prgb* palette, const uint8_t *bitmap) {
 	unsigned int scale_y, scale_x, y, x;
-	unsigned counter;
 	unsigned physical_line = 0;
 	unsigned lineoffset = y_pos * (videomem_pitch / 4);
 	unsigned pixel_start = 0;
@@ -65,21 +64,18 @@ void blit_sprite(unsigned x_pos, unsigned y_pos, void *video_mem, unsigned video
 	};
 	for (y = 0; y < sprite_height; y++) {
 		for(scale_y = 0; scale_y < SCALE; scale_y++) {
-			
-			counter = pixel_start;
 			//unsigned lineoffset = ((y * SCALE) + scale_y) * (videomem_pitch / 4);
 			//unsigned lineoffset = physical_line * (videomem_pitch / 4);
 			sdl_rgb_t *ptr = &((sdl_rgb_t *) video_mem)[lineoffset + x_pos];
-			uint8_t *p = &bitmap[pixel_start];
+			const uint8_t *p = &bitmap[pixel_start];
 			for (x = 0; x < sprite_width; x++) {
 				prgb col = palette[*p++];
-				uint32_t mask = mask_colors[BA_GET(sprite_mask, counter)].asInt;
+				uint32_t mask = mask_colors[(col.val == palette[0].val)].asInt;
 				for(scale_x = 0; scale_x < SCALE; scale_x++) {
 					ptr[0].asInt &= mask;
 					ptr[0].asInt |= convert_prgb(col).asInt;
 					ptr++;
 				}
-				counter++;
 			}
 			physical_line++;
 			lineoffset += videomem_pitch / 4;
@@ -122,7 +118,7 @@ void redraw_bg(SDL_Surface *surface) {
 
 void redraw(SDL_Surface *surface, int startx, int starty) {
 	redraw_bg(surface);
-	blit_sprite(startx, starty, surface->pixels, surface->pitch, SPRITE_WIDTH, SPRITE_HEIGHT, my_pic.sprite_mask[0], my_pic.palette, my_pic.data);
+	blit_sprite(startx, starty, surface->pixels, surface->pitch, SPRITE_WIDTH, SPRITE_HEIGHT, my_pic.palette, my_pic.data);
 	SDL_UpdateRect(surface, 0 ,0, 640, 480);
 	//SDL_UpdateRect(surface, startx ,starty, SPRITE_WIDTH * SCALE, SPRITE_HEIGHT * SCALE);
 }
@@ -150,7 +146,7 @@ int main() {
 	
 	unsigned x, y;
 	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
-	uint8_t *p = my_pic.data;
+	const uint8_t *p = my_pic.data;
 	unsigned counter = 0;
 	
 	int startx = 10;
