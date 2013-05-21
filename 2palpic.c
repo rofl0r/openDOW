@@ -223,7 +223,7 @@ int main(int argc, char** argv) {
 					fprintf(outfile, "%d", bit);
 					if(counter != (sprite_w * sprite_h) - 1) {
 						if(counter % 8 == 7)
-							fprintf(outfile, "),\n\t\t\tBYTEL(", bit);
+							fprintf(outfile, "),\n\t\t\tBYTEL(");
 						else
 							fprintf(outfile, ",");
 					}
