@@ -100,12 +100,15 @@ static void get_last_move_event(SDL_Event* e) {
 #undef numpeek
 }
 
+#define VMODE_W 640
+#define VMODE_H 480
+
 void redraw_bg(SDL_Surface *surface) {
 	unsigned lineoffset = 0, x, y;
 	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
-	for(y = 0; y < 480; y++) {
+	for(y = 0; y < VMODE_H; y++) {
 		//unsigned lineoffset = y * (surface->pitch / 4);
-		for(x = 0; x < 640; x++)
+		for(x = 0; x < VMODE_W; x++)
 			//ptr[lineoffset + x] = SRGB_BLUE;
 			*ptr++ = SRGB_BLUE;
 	}
@@ -114,7 +117,7 @@ void redraw_bg(SDL_Surface *surface) {
 void redraw(SDL_Surface *surface, int startx, int starty) {
 	redraw_bg(surface);
 	blit_sprite(startx, starty, surface->pixels, surface->pitch, SPRITE_WIDTH, SPRITE_HEIGHT, players.palette, players.data);
-	SDL_UpdateRect(surface, 0 ,0, 640, 480);
+	SDL_UpdateRect(surface, 0 ,0, VMODE_W, VMODE_H);
 	//SDL_UpdateRect(surface, startx ,starty, SPRITE_WIDTH * SCALE, SPRITE_HEIGHT * SCALE);
 }
 
@@ -135,14 +138,9 @@ enum cursor cursor_lut[] = {
 
 int main() {
 	SDL_Init(SDL_INIT_VIDEO);
-	SDL_Surface *surface = SDL_SetVideoMode(640, 480, 32, SDL_RESIZABLE | SDL_HWPALETTE);
+	SDL_Surface *surface = SDL_SetVideoMode(VMODE_W, VMODE_H, 32, SDL_RESIZABLE | SDL_HWPALETTE);
 	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	SDL_EnableKeyRepeat(100, 20);
-	
-	unsigned x, y;
-	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
-	const uint8_t *p = players.data;
-	unsigned counter = 0;
 	
 	int startx = 10;
 	int starty = 10;
@@ -157,10 +155,10 @@ int main() {
 	};
 	
 	struct { int *target; int dir; int max;} moves[] = {
-		[c_up] = {&starty, SCALE * -1, 480 - (SPRITE_HEIGHT * SCALE)},
-		[c_down] = {&starty, SCALE, 480 - (SPRITE_HEIGHT * SCALE)},
-		[c_left] = {&startx, SCALE * -1, 640 - (SPRITE_WIDTH * SCALE)},
-		[c_right] = {&startx, SCALE, 640 - (SPRITE_WIDTH* SCALE)},
+		[c_up] = {&starty, SCALE * -1, VMODE_H - (SPRITE_HEIGHT * SCALE)},
+		[c_down] = {&starty, SCALE, VMODE_H - (SPRITE_HEIGHT * SCALE)},
+		[c_left] = {&startx, SCALE * -1, VMODE_W - (SPRITE_WIDTH * SCALE)},
+		[c_right] = {&startx, SCALE, VMODE_W - (SPRITE_WIDTH* SCALE)},
 	};
 	
 	SDL_Delay(1);
