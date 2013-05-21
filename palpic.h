@@ -64,7 +64,7 @@ static inline uint8_t* palpic_getdata(struct palpic* p) {
 	return (uint8_t*)(p + 1) + (sizeof(prgb) * p->palcount);
 }
 
-static uint32_t palpic_getfilesize(struct palpic* p) {
+static inline uint32_t palpic_getfilesize(struct palpic* p) {
 	return sizeof(palpic) + (sizeof(prgb) * p->palcount) + (p->width * p->height);
 }
 
