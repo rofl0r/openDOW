@@ -30,9 +30,12 @@ composeRGBPixel(l_int32    rval, l_int32    gval,  l_int32    bval,  l_uint32  *
     return 0;
 } */
 
-static unsigned get_sprite_start(unsigned sprite_nr, unsigned row_nr, unsigned sprite_w, unsigned sprites_per_row) {
+static unsigned get_sprite_start(unsigned sprite_nr, unsigned row_nr, unsigned sprite_w, unsigned sprite_h, unsigned sprites_per_row) {
+	unsigned sprite_row = sprite_nr / sprites_per_row;
 	unsigned row_off = (row_nr * sprite_w * sprites_per_row);
-	return row_off + (sprite_nr * sprite_w);
+	unsigned res = (sprite_row * sprite_w * sprite_h * sprites_per_row) + row_off + ((sprite_nr % sprites_per_row) * sprite_w);
+	//printf("sprite %.2u, row %.2u : %u\n", sprite_nr, row_nr, res);
+	return res;
 }
 
 #define STRSZ(lit) lit, sizeof(lit) - 1
@@ -125,7 +128,7 @@ int main(int argc, char** argv) {
 		
 		for(sprite = 0; sprite < sprite_count; sprite++) {
 			for(y = 0; y < sprite_h; y++) {
-				unsigned sprite_start_y = get_sprite_start(sprite, y, sprite_w, sprites_per_row);
+				unsigned sprite_start_y = get_sprite_start(sprite, y, sprite_w, sprite_h, sprites_per_row);
 				bufptr = &((prgb*) pix32->data)[sprite_start_y];
 				
 				for(x = 0; x < sprite_w; x++) {
@@ -182,7 +185,7 @@ int main(int argc, char** argv) {
 		for(sprite = 0; sprite < sprite_count; sprite++) {
 			fprintf(outfile, "/* sprite #%.3u */\n\t\t", sprite);
 			for(y = 0; y < sprite_h; y++) {
-				unsigned sprite_start_y = get_sprite_start(sprite, y, sprite_w, sprites_per_row);
+				unsigned sprite_start_y = get_sprite_start(sprite, y, sprite_w, sprite_h, sprites_per_row);
 				assert(sprite_start_y + sprite_w <= h * w);
 				bufptr = &((prgb*) pix32->data)[sprite_start_y];
 				
