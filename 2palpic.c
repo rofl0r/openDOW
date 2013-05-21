@@ -180,6 +180,7 @@ int main(int argc, char** argv) {
 		unsigned values_per_line = sprite_w;
 		const char *value_format = pp.palcount > 99 ? "%3u," : "%2u,";
 		for(sprite = 0; sprite < sprite_count; sprite++) {
+			fprintf(outfile, "/* sprite #%.3u */\n\t\t", sprite);
 			for(y = 0; y < sprite_h; y++) {
 				unsigned sprite_start_y = get_sprite_start(sprite, y, sprite_w, sprites_per_row);
 				assert(sprite_start_y + sprite_w <= h * w);
