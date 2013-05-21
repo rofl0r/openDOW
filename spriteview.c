@@ -55,7 +55,6 @@ static sdl_rgb_t convert_prgb(prgb col) {
 
 void blit_sprite(unsigned x_pos, unsigned y_pos, void *video_mem, unsigned videomem_pitch, unsigned sprite_width, unsigned sprite_height, const prgb* palette, const uint8_t *bitmap) {
 	unsigned int scale_y, scale_x, y, x;
-	unsigned physical_line = 0;
 	unsigned lineoffset = y_pos * (videomem_pitch / 4);
 	unsigned pixel_start = 0;
 	static const sdl_rgb_t mask_colors[2] = {
@@ -64,8 +63,6 @@ void blit_sprite(unsigned x_pos, unsigned y_pos, void *video_mem, unsigned video
 	};
 	for (y = 0; y < sprite_height; y++) {
 		for(scale_y = 0; scale_y < SCALE; scale_y++) {
-			//unsigned lineoffset = ((y * SCALE) + scale_y) * (videomem_pitch / 4);
-			//unsigned lineoffset = physical_line * (videomem_pitch / 4);
 			sdl_rgb_t *ptr = &((sdl_rgb_t *) video_mem)[lineoffset + x_pos];
 			const uint8_t *p = &bitmap[pixel_start];
 			for (x = 0; x < sprite_width; x++) {
@@ -77,10 +74,8 @@ void blit_sprite(unsigned x_pos, unsigned y_pos, void *video_mem, unsigned video
 					ptr++;
 				}
 			}
-			physical_line++;
 			lineoffset += videomem_pitch / 4;
 		}
-		//physical_line += SCALE;
 		pixel_start += sprite_width;
 	}
 }
@@ -118,7 +113,7 @@ void redraw_bg(SDL_Surface *surface) {
 
 void redraw(SDL_Surface *surface, int startx, int starty) {
 	redraw_bg(surface);
-	blit_sprite(startx, starty, surface->pixels, surface->pitch, SPRITE_WIDTH, SPRITE_HEIGHT, my_pic.palette, my_pic.data);
+	blit_sprite(startx, starty, surface->pixels, surface->pitch, SPRITE_WIDTH, SPRITE_HEIGHT, players.palette, players.data);
 	SDL_UpdateRect(surface, 0 ,0, 640, 480);
 	//SDL_UpdateRect(surface, startx ,starty, SPRITE_WIDTH * SCALE, SPRITE_HEIGHT * SCALE);
 }
@@ -146,7 +141,7 @@ int main() {
 	
 	unsigned x, y;
 	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
-	const uint8_t *p = my_pic.data;
+	const uint8_t *p = players.data;
 	unsigned counter = 0;
 	
 	int startx = 10;
