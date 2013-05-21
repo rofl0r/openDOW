@@ -56,15 +56,15 @@ static inline void palpic_fileformat(struct palpic *p) {
 	p->height = htons(p->width);
 }
 
-static inline prgb* palpic_getpalette(struct palpic* p) {
+static inline prgb* palpic_getpalette(const struct palpic* p) {
 	return (prgb*) (p+1);
 }
 
-static inline uint8_t* palpic_getdata(struct palpic* p) {
+static inline uint8_t* palpic_getdata(const struct palpic* p) {
 	return (uint8_t*)(p + 1) + (sizeof(prgb) * p->palcount);
 }
 
-static inline uint32_t palpic_getfilesize(struct palpic* p) {
+static inline uint32_t palpic_getfilesize(const struct palpic* p) {
 	return sizeof(palpic) + (sizeof(prgb) * p->palcount) + (p->width * p->height);
 }
 
