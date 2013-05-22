@@ -10,7 +10,7 @@ static const struct {
 	prgb palette[PAL_COUNT];
 	uint8_t data[WIDTH * HEIGHT];
 } STRUCT_NAME = { 
-	{ {'p', 'P', 'i', 'C', }, 1, PAL_COUNT, SPRITE_COUNT, WIDTH, HEIGHT, 0 },
+	{ {'p', 'P', 'i', 'C', }, 1, PAL_COUNT, SPRITE_COUNT, WIDTH, HEIGHT, PPF_TRANSPARENT, 0 },
 	{
 		PRGB(  0,   0,   0), 
 		PRGB(149, 149, 125), 
