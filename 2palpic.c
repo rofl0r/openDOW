@@ -50,13 +50,23 @@ int main(int argc, char** argv) {
 
 	unsigned startarg = 1;
 	for(; startarg < (unsigned) argc; startarg++)
-		if(memcmp(argv[startarg], STRSZ("-sprite="))) break;
+		if(!memcmp(argv[startarg], STRSZ("-sprite="))) break;
 	if(startarg == argc) {
-		printf("syntax: %s -sprite=WxH infile outfile\n"
-		       "where WxH denotes the dimensions of a single picture in the spritesheet\n", argv[0]);
+		printf("syntax: %s [-t] -sprite=WxH infile outfile\n"
+		       "where WxH denotes the dimensions of a single picture in the spritesheet\n"
+		       "-t, if given, means the first color in the bitmap is the transparent color\n", argv[0]);
 		return 1;
 	}
+	if(startarg == 2 && argv[1][0] == '-' && argv[1][1] == 't' && argv[1][2] == 0)
+		pp.flags |= PPF_TRANSPARENT;
+	
+	startarg++;
+	
 	char *in_filename = argv[startarg];
+	if(access(in_filename, R_OK) == -1) {
+		perror(in_filename);
+		return 1;
+	}
 	char *out_filename = argv[startarg + 1];
 	char* cp;
 	unsigned sprite_w, sprite_h;
@@ -160,13 +170,14 @@ int main(int argc, char** argv) {
 			 "\tprgb palette[PAL_COUNT];\n"
 			 "\tuint8_t data[WIDTH * HEIGHT];\n"
 			 "} STRUCT_NAME = { \n"
-			 "\t{ {'p', 'P', 'i', 'C', }, 1, PAL_COUNT, SPRITE_COUNT, WIDTH, HEIGHT, 0 },\n"
+			 "\t{ {'p', 'P', 'i', 'C', }, 1, PAL_COUNT, SPRITE_COUNT, WIDTH, HEIGHT, %s, 0 },\n"
 			 "\t{\n\t\t",
 			 (int) pp.palcount,
 			 (int) sprite_count, 
 			 (int) pp.width, 
 			 (int) pp.height,
-			 struct_name
+			 struct_name,
+			 (pp.flags & PPF_TRANSPARENT ? "PPF_TRANSPARENT" :  "0")
 		);
 		fwrite(buf, strlen(buf), 1, outfile);
 		

@@ -29,12 +29,17 @@ typedef struct palpic {
 	uint16_t spritecount;
 	uint16_t width;
 	uint16_t height;
-	uint32_t padding;
+	uint16_t flags;
+	uint16_t padding;
 	//prgb palette[];
 	//uint8_t data[];
 } palpic;
 
-#define palpic_empty { {'p', 'P', 'i', 'C', }, 1, 0, 0, 0, 0, 0 }
+enum palpic_flags {
+	PPF_TRANSPARENT = 1,
+};
+
+#define palpic_empty { {'p', 'P', 'i', 'C', }, 1, 0, 0, 0, 0, 0, 0 }
 
 #ifdef IS_LITTLE_ENDIAN
 #define RGB(x,y,z) ((rgb_t) {{0, z, y, x}})

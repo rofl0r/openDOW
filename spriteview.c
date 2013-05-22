@@ -41,6 +41,7 @@ typedef union {
 
 #endif
 
+const struct palpic* spritemap = &players.header;
 
 static sdl_rgb_t convert_prgb(prgb col) {
 	sdl_rgb_t ret;
@@ -51,9 +52,8 @@ static sdl_rgb_t convert_prgb(prgb col) {
 	return ret;
 }
 
-#define SCALE 4
-
-void blit_sprite(unsigned x_pos, unsigned y_pos, void *video_mem, unsigned videomem_pitch, const struct palpic* pic, uint16_t spritenum) {
+void blit_sprite(unsigned x_pos, unsigned y_pos, void *video_mem, unsigned videomem_pitch, 
+	         unsigned scale, const struct palpic* pic, uint16_t spritenum) {
 	unsigned sprite_width = palpic_getspritewidth(pic);
 	unsigned sprite_height = palpic_getspriteheight(pic);
 	const prgb* palette = palpic_getpalette(pic);
@@ -61,18 +61,23 @@ void blit_sprite(unsigned x_pos, unsigned y_pos, void *video_mem, unsigned video
 	unsigned int scale_y, scale_x, y, x;
 	unsigned lineoffset = y_pos * (videomem_pitch / 4);
 	unsigned pixel_start = 0;
-	static const sdl_rgb_t mask_colors[2] = {
+	static const sdl_rgb_t mask_colors_transp[2] = {
 		[0] = (SRGB_BLACK),
 		[1] = (SRGB_WHITE),
 	};
+	static const sdl_rgb_t mask_colors_non_transp[2] = {
+		[0] = (SRGB_BLACK),
+		[1] = (SRGB_BLACK),
+	};
+	const sdl_rgb_t *mask_colors = (pic->flags & PPF_TRANSPARENT ? mask_colors_transp : mask_colors_non_transp);
 	for (y = 0; y < sprite_height; y++) {
-		for(scale_y = 0; scale_y < SCALE; scale_y++) {
+		for(scale_y = 0; scale_y < scale; scale_y++) {
 			sdl_rgb_t *ptr = &((sdl_rgb_t *) video_mem)[lineoffset + x_pos];
 			const uint8_t *p = &bitmap[pixel_start];
 			for (x = 0; x < sprite_width; x++) {
 				prgb col = palette[*p++];
 				uint32_t mask = mask_colors[(col.val == palette[0].val)].asInt;
-				for(scale_x = 0; scale_x < SCALE; scale_x++) {
+				for(scale_x = 0; scale_x < scale; scale_x++) {
 					ptr[0].asInt &= mask;
 					ptr[0].asInt |= convert_prgb(col).asInt;
 					ptr++;
@@ -120,11 +125,12 @@ void redraw_bg(SDL_Surface *surface) {
 
 static uint16_t sprite_number = 0;
 
+#define SCALE 4
 void redraw(SDL_Surface *surface, int startx, int starty) {
 	redraw_bg(surface);
-	blit_sprite(startx, starty, surface->pixels, surface->pitch, &players.header, sprite_number);
+	blit_sprite(startx, starty, surface->pixels, surface->pitch, SCALE, spritemap, sprite_number);
 	SDL_UpdateRect(surface, 0 ,0, VMODE_W, VMODE_H);
-	//SDL_UpdateRect(surface, startx ,starty, SPRITE_WIDTH * SCALE, palpic_getspriteheight(&players.header) * SCALE);
+	//SDL_UpdateRect(surface, startx ,starty, SPRITE_WIDTH * SCALE, palpic_getspriteheight(spritemap) * SCALE);
 }
 
 enum cursor {
@@ -160,10 +166,10 @@ int main() {
 	};
 	
 	struct { int *target; int dir; int max;} moves[] = {
-		[c_up] = {&starty, SCALE * -1, VMODE_H - (palpic_getspriteheight(&players.header) * SCALE)},
-		[c_down] = {&starty, SCALE, VMODE_H - (palpic_getspriteheight(&players.header) * SCALE)},
-		[c_left] = {&startx, SCALE * -1, VMODE_W - (palpic_getspritewidth(&players.header) * SCALE)},
-		[c_right] = {&startx, SCALE, VMODE_W - (palpic_getspritewidth(&players.header) * SCALE)},
+		[c_up] = {&starty, SCALE * -1, VMODE_H - (palpic_getspriteheight(spritemap) * SCALE)},
+		[c_down] = {&starty, SCALE, VMODE_H - (palpic_getspriteheight(spritemap) * SCALE)},
+		[c_left] = {&startx, SCALE * -1, VMODE_W - (palpic_getspritewidth(spritemap) * SCALE)},
+		[c_right] = {&startx, SCALE, VMODE_W - (palpic_getspritewidth(spritemap) * SCALE)},
 	};
 	
 	SDL_Delay(1);
@@ -185,7 +191,7 @@ int main() {
 						case SDLK_KP_PLUS:
 							sprite_number++;
 							sprite_number_overflow_check:
-							if(sprite_number >= palpic_getspritecount(&players.header))
+							if(sprite_number >= palpic_getspritecount(spritemap))
 								sprite_number = 0;
 							printf("%d\n", sprite_number);
 							need_redraw = 1;
