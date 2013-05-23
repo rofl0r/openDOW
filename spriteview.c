@@ -144,16 +144,12 @@ static vec2f velocity(vec2f* from, vec2f* to) {
 }
 
 #include <math.h>
-float calculateDistance(vec2f* a, vec2f* b) {
-	//float x = a->x - b->x;
-	//float y = a->y - b->y;
-	//return (float) sqrtf((x * x) + (y * y));
+static float calculateDistance(vec2f* a, vec2f* b) {
 	vec2f vel = velocity(a, b);
 	return (float) sqrtf((vel.x * vel.x) + (vel.y * vel.y));
 }
 
-
-void shoot_bullet(SDL_Surface *surface, int *start_x, int *start_y, unsigned dest_x, unsigned dest_y) {
+static void shoot_bullet(SDL_Surface *surface, int *start_x, int *start_y, unsigned dest_x, unsigned dest_y) {
 	vec2f from = { .x = *start_x, .y = *start_y };
 	vec2f to = { .x = dest_x, .y = dest_y };
 	float dist = calculateDistance(&from, &to);
