@@ -1,5 +1,10 @@
 #include "../lib/include/timelib.h"
 #include <stdint.h>
+#include <assert.h>
+#include "vec2f.h"
+#include "anim.h"
+#include "gameobj.h"
+#include "video.h"
 
 #include <SDL/SDL.h>
 #ifndef IN_KDEVELOP_PARSER
@@ -42,9 +47,6 @@ typedef union {
 #define SRGB_BLACK SRGB(0x00,0x00,0x00)
 
 #endif
-
-//const struct palpic* spritemap = &players.header;
-const struct palpic* spritemap = &bullet.header;
 
 static sdl_rgb_t convert_prgb(prgb col) {
 	sdl_rgb_t ret;
@@ -112,10 +114,10 @@ static void get_last_move_event(SDL_Event* e) {
 #undef numpeek
 }
 
-#define VMODE_W 640
-#define VMODE_H 480
+const struct palpic *spritemaps[2] = { &players.header, &bullet.header };
+SDL_Surface *surface;
 
-void redraw_bg(SDL_Surface *surface) {
+void redraw_bg() {
 	unsigned lineoffset = 0, x, y;
 	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
 	for(y = 0; y < VMODE_H; y++) {
@@ -126,59 +128,94 @@ void redraw_bg(SDL_Surface *surface) {
 	}
 }
 
-static uint16_t sprite_number = 0;
-
-#define SCALE 4
-void redraw(SDL_Surface *surface, int startx, int starty) {
-	redraw_bg(surface);
-	blit_sprite(startx, starty, surface->pixels, surface->pitch, SCALE, spritemap, sprite_number);
-	SDL_UpdateRect(surface, 0 ,0, VMODE_W, VMODE_H);
-	//SDL_UpdateRect(surface, startx ,starty, SPRITE_WIDTH * SCALE, palpic_getspriteheight(spritemap) * SCALE);
+static void start_anim(int obj_id, enum animation_id aid) {
+	if(obj_id == -1) return;
+	objs[obj_id].animid = aid;
+	objs[obj_id].anim_curr = animations[aid].first;
 }
 
-typedef struct { float x, y; } vec2f;
-
-static vec2f velocity(vec2f* from, vec2f* to) {
-	vec2f res = { .x = to->x - from->x, .y = to->y - from->y};
-	return res;
+static int init_player(int no) {
+	int pid = gameobj_alloc();
+	if(pid == -1) return -1;
+	objs[pid].objtype = no == 1 ? OBJ_P1 : OBJ_P2;
+	objs[pid].pos = VEC( 10, 10 );
+	objs[pid].vel = VEC( 0, 0 );
+	objs[pid].spritemap_id = 0;
+	start_anim(pid, no == 1 ? ANIM_P1_MOVE_N : ANIM_P2_MOVE_N);
+	return pid;
 }
 
-#include <math.h>
-static float calculateDistance(vec2f* a, vec2f* b) {
-	vec2f vel = velocity(a, b);
-	return (float) sqrtf((vel.x * vel.x) + (vel.y * vel.y));
+static int init_bullet(vec2f *pos, vec2f *vel, int steps) {
+	int id = gameobj_alloc();
+	if(id == -1) return -1;
+	objs[id].objtype = OBJ_BULLET;
+	objs[id].spritemap_id = 1;
+	objs[id].vel = *vel;
+	objs[id].pos = *pos;
+	start_anim(id, ANIM_BULLET);
+	objs[id].objspecific.bullet.step_curr = 0;
+	objs[id].objspecific.bullet.step_max = steps;
 }
 
-static void shoot_bullet(SDL_Surface *surface, int *start_x, int *start_y, unsigned dest_x, unsigned dest_y) {
-	vec2f from = { .x = *start_x, .y = *start_y };
-	vec2f to = { .x = dest_x, .y = dest_y };
-	float dist = calculateDistance(&from, &to);
+static void fire_bullet(int sx, int sy, int dx, int dy, float speed, float range) {
+	vec2f from = VEC(sx, sy);
+	vec2f to = VEC(dx, dy);
 	vec2f vel = velocity(&from, &to);
-	static const float bullet_speed = 40.0;
-	float steps = dist / bullet_speed;
+	float dist = veclength(&vel);
+	if(dist != range) dist = range;
+	float steps = dist / speed;
 	vel.x /= steps;
 	vel.y /= steps;
-	float dist_taken = 0;
-	unsigned frames = 0;
+	init_bullet(&from, &vel, steps);
+}
+
+static int init_game_objs() {
+	return init_player(1);
+}
+
+static int get_next_anim_frame(enum animation_id aid, int curr) {
+	curr++;
+	if(curr > animations[aid].last) return animations[aid].first;
+	return curr;
+}
+
+static void game_tick() {
+	size_t obj_visited = 0;
+	size_t obj_count_copy = obj_count;
+	int background_painted = 0;
+	const int fps = 60;
+	size_t i = 0;
 	struct timeval timer;
-	gettimestamp(&timer);
-	while(dist_taken < dist && from.x >= 0 && from.y >= 0 && from.x < VMODE_W && from.y < VMODE_H) {
-		vec2f nu = { .x = from.x + vel.x, .y = from.y + vel.y };
-		dist_taken += calculateDistance(&(vec2f) {.x = 0, .y = 0}, &vel);
-		struct timeval it_time;
-		gettimestamp(&it_time);
-		if( ( (int) nu.x != (int)from.x) || ((int) nu.y != (int)from.y) )
-			redraw(surface, from.x, from.y);
-		//SDL_Delay(1000/60 - mspassed(&it_time));
-		//SDL_Delay(1000/60);
-		frames++;
-		from = nu;
+	for(; obj_visited < obj_count_copy && i < OBJ_MAX; i++) {
+		if(obj_slot_used[i]) {
+			if(objs[i].objtype == OBJ_BULLET) {
+				if(objs[i].objspecific.bullet.step_curr >= objs[i].objspecific.bullet.step_max)
+					gameobj_free(i);
+				else objs[i].objspecific.bullet.step_curr++;
+			}
+			int next_anim = get_next_anim_frame(objs[i].animid, objs[i].anim_curr);
+			if(objs[i].anim_curr != next_anim || objs[i].vel.x != 0 || objs[i].vel.y != 0) {
+				if(!background_painted) {
+					gettimestamp(&timer);
+					redraw_bg();
+					background_painted = 1;
+				}
+				objs[i].pos.x += objs[i].vel.x;
+				objs[i].pos.y += objs[i].vel.y;
+				
+				blit_sprite(objs[i].pos.x, objs[i].pos.y, surface->pixels, surface->pitch,
+				            SCALE, spritemaps[objs[i].spritemap_id], next_anim);
+				
+				objs[i].anim_curr = next_anim;
+			}
+			
+			obj_visited++;
+		}
 	}
-	long passed = mspassed(&timer);
-	printf("fps: %.4f\n", frames * 1000.f / passed);
-	
-	*start_x = from.x;
-	*start_y = from.y;
+	if(background_painted) SDL_UpdateRect(surface, 0 ,0, VMODE_W, VMODE_H);
+	const long ms_used = background_painted ? mspassed(&timer) : 0;
+	assert(ms_used > 0);
+	SDL_Delay(1000/fps - ms_used);
 }
 
 enum cursor {
@@ -197,14 +234,16 @@ enum cursor cursor_lut[] = {
 
 int main() {
 	SDL_Init(SDL_INIT_VIDEO);
-	SDL_Surface *surface = SDL_SetVideoMode(VMODE_W, VMODE_H, 32, SDL_RESIZABLE | SDL_HWPALETTE);
+	surface = SDL_SetVideoMode(VMODE_W, VMODE_H, 32, SDL_RESIZABLE | SDL_HWPALETTE);
 	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	SDL_EnableKeyRepeat(100, 20);
 	
 	int startx = 10;
 	int starty = 10;
 	
-	redraw(surface, startx, starty);
+	int player = init_game_objs();
+	
+	//redraw(surface, startx, starty);
 	
 	char cursors_pressed[] = {
 		[c_up] = 0,
@@ -212,7 +251,7 @@ int main() {
 		[c_left] = 0,
 		[c_right] = 0,
 	};
-	
+	const struct palpic* spritemap = &players.header;
 	struct { int *target; int dir; int max;} moves[] = {
 		[c_up] = {&starty, SCALE * -1, VMODE_H - (palpic_getspriteheight(spritemap) * SCALE)},
 		[c_down] = {&starty, SCALE, VMODE_H - (palpic_getspriteheight(spritemap) * SCALE)},
@@ -227,7 +266,8 @@ int main() {
 		while (SDL_PollEvent(&sdl_event)) {
 			switch (sdl_event.type) {
 				case SDL_MOUSEBUTTONDOWN:
-					shoot_bullet(surface, &startx, &starty, sdl_event.button.x, sdl_event.button.y);
+					fire_bullet(objs[player].pos.x, objs[player].pos.y, sdl_event.button.x, sdl_event.button.y, 60, 100);
+					//shoot_bullet(surface, &startx, &starty, sdl_event.button.x, sdl_event.button.y);
 					break;
 				case SDL_QUIT:
 					return 0;
@@ -240,16 +280,7 @@ int main() {
 							cursors_pressed[cursor_lut[sdl_event.key.keysym.sym]] = 1;
 							break;
 						case SDLK_KP_PLUS:
-							sprite_number++;
-							sprite_number_overflow_check:
-							if(sprite_number >= palpic_getspritecount(spritemap))
-								sprite_number = 0;
-							printf("%d\n", sprite_number);
-							need_redraw = 1;
-							break;
 						case SDLK_KP_MINUS:
-							sprite_number--;
-							goto sprite_number_overflow_check;
 						default:
 							break;
 					}
@@ -278,9 +309,7 @@ int main() {
 				need_redraw = 1;
 			}
 		}
-		if(need_redraw) redraw(surface, startx, starty);
-
-		SDL_Delay(1);
+		game_tick();
 	}
 
 	return 0;
