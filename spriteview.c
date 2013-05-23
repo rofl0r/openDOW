@@ -1,3 +1,4 @@
+#include "../lib/include/timelib.h"
 #include <stdint.h>
 
 #include <SDL/SDL.h>
@@ -8,6 +9,7 @@
 #include "palpic.h"
 
 #include "players.c"
+#include "bullet.c"
 #endif
 
 //RcB: LINK "-lSDL"
@@ -41,7 +43,8 @@ typedef union {
 
 #endif
 
-const struct palpic* spritemap = &players.header;
+//const struct palpic* spritemap = &players.header;
+const struct palpic* spritemap = &bullet.header;
 
 static sdl_rgb_t convert_prgb(prgb col) {
 	sdl_rgb_t ret;
@@ -133,6 +136,55 @@ void redraw(SDL_Surface *surface, int startx, int starty) {
 	//SDL_UpdateRect(surface, startx ,starty, SPRITE_WIDTH * SCALE, palpic_getspriteheight(spritemap) * SCALE);
 }
 
+typedef struct { float x, y; } vec2f;
+
+static vec2f velocity(vec2f* from, vec2f* to) {
+	vec2f res = { .x = to->x - from->x, .y = to->y - from->y};
+	return res;
+}
+
+#include <math.h>
+float calculateDistance(vec2f* a, vec2f* b) {
+	//float x = a->x - b->x;
+	//float y = a->y - b->y;
+	//return (float) sqrtf((x * x) + (y * y));
+	vec2f vel = velocity(a, b);
+	return (float) sqrtf((vel.x * vel.x) + (vel.y * vel.y));
+}
+
+
+void shoot_bullet(SDL_Surface *surface, int *start_x, int *start_y, unsigned dest_x, unsigned dest_y) {
+	vec2f from = { .x = *start_x, .y = *start_y };
+	vec2f to = { .x = dest_x, .y = dest_y };
+	float dist = calculateDistance(&from, &to);
+	vec2f vel = velocity(&from, &to);
+	static const float bullet_speed = 40.0;
+	float steps = dist / bullet_speed;
+	vel.x /= steps;
+	vel.y /= steps;
+	float dist_taken = 0;
+	unsigned frames = 0;
+	struct timeval timer;
+	gettimestamp(&timer);
+	while(dist_taken < dist && from.x >= 0 && from.y >= 0 && from.x < VMODE_W && from.y < VMODE_H) {
+		vec2f nu = { .x = from.x + vel.x, .y = from.y + vel.y };
+		dist_taken += calculateDistance(&(vec2f) {.x = 0, .y = 0}, &vel);
+		struct timeval it_time;
+		gettimestamp(&it_time);
+		if( ( (int) nu.x != (int)from.x) || ((int) nu.y != (int)from.y) )
+			redraw(surface, from.x, from.y);
+		//SDL_Delay(1000/60 - mspassed(&it_time));
+		//SDL_Delay(1000/60);
+		frames++;
+		from = nu;
+	}
+	long passed = mspassed(&timer);
+	printf("fps: %.4f\n", frames * 1000.f / passed);
+	
+	*start_x = from.x;
+	*start_y = from.y;
+}
+
 enum cursor {
 	c_down,
 	c_up,
@@ -178,6 +230,9 @@ int main() {
 		unsigned need_redraw = 0;
 		while (SDL_PollEvent(&sdl_event)) {
 			switch (sdl_event.type) {
+				case SDL_MOUSEBUTTONDOWN:
+					shoot_bullet(surface, &startx, &starty, sdl_event.button.x, sdl_event.button.y);
+					break;
 				case SDL_QUIT:
 					return 0;
 				case SDL_KEYDOWN:
