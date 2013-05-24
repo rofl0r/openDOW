@@ -183,10 +183,12 @@ static void fire_bullet(int player_id, int dx, int dy, float speed, float range)
 		if(aid != -1) switch_anim(player_id, aid);
 	}
 	float dist = veclength(&vel);
-	if(dist != range) dist = range;
+	if(dist > range) 
+		dist = range;
 	float steps = dist / speed;
-	vel.x /= steps;
-	vel.y /= steps;
+	float deg = atan2(vel.y, vel.x);
+	vel.x = cos(deg) * speed;
+	vel.y = sin(deg) * speed;
 	init_bullet(&from, &vel, steps);
 }
 
@@ -397,7 +399,7 @@ int main() {
 			switch (sdl_event.type) {
 				case SDL_MOUSEBUTTONDOWN:
 					
-					fire_bullet(player, sdl_event.button.x, sdl_event.button.y, 1, 100);
+					fire_bullet(player, sdl_event.button.x, sdl_event.button.y, 5, 300);
 					break;
 				case SDL_QUIT:
 					return 0;
