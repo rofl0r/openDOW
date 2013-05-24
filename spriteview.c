@@ -5,13 +5,15 @@
 #include "anim.h"
 #include "gameobj.h"
 #include "video.h"
+#include "direction.h"
+#include "palpic.h"
 
 #include <SDL/SDL.h>
 #ifndef IN_KDEVELOP_PARSER
 #include "../lib/include/bitarray.h"
 #include "../lib/include/macros.h"
 
-#include "palpic.h"
+
 
 #include "players.c"
 #include "bullet.c"
@@ -57,7 +59,7 @@ static sdl_rgb_t convert_prgb(prgb col) {
 	return ret;
 }
 
-void blit_sprite(unsigned x_pos, unsigned y_pos, void *video_mem, unsigned videomem_pitch, 
+void blit_sprite(int x_pos, int y_pos, void *video_mem, unsigned videomem_pitch, 
 	         unsigned scale, const struct palpic* pic, uint16_t spritenum) {
 	unsigned sprite_width = palpic_getspritewidth(pic);
 	unsigned sprite_height = palpic_getspriteheight(pic);
@@ -155,12 +157,30 @@ static int init_bullet(vec2f *pos, vec2f *vel, int steps) {
 	start_anim(id, ANIM_BULLET);
 	objs[id].objspecific.bullet.step_curr = 0;
 	objs[id].objspecific.bullet.step_max = steps;
+	return id;
 }
 
-static void fire_bullet(int sx, int sy, int dx, int dy, float speed, float range) {
-	vec2f from = VEC(sx, sy);
+static vec2f get_player_center(int player_id) {
+	vec2f res = objs[player_id].pos;
+	res.x += palpic_getspritewidth(spritemaps[objs[player_id].spritemap_id]) * SCALE / 2;
+	res.y += palpic_getspriteheight(spritemaps[objs[player_id].spritemap_id]) * SCALE / 2;
+	return res;
+}
+
+void switch_anim(int playerid, int aid);
+enum direction get_direction_from_vec(vec2f *vel);
+enum animation_id get_anim_from_direction(enum direction dir, int player);
+
+static void fire_bullet(int player_id, int dx, int dy, float speed, float range) {
+	vec2f from = get_player_center(player_id);
+	//get_anim_from_vel(0, objs[player].
 	vec2f to = VEC(dx, dy);
 	vec2f vel = velocity(&from, &to);
+	enum direction dir = get_direction_from_vec(&vel);
+	if(dir != -1) {
+		enum animation_id aid = get_anim_from_direction(dir, player_id);
+		if(aid != -1) switch_anim(player_id, aid);
+	}
 	float dist = veclength(&vel);
 	if(dist != range) dist = range;
 	float steps = dist / speed;
@@ -179,43 +199,47 @@ static int get_next_anim_frame(enum animation_id aid, int curr) {
 	return curr;
 }
 
-static void game_tick() {
+static void game_tick(int force_redraw) {
 	size_t obj_visited = 0;
 	size_t obj_count_copy = obj_count;
 	int background_painted = 0;
 	const int fps = 60;
-	size_t i = 0;
 	struct timeval timer;
-	for(; obj_visited < obj_count_copy && i < OBJ_MAX; i++) {
+	int paint_objs[OBJ_MAX];
+	size_t paint_obj_count = 0, i;
+	for(i = 0; obj_visited < obj_count_copy && i < OBJ_MAX; i++) {
 		if(obj_slot_used[i]) {
+			obj_visited++;
 			if(objs[i].objtype == OBJ_BULLET) {
-				if(objs[i].objspecific.bullet.step_curr >= objs[i].objspecific.bullet.step_max)
+				if(objs[i].objspecific.bullet.step_curr >= objs[i].objspecific.bullet.step_max) {
 					gameobj_free(i);
+					force_redraw = 1;
+					continue;
+				}
 				else objs[i].objspecific.bullet.step_curr++;
 			}
-			int next_anim = get_next_anim_frame(objs[i].animid, objs[i].anim_curr);
-			if(objs[i].anim_curr != next_anim || objs[i].vel.x != 0 || objs[i].vel.y != 0) {
-				if(!background_painted) {
-					gettimestamp(&timer);
-					redraw_bg();
-					background_painted = 1;
-				}
+			paint_objs[paint_obj_count++] = i;
+			if(objs[i].vel.x != 0 || objs[i].vel.y != 0) {
 				objs[i].pos.x += objs[i].vel.x;
 				objs[i].pos.y += objs[i].vel.y;
-				
-				blit_sprite(objs[i].pos.x, objs[i].pos.y, surface->pixels, surface->pitch,
-				            SCALE, spritemaps[objs[i].spritemap_id], next_anim);
-				
-				objs[i].anim_curr = next_anim;
+				objs[i].anim_curr = get_next_anim_frame(objs[i].animid, objs[i].anim_curr);
+				force_redraw = 1;
 			}
-			
-			obj_visited++;
 		}
 	}
-	if(background_painted) SDL_UpdateRect(surface, 0 ,0, VMODE_W, VMODE_H);
-	const long ms_used = background_painted ? mspassed(&timer) : 0;
-	assert(ms_used > 0);
-	SDL_Delay(1000/fps - ms_used);
+	long ms_used = 0;
+	if(force_redraw) {
+		gettimestamp(&timer);
+		redraw_bg();
+		for(i = 0; i < paint_obj_count; i++) {
+			blit_sprite(objs[paint_objs[i]].pos.x, objs[paint_objs[i]].pos.y, surface->pixels, surface->pitch,
+			            SCALE, spritemaps[objs[paint_objs[i]].spritemap_id], objs[paint_objs[i]].anim_curr);
+		}
+		SDL_UpdateRect(surface, 0 ,0, VMODE_W, VMODE_H);
+		ms_used = mspassed(&timer);
+	}
+	long sleepms = 1000/fps - ms_used;
+	if(sleepms >= 0) SDL_Delay(sleepms);
 }
 
 enum cursor {
@@ -232,6 +256,110 @@ enum cursor cursor_lut[] = {
 	[SDLK_RIGHT] = c_right,
 };
 
+char cursors_pressed[] = {
+	[c_up] = 0,
+	[c_down] = 0,
+	[c_left] = 0,
+	[c_right] = 0,
+};
+
+vec2f get_vel_from_anim(int aid, float speed) {
+#define VELLUT(a, b, c) [a] = VEC(b, c)
+	static const vec2f vel_lut[] = {
+		VELLUT(ANIM_P1_MOVE_NW, -1, -1),
+		VELLUT(ANIM_P1_MOVE_NO, 1, -1),
+		VELLUT(ANIM_P1_MOVE_N, 0, -1),
+		VELLUT(ANIM_P1_MOVE_SW, -1, 1),
+		VELLUT(ANIM_P1_MOVE_SO, 1, 1),
+		VELLUT(ANIM_P1_MOVE_S, 0, 1),
+		VELLUT(ANIM_P1_MOVE_W, -1, 0),
+		VELLUT(ANIM_P1_MOVE_O, 1, 0),
+	};
+#undef VELLUT
+	vec2f v = vel_lut[aid];
+	v.x *= speed;
+	v.y *= speed;
+	return v;
+}
+
+enum direction get_direction_from_vec(vec2f *vel) {
+	enum direction dir = -1;
+	if(vel->y < 0) {
+		if(vel->x < 0 && vel->x <= vel->y) dir = DIR_NW;
+		else if(vel->x > 0 && vel->x >= -vel->y) dir = DIR_NO;
+		else dir = DIR_N;
+	} else if(vel->y > 0) {
+		if(vel->x < 0) dir = DIR_SW;
+		else if(vel->x > 0) dir = DIR_SO;
+		else dir = DIR_S;
+	} else if(vel->x < 0) dir = DIR_W;
+	else if(vel->x > 0) dir = DIR_O;
+	return dir;
+}
+
+enum direction get_direction_from_cursor(void) {
+	enum direction dir = -1;
+	if(cursors_pressed[c_up]) {
+		if(cursors_pressed[c_left]) dir = DIR_NW;
+		else if(cursors_pressed[c_right]) dir = DIR_NO;
+		else dir = DIR_N;
+	} else if (cursors_pressed[c_down]) {
+		if(cursors_pressed[c_left]) dir = DIR_SW;
+		else if(cursors_pressed[c_right]) dir = DIR_SO;
+		else dir = DIR_S;
+	} else if (cursors_pressed[c_left]) {
+		dir = DIR_W;
+	} else if (cursors_pressed[c_right]) {
+		dir = DIR_O;
+	}
+	return dir;
+}
+
+enum animation_id get_anim_from_direction(enum direction dir, int player) {
+	#define DIRMAP(a, b) [a] = b
+	static const enum animation_id dir_map_p1[] = {
+		DIRMAP(DIR_N, ANIM_P1_MOVE_N),
+		DIRMAP(DIR_NW, ANIM_P1_MOVE_NW),
+		DIRMAP(DIR_W, ANIM_P1_MOVE_W),
+		DIRMAP(DIR_SW, ANIM_P1_MOVE_SW),
+		DIRMAP(DIR_S, ANIM_P1_MOVE_S),
+		DIRMAP(DIR_SO, ANIM_P1_MOVE_SO),
+		DIRMAP(DIR_O, ANIM_P1_MOVE_O),
+		DIRMAP(DIR_NO, ANIM_P1_MOVE_NO),
+	};
+	static const enum animation_id dir_map_p2[] = {
+		DIRMAP(DIR_N, ANIM_P2_MOVE_N),
+		DIRMAP(DIR_NW, ANIM_P2_MOVE_NW),
+		DIRMAP(DIR_W, ANIM_P2_MOVE_W),
+		DIRMAP(DIR_SW, ANIM_P2_MOVE_SW),
+		DIRMAP(DIR_S, ANIM_P2_MOVE_S),
+		DIRMAP(DIR_SO, ANIM_P2_MOVE_SO),
+		DIRMAP(DIR_O, ANIM_P2_MOVE_O),
+		DIRMAP(DIR_NO, ANIM_P2_MOVE_NO),
+	};
+	#undef DIRMAP
+	const enum animation_id *dir_map = player == 0 ? dir_map_p1 : dir_map_p2;
+	return dir_map[dir];
+}
+
+int get_anim_from_cursor(void) {
+	enum direction dir = get_direction_from_cursor();
+	if(dir == -1) return -1;
+	enum animation_id aid = get_anim_from_direction(dir, 0);
+	return aid;
+}
+
+int get_anim_from_vel(int player, vec2f *vel, vec2f *origin) {
+	enum direction dir = get_direction_from_vec(vel);
+	if(dir == -1) return -1;
+	return get_anim_from_direction(dir, player);
+}
+
+void switch_anim(int playerid, int aid) {
+	if(objs[playerid].animid == aid) return;
+	start_anim(playerid, aid);
+}
+
 int main() {
 	SDL_Init(SDL_INIT_VIDEO);
 	surface = SDL_SetVideoMode(VMODE_W, VMODE_H, 32, SDL_RESIZABLE | SDL_HWPALETTE);
@@ -241,16 +369,8 @@ int main() {
 	int startx = 10;
 	int starty = 10;
 	
-	int player = init_game_objs();
-	
 	//redraw(surface, startx, starty);
 	
-	char cursors_pressed[] = {
-		[c_up] = 0,
-		[c_down] = 0,
-		[c_left] = 0,
-		[c_right] = 0,
-	};
 	const struct palpic* spritemap = &players.header;
 	struct { int *target; int dir; int max;} moves[] = {
 		[c_up] = {&starty, SCALE * -1, VMODE_H - (palpic_getspriteheight(spritemap) * SCALE)},
@@ -260,14 +380,18 @@ int main() {
 	};
 	
 	SDL_Delay(1);
+	
+	int player = init_game_objs();
+	game_tick(1);
+	
 	SDL_Event sdl_event;
 	while(1) {
 		unsigned need_redraw = 0;
 		while (SDL_PollEvent(&sdl_event)) {
 			switch (sdl_event.type) {
 				case SDL_MOUSEBUTTONDOWN:
-					fire_bullet(objs[player].pos.x, objs[player].pos.y, sdl_event.button.x, sdl_event.button.y, 60, 100);
-					//shoot_bullet(surface, &startx, &starty, sdl_event.button.x, sdl_event.button.y);
+					
+					fire_bullet(player, sdl_event.button.x, sdl_event.button.y, 1, 100);
 					break;
 				case SDL_QUIT:
 					return 0;
@@ -276,8 +400,18 @@ int main() {
 						case SDLK_UP:
 						case SDLK_DOWN:
 						case SDLK_RIGHT:
-						case SDLK_LEFT:
+						case SDLK_LEFT: 
 							cursors_pressed[cursor_lut[sdl_event.key.keysym.sym]] = 1;
+							check_anim:
+							{
+								int aid = get_anim_from_cursor();
+								if(aid != -1) {
+									switch_anim(player, aid);
+									objs[player].vel = get_vel_from_anim(aid, 20);
+								} else {
+									objs[player].vel = VEC(0,0);
+								}
+							}
 							break;
 						case SDLK_KP_PLUS:
 						case SDLK_KP_MINUS:
@@ -292,7 +426,7 @@ int main() {
 						case SDLK_RIGHT:
 						case SDLK_LEFT:
 							cursors_pressed[cursor_lut[sdl_event.key.keysym.sym]] = 0;
-							break;
+							goto check_anim;
 						default:
 							break;
 					}
@@ -309,7 +443,7 @@ int main() {
 				need_redraw = 1;
 			}
 		}
-		game_tick();
+		game_tick(need_redraw);
 	}
 
 	return 0;
