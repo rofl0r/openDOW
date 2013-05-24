@@ -1,4 +1,5 @@
 #include "../lib/include/timelib.h"
+#include "../lib/include/macros.h"
 #include <stdint.h>
 #include <assert.h>
 #include "vec2f.h"
@@ -11,7 +12,7 @@
 #include <SDL/SDL.h>
 #ifndef IN_KDEVELOP_PARSER
 #include "../lib/include/bitarray.h"
-#include "../lib/include/macros.h"
+
 
 
 
@@ -283,18 +284,23 @@ vec2f get_vel_from_anim(int aid, float speed) {
 }
 
 enum direction get_direction_from_vec(vec2f *vel) {
-	enum direction dir = -1;
-	if(vel->y < 0) {
-		if(vel->x < 0 && vel->x <= vel->y) dir = DIR_NW;
-		else if(vel->x > 0 && vel->x >= -vel->y) dir = DIR_NO;
-		else dir = DIR_N;
-	} else if(vel->y > 0) {
-		if(vel->x < 0) dir = DIR_SW;
-		else if(vel->x > 0) dir = DIR_SO;
-		else dir = DIR_S;
-	} else if(vel->x < 0) dir = DIR_W;
-	else if(vel->x > 0) dir = DIR_O;
-	return dir;
+	float deg = atan2(vel->y, vel->x);
+	if(deg < 0) deg *= -1.f;
+	else deg = M_PI + (M_PI - deg); // normalize atan2 result to scale from 0 to 2 pi
+	int hexadrant = (int)(deg / ((1.0/16.0f)*2*M_PI));
+	assert(hexadrant >= 0 && hexadrant < 16);
+	static const enum direction rad_lut[] = {
+		DIR_O,
+		DIR_NO, DIR_NO,
+		DIR_N, DIR_N,
+		DIR_NW, DIR_NW,
+		DIR_W, DIR_W,
+		DIR_SW, DIR_SW,
+		DIR_S, DIR_S,
+		DIR_SO, DIR_SO,
+		DIR_O
+	};
+	return rad_lut[hexadrant];
 }
 
 enum direction get_direction_from_cursor(void) {
