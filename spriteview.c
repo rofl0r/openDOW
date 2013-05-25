@@ -1,6 +1,7 @@
 #include "../lib/include/timelib.h"
 #include "../lib/include/macros.h"
 #include <stdint.h>
+#include <stdbool.h>
 #include <assert.h>
 #include "vec2f.h"
 #include "anim.h"
@@ -368,6 +369,8 @@ void switch_anim(int playerid, int aid) {
 	start_anim(playerid, aid);
 }
 
+bool fullscreen_active = false;
+
 int main() {
 	SDL_Init(SDL_INIT_VIDEO);
 	surface = SDL_SetVideoMode(VMODE_W, VMODE_H, 32, SDL_RESIZABLE | SDL_HWPALETTE);
@@ -402,9 +405,15 @@ int main() {
 					fire_bullet(player, sdl_event.button.x, sdl_event.button.y, 20, 300);
 					break;
 				case SDL_QUIT:
+					dun_goofed:
+					// restore desktop video mode correctly...
+					if(fullscreen_active)
+						SDL_WM_ToggleFullScreen(surface);
 					return 0;
 				case SDL_KEYDOWN:
 					switch(sdl_event.key.keysym.sym) {
+						case SDLK_ESCAPE:
+							goto dun_goofed;
 						case SDLK_UP:
 						case SDLK_DOWN:
 						case SDLK_RIGHT:
@@ -423,8 +432,10 @@ int main() {
 							break;
 						case SDLK_RETURN:
 							if((sdl_event.key.keysym.mod & KMOD_LALT) ||
-							   (sdl_event.key.keysym.mod & KMOD_RALT))
+							   (sdl_event.key.keysym.mod & KMOD_RALT)) {
 								SDL_WM_ToggleFullScreen(surface);
+								fullscreen_active = !fullscreen_active;
+							}
 							break;
 						case SDLK_KP_PLUS:
 						case SDLK_KP_MINUS:
