@@ -44,6 +44,7 @@ enum __attribute__ ((__packed__)) animation_id {
 	ANIM_P2_THROW_O,
 	ANIM_P2_THROW_NO,
 	ANIM_BULLET,
+	ANIM_CROSSHAIR,
 	ANIM_MAX,
 	ANIM_INVALID = ANIM_MAX
 };

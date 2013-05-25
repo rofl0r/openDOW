@@ -9,6 +9,7 @@ enum objtype {
 	OBJ_P1 = 0,
 	OBJ_P2,
 	OBJ_BULLET,
+	OBJ_CROSSHAIR,
 };
 
 typedef struct gameobj {

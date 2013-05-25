@@ -36,5 +36,6 @@ const struct anim animations[] = {
 	ANIM(ANIM_P2_THROW_O, 35, 1),
 	ANIM(ANIM_P2_THROW_NO, 39, 4),
 	ANIM(ANIM_BULLET, 1, 1),
+	ANIM(ANIM_CROSSHAIR, 0, 1),
 };
 

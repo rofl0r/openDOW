@@ -19,6 +19,7 @@
 
 #include "players.c"
 #include "bullet.c"
+#include "crosshair4.c"
 #endif
 
 //RcB: LINK "-lSDL"
@@ -118,7 +119,7 @@ static void get_last_move_event(SDL_Event* e) {
 #undef numpeek
 }
 
-const struct palpic *spritemaps[2] = { &players.header, &bullet.header };
+const struct palpic *spritemaps[3] = { &players.header, &bullet.header, &crosshair4.header };
 SDL_Surface *surface;
 bool fullscreen_active = false;
 int player_ids[2];
@@ -151,6 +152,17 @@ static int init_player(int player_no) {
 	objs[pid].spritemap_id = 0;
 	start_anim(pid, player_no == 0 ? ANIM_P1_MOVE_N : ANIM_P2_MOVE_N);
 	return pid;
+}
+
+vec2f *mousepos;
+static int init_crosshair() {
+	int id = gameobj_alloc();
+	if(id == -1) return -1;
+	objs[id].objtype = OBJ_CROSSHAIR;
+	mousepos = &objs[id].pos;
+	objs[id].vel = VEC(0, 0);
+	objs[id].spritemap_id = 2;
+	start_anim(id, ANIM_CROSSHAIR);
 }
 
 static int init_bullet(vec2f *pos, vec2f *vel, int steps) {
@@ -197,8 +209,9 @@ static void fire_bullet(int player_no, int dx, int dy, float speed, float range)
 	init_bullet(&from, &vel, steps);
 }
 
-static int init_game_objs() {
-	return init_player(0);
+static void init_game_objs() {
+	init_player(0);
+	init_crosshair();
 }
 
 static int get_next_anim_frame(enum animation_id aid, int curr) {
@@ -377,6 +390,7 @@ int main() {
 	surface = SDL_SetVideoMode(VMODE_W, VMODE_H, 32, SDL_RESIZABLE | SDL_HWPALETTE);
 	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	SDL_EnableKeyRepeat(100, 20);
+	SDL_ShowCursor(0);
 	
 	int startx = 10;
 	int starty = 10;
@@ -404,8 +418,14 @@ int main() {
 		unsigned need_redraw = 0;
 		while (SDL_PollEvent(&sdl_event)) {
 			switch (sdl_event.type) {
+				case SDL_MOUSEMOTION:
+					mousepos->x = sdl_event.motion.x;
+					mousepos->y = sdl_event.motion.y;
+					need_redraw = 1;
+					break;
 				case SDL_MOUSEBUTTONDOWN:
-					
+					mousepos->x = sdl_event.button.x;
+					mousepos->y = sdl_event.button.y;
 					fire_bullet(player_no, sdl_event.button.x, sdl_event.button.y, 20, 300);
 					break;
 				case SDL_QUIT:
