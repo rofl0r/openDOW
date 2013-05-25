@@ -243,7 +243,6 @@ static void fire_bullet(int player_no) {
 	vel.y = sin(deg) * speed;
 	int bid = init_bullet(&from, &vel, steps);
 	player_ammo[player_no][pw->ammo]--;
-	printf("%d, %d, %d %d/%d\n", player_ammo[player_no][pw->ammo], (int) obj_count, bid, objs[bid].objspecific.bullet.step_curr, objs[bid].objspecific.bullet.step_max);
 }
 
 static void init_game_objs() {
@@ -273,7 +272,6 @@ static void game_tick(int force_redraw) {
 			float shotinterval = fps / shots_per_second;
 			if((int)((float)mousebutton_down[MB_LEFT] / shotinterval) != (int)((float)(mousebutton_down[MB_LEFT]-1) / shotinterval))
 				fire_bullet(player_no);
-			else printf("skipped\n");
 		}
 	}
 	size_t obj_count_copy = obj_count;
@@ -282,7 +280,6 @@ static void game_tick(int force_redraw) {
 			obj_visited++;
 			if(objs[i].objtype == OBJ_BULLET) {
 				if(objs[i].objspecific.bullet.step_curr >= objs[i].objspecific.bullet.step_max) {
-					printf("rem %zu\n", i);
 					gameobj_free(i);
 					force_redraw = 1;
 					continue;
