@@ -358,7 +358,7 @@ enum direction get_direction_from_vec(vec2f *vel) {
 	float deg_org, deg = atan2(vel->y, vel->x);
 	deg_org = deg;
 	if(deg < 0) deg *= -1.f;
-	else deg = M_PI + (M_PI - deg); // normalize atan2 result to scale from 0 to 2 pi
+	else if(deg > 0) deg = M_PI + (M_PI - deg); // normalize atan2 result to scale from 0 to 2 pi
 	int hexadrant = (int)(deg / ((1.0/16.0f)*2*M_PI));
 	assert(hexadrant >= 0 && hexadrant < 16);
 	static const enum direction rad_lut[] = {
