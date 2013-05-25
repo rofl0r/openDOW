@@ -30,7 +30,7 @@ typedef struct gameobj {
 int gameobj_alloc(void);
 void gameobj_free(int id);
 
-#define OBJ_MAX 256
+#define OBJ_MAX 255
 extern gameobj objs[OBJ_MAX];
 extern uint8_t obj_slot_used[OBJ_MAX];
 extern uint8_t obj_count;
