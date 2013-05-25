@@ -178,10 +178,10 @@ static int init_bullet(vec2f *pos, vec2f *vel, int steps) {
 	return id;
 }
 
-static vec2f get_player_center(int player_id) {
-	vec2f res = objs[player_id].pos;
-	res.x += palpic_getspritewidth(spritemaps[objs[player_id].spritemap_id]) * SCALE / 2;
-	res.y += palpic_getspriteheight(spritemaps[objs[player_id].spritemap_id]) * SCALE / 2;
+static vec2f get_sprite_center(int obj_id) {
+	vec2f res = objs[obj_id].pos;
+	res.x += palpic_getspritewidth(spritemaps[objs[obj_id].spritemap_id]) * SCALE / 2;
+	res.y += palpic_getspriteheight(spritemaps[objs[obj_id].spritemap_id]) * SCALE / 2;
 	return res;
 }
 
@@ -190,7 +190,7 @@ enum direction get_direction_from_vec(vec2f *vel);
 enum animation_id get_anim_from_direction(enum direction dir, int player);
 
 static void fire_bullet(int player_no, int dx, int dy, float speed, float range) {
-	vec2f from = get_player_center(player_ids[player_no]);
+	vec2f from = get_sprite_center(player_ids[player_no]);
 	//get_anim_from_vel(0, objs[player].
 	vec2f to = VEC(dx, dy);
 	vec2f vel = velocity(&from, &to);
