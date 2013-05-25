@@ -1,7 +1,7 @@
 #ifndef DIRECTION_H
 #define DIRECTION_H
 
-enum __attribute__ ((__packed__)) direction {
+enum direction {
 	DIR_N = 0,
 	DIR_NW,
 	DIR_W,

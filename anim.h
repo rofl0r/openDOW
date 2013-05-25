@@ -8,7 +8,7 @@ typedef struct anim {
 	uint16_t last;
 } anim;
 
-enum __attribute__ ((__packed__)) animation_id {
+enum animation_id {
 	ANIM_P1_MOVE_N = 0,
 	ANIM_P1_MOVE_NW,
 	ANIM_P1_MOVE_W,
