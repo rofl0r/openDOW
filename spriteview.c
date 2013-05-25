@@ -8,19 +8,28 @@
 #include "gameobj.h"
 #include "video.h"
 #include "direction.h"
+#include "weapon.h"
 #include "palpic.h"
 
 #include <SDL/SDL.h>
+
 #ifndef IN_KDEVELOP_PARSER
 #include "../lib/include/bitarray.h"
-
-
-
-
 #include "players.c"
 #include "bullet.c"
 #include "crosshair4.c"
 #endif
+
+enum mousebutton {
+	MB_LEFT = 0,
+	MB_RIGHT,
+};
+
+// 1 if button down, 0 if not, >1 to count ms pressed
+unsigned long mousebutton_down[] = {
+	[MB_LEFT] = 0,
+	[MB_RIGHT] = 0,
+};
 
 //RcB: LINK "-lSDL"
 
@@ -124,6 +133,10 @@ SDL_Surface *surface;
 bool fullscreen_active = false;
 int player_ids[2];
 int crosshair_id;
+enum weapon_id player_weapons[2][WP_MAX];
+int weapon_count[2];
+enum weapon_id weapon_active[2]; // index into player_weapons[playerno]
+int player_ammo[2][AMMO_MAX];
 
 void redraw_bg() {
 	unsigned lineoffset = 0, x, y;
@@ -152,6 +165,12 @@ static int init_player(int player_no) {
 	objs[pid].vel = VEC( 0, 0 );
 	objs[pid].spritemap_id = 0;
 	start_anim(pid, player_no == 0 ? ANIM_P1_MOVE_N : ANIM_P2_MOVE_N);
+	player_weapons[player_no][0] = WP_COLT45;
+	weapon_count[player_no] = 1;
+	weapon_active[player_no] = 0;
+	size_t i = 0;
+	for(; i < AMMO_MAX; i++)
+		player_ammo[player_no][i] = 50000;
 	return pid;
 }
 
@@ -191,7 +210,17 @@ void switch_anim(int playerid, int aid);
 enum direction get_direction_from_vec(vec2f *vel);
 enum animation_id get_anim_from_direction(enum direction dir, int player);
 
-static void fire_bullet(int player_no, float speed, float range) {
+static enum weapon_id get_active_weapon_id(int player_no) {
+	return player_weapons[player_no][weapon_active[player_no]];
+}
+
+static struct weapon* get_active_weapon(int player_no) {
+	return &weapons[get_active_weapon_id(player_no)];
+}
+
+static void fire_bullet(int player_no) {
+	struct weapon *pw = get_active_weapon(player_no);
+	if(player_ammo[player_no][pw->ammo] == 0) return;
 	vec2f from = get_sprite_center(player_ids[player_no]);
 	//get_anim_from_vel(0, objs[player].
 	vec2f to = get_sprite_center(crosshair_id);
@@ -202,13 +231,19 @@ static void fire_bullet(int player_no, float speed, float range) {
 		if(aid != ANIM_INVALID) switch_anim(player_ids[player_no], aid);
 	}
 	float dist = veclength(&vel);
+	float speed = pw->bullet_speed;
+	const float range_tab[] = {0,   0,   128, 160, 235, 235, 235, 235, 235, 235, 
+	                     235, 320, 320, 360, 360, 360, 360, 260, 360, 360, 640 };
+	float range = range_tab[pw->range];
 	if(dist > range) 
 		dist = range;
 	float steps = dist / speed;
 	float deg = atan2(vel.y, vel.x);
 	vel.x = cos(deg) * speed;
 	vel.y = sin(deg) * speed;
-	init_bullet(&from, &vel, steps);
+	int bid = init_bullet(&from, &vel, steps);
+	player_ammo[player_no][pw->ammo]--;
+	printf("%d, %d, %d %d/%d\n", player_ammo[player_no][pw->ammo], (int) obj_count, bid, objs[bid].objspecific.bullet.step_curr, objs[bid].objspecific.bullet.step_max);
 }
 
 static void init_game_objs() {
@@ -224,17 +259,30 @@ static int get_next_anim_frame(enum animation_id aid, int curr) {
 
 static void game_tick(int force_redraw) {
 	size_t obj_visited = 0;
-	size_t obj_count_copy = obj_count;
 	int background_painted = 0;
 	const int fps = 60;
 	struct timeval timer;
 	int paint_objs[OBJ_MAX];
 	size_t paint_obj_count = 0, i;
+	if(mousebutton_down[MB_LEFT] > 1) {
+		const int player_no = 0;
+		struct weapon *pw = get_active_weapon(player_no);
+		//if(get_active_weapon_id(player_no) == WP_M134) __asm__("int3");
+		if (pw->flags & WF_AUTOMATIC) {
+			float shots_per_second = pw->rpm / 60.f;
+			float shotinterval = fps / shots_per_second;
+			if((int)((float)mousebutton_down[MB_LEFT] / shotinterval) != (int)((float)(mousebutton_down[MB_LEFT]-1) / shotinterval))
+				fire_bullet(player_no);
+			else printf("skipped\n");
+		}
+	}
+	size_t obj_count_copy = obj_count;
 	for(i = 0; obj_visited < obj_count_copy && i < OBJ_MAX; i++) {
 		if(obj_slot_used[i]) {
 			obj_visited++;
 			if(objs[i].objtype == OBJ_BULLET) {
 				if(objs[i].objspecific.bullet.step_curr >= objs[i].objspecific.bullet.step_max) {
+					printf("rem %zu\n", i);
 					gameobj_free(i);
 					force_redraw = 1;
 					continue;
@@ -263,6 +311,7 @@ static void game_tick(int force_redraw) {
 	}
 	long sleepms = 1000/fps - ms_used;
 	if(sleepms >= 0) SDL_Delay(sleepms);
+	if(mousebutton_down[MB_LEFT]) mousebutton_down[MB_LEFT]++;
 }
 
 enum cursor {
@@ -306,7 +355,8 @@ vec2f get_vel_from_anim(int aid, float speed) {
 }
 
 enum direction get_direction_from_vec(vec2f *vel) {
-	float deg = atan2(vel->y, vel->x);
+	float deg_org, deg = atan2(vel->y, vel->x);
+	deg_org = deg;
 	if(deg < 0) deg *= -1.f;
 	else deg = M_PI + (M_PI - deg); // normalize atan2 result to scale from 0 to 2 pi
 	int hexadrant = (int)(deg / ((1.0/16.0f)*2*M_PI));
@@ -428,7 +478,13 @@ int main() {
 				case SDL_MOUSEBUTTONDOWN:
 					mousepos->x = sdl_event.button.x;
 					mousepos->y = sdl_event.button.y;
-					fire_bullet(player_no, 20, 300);
+					mousebutton_down[MB_LEFT] = 1;
+					fire_bullet(player_no);
+					break;
+				case SDL_MOUSEBUTTONUP:
+					mousepos->x = sdl_event.button.x;
+					mousepos->y = sdl_event.button.y;
+					mousebutton_down[MB_LEFT] = 0;
 					break;
 				case SDL_QUIT:
 					dun_goofed:
@@ -465,6 +521,11 @@ int main() {
 							break;
 						case SDLK_KP_PLUS:
 						case SDLK_KP_MINUS:
+							player_weapons[player_no][0]++;
+							if(player_weapons[player_no][0] == WP_INVALID)
+								player_weapons[player_no][0] = 0;
+							printf("%s\n", weapon_name(player_weapons[player_no][0]));
+							break;
 						default:
 							break;
 					}
