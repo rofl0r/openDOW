@@ -224,6 +224,8 @@ static void fire_bullet(int player_no) {
 	vec2f from = get_sprite_center(player_ids[player_no]);
 	//get_anim_from_vel(0, objs[player].
 	vec2f to = get_sprite_center(crosshair_id);
+	to.x += 4 - rand()%8;
+	to.y += 4 - rand()%8;
 	vec2f vel = velocity(&from, &to);
 	enum direction dir = get_direction_from_vec(&vel);
 	if(dir != DIR_INVALID) {
@@ -233,7 +235,7 @@ static void fire_bullet(int player_no) {
 	float dist = veclength(&vel);
 	float speed = pw->bullet_speed;
 	const float range_tab[] = {0,   0,   128, 160, 235, 235, 235, 235, 235, 235, 
-	                     235, 320, 320, 360, 360, 360, 360, 260, 360, 360, 640 };
+	                           235, 320, 320, 360, 360, 360, 360, 260, 360, 360, 640 };
 	float range = range_tab[pw->range];
 	if(dist > range) 
 		dist = range;
