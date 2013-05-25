@@ -120,6 +120,8 @@ static void get_last_move_event(SDL_Event* e) {
 
 const struct palpic *spritemaps[2] = { &players.header, &bullet.header };
 SDL_Surface *surface;
+bool fullscreen_active = false;
+int player_ids[2];
 
 void redraw_bg() {
 	unsigned lineoffset = 0, x, y;
@@ -138,14 +140,16 @@ static void start_anim(int obj_id, enum animation_id aid) {
 	objs[obj_id].anim_curr = animations[aid].first;
 }
 
-static int init_player(int no) {
+static int init_player(int player_no) {
+	assert(player_no == 0 || player_no == 1);
 	int pid = gameobj_alloc();
 	if(pid == -1) return -1;
-	objs[pid].objtype = no == 1 ? OBJ_P1 : OBJ_P2;
+	player_ids[player_no] = pid;
+	objs[pid].objtype = player_no == 0 ? OBJ_P1 : OBJ_P2;
 	objs[pid].pos = VEC( 10, 10 );
 	objs[pid].vel = VEC( 0, 0 );
 	objs[pid].spritemap_id = 0;
-	start_anim(pid, no == 1 ? ANIM_P1_MOVE_N : ANIM_P2_MOVE_N);
+	start_anim(pid, player_no == 0 ? ANIM_P1_MOVE_N : ANIM_P2_MOVE_N);
 	return pid;
 }
 
@@ -173,15 +177,15 @@ void switch_anim(int playerid, int aid);
 enum direction get_direction_from_vec(vec2f *vel);
 enum animation_id get_anim_from_direction(enum direction dir, int player);
 
-static void fire_bullet(int player_id, int dx, int dy, float speed, float range) {
-	vec2f from = get_player_center(player_id);
+static void fire_bullet(int player_no, int dx, int dy, float speed, float range) {
+	vec2f from = get_player_center(player_ids[player_no]);
 	//get_anim_from_vel(0, objs[player].
 	vec2f to = VEC(dx, dy);
 	vec2f vel = velocity(&from, &to);
 	enum direction dir = get_direction_from_vec(&vel);
 	if(dir != DIR_INVALID) {
-		enum animation_id aid = get_anim_from_direction(dir, player_id);
-		if(aid != ANIM_INVALID) switch_anim(player_id, aid);
+		enum animation_id aid = get_anim_from_direction(dir, player_no);
+		if(aid != ANIM_INVALID) switch_anim(player_ids[player_no], aid);
 	}
 	float dist = veclength(&vel);
 	if(dist > range) 
@@ -194,7 +198,7 @@ static void fire_bullet(int player_id, int dx, int dy, float speed, float range)
 }
 
 static int init_game_objs() {
-	return init_player(1);
+	return init_player(0);
 }
 
 static int get_next_anim_frame(enum animation_id aid, int curr) {
@@ -324,7 +328,7 @@ enum direction get_direction_from_cursor(void) {
 	return dir;
 }
 
-enum animation_id get_anim_from_direction(enum direction dir, int player) {
+enum animation_id get_anim_from_direction(enum direction dir, int player_no) {
 	#define DIRMAP(a, b) [a] = b
 	static const enum animation_id dir_map_p1[] = {
 		DIRMAP(DIR_N, ANIM_P1_MOVE_N),
@@ -347,7 +351,7 @@ enum animation_id get_anim_from_direction(enum direction dir, int player) {
 		DIRMAP(DIR_NO, ANIM_P2_MOVE_NO),
 	};
 	#undef DIRMAP
-	const enum animation_id *dir_map = player == 0 ? dir_map_p1 : dir_map_p2;
+	const enum animation_id *dir_map = player_no == 0 ? dir_map_p1 : dir_map_p2;
 	return dir_map[dir];
 }
 
@@ -356,19 +360,17 @@ enum animation_id get_anim_from_cursor(void) {
 	if(dir == DIR_INVALID) return ANIM_INVALID;
 	return get_anim_from_direction(dir, 0);
 }
-
-enum animation_id get_anim_from_vel(int player, vec2f *vel, vec2f *origin) {
+/* playerno is either 0 or 1, not player_id! */
+enum animation_id get_anim_from_vel(int player_no, vec2f *vel, vec2f *origin) {
 	enum direction dir = get_direction_from_vec(vel);
 	if(dir == DIR_INVALID) return ANIM_INVALID;
-	return get_anim_from_direction(dir, player);
+	return get_anim_from_direction(dir, player_no);
 }
 
-void switch_anim(int playerid, int aid) {
-	if(objs[playerid].animid == aid) return;
-	start_anim(playerid, aid);
+void switch_anim(int player_id, int aid) {
+	if(objs[player_id].animid == aid) return;
+	start_anim(player_id, aid);
 }
-
-bool fullscreen_active = false;
 
 int main() {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -391,7 +393,10 @@ int main() {
 	
 	SDL_Delay(1);
 	
-	int player = init_game_objs();
+	init_game_objs();
+	int player_no = 0;
+	int player_id = player_ids[player_no];
+	
 	game_tick(1);
 	
 	SDL_Event sdl_event;
@@ -401,7 +406,7 @@ int main() {
 			switch (sdl_event.type) {
 				case SDL_MOUSEBUTTONDOWN:
 					
-					fire_bullet(player, sdl_event.button.x, sdl_event.button.y, 20, 300);
+					fire_bullet(player_no, sdl_event.button.x, sdl_event.button.y, 20, 300);
 					break;
 				case SDL_QUIT:
 					dun_goofed:
@@ -422,10 +427,10 @@ int main() {
 							{
 								enum animation_id aid = get_anim_from_cursor();
 								if(aid != ANIM_INVALID) {
-									switch_anim(player, aid);
-									objs[player].vel = get_vel_from_anim(aid, 8);
+									switch_anim(player_id, aid);
+									objs[player_id].vel = get_vel_from_anim(aid, 8);
 								} else {
-									objs[player].vel = VEC(0,0);
+									objs[player_id].vel = VEC(0,0);
 								}
 							}
 							break;
