@@ -10,6 +10,8 @@ enum __attribute__ ((__packed__)) direction {
 	DIR_SO,
 	DIR_O,
 	DIR_NO,
+	DIR_MAX,
+	DIR_INVALID = DIR_MAX
 };
 
 static inline const char* dir_name(enum direction dir) {

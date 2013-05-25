@@ -179,9 +179,9 @@ static void fire_bullet(int player_id, int dx, int dy, float speed, float range)
 	vec2f to = VEC(dx, dy);
 	vec2f vel = velocity(&from, &to);
 	enum direction dir = get_direction_from_vec(&vel);
-	if(dir != -1) {
+	if(dir != DIR_INVALID) {
 		enum animation_id aid = get_anim_from_direction(dir, player_id);
-		if(aid != -1) switch_anim(player_id, aid);
+		if(aid != ANIM_INVALID) switch_anim(player_id, aid);
 	}
 	float dist = veclength(&vel);
 	if(dist > range) 
@@ -307,7 +307,7 @@ enum direction get_direction_from_vec(vec2f *vel) {
 }
 
 enum direction get_direction_from_cursor(void) {
-	enum direction dir = -1;
+	enum direction dir = DIR_INVALID;
 	if(cursors_pressed[c_up]) {
 		if(cursors_pressed[c_left]) dir = DIR_NW;
 		else if(cursors_pressed[c_right]) dir = DIR_NO;
@@ -351,16 +351,15 @@ enum animation_id get_anim_from_direction(enum direction dir, int player) {
 	return dir_map[dir];
 }
 
-int get_anim_from_cursor(void) {
+enum animation_id get_anim_from_cursor(void) {
 	enum direction dir = get_direction_from_cursor();
-	if(dir == -1) return -1;
-	enum animation_id aid = get_anim_from_direction(dir, 0);
-	return aid;
+	if(dir == DIR_INVALID) return ANIM_INVALID;
+	return get_anim_from_direction(dir, 0);
 }
 
-int get_anim_from_vel(int player, vec2f *vel, vec2f *origin) {
+enum animation_id get_anim_from_vel(int player, vec2f *vel, vec2f *origin) {
 	enum direction dir = get_direction_from_vec(vel);
-	if(dir == -1) return -1;
+	if(dir == DIR_INVALID) return ANIM_INVALID;
 	return get_anim_from_direction(dir, player);
 }
 
@@ -421,8 +420,8 @@ int main() {
 							cursors_pressed[cursor_lut[sdl_event.key.keysym.sym]] = 1;
 							check_anim:
 							{
-								int aid = get_anim_from_cursor();
-								if(aid != -1) {
+								enum animation_id aid = get_anim_from_cursor();
+								if(aid != ANIM_INVALID) {
 									switch_anim(player, aid);
 									objs[player].vel = get_vel_from_anim(aid, 8);
 								} else {
