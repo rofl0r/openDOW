@@ -4,7 +4,6 @@
 gameobj objs[OBJ_MAX];
 uint8_t obj_slot_used[OBJ_MAX];
 uint8_t obj_count;
-
 // return -1 on error or gameobj slot id.
 int gameobj_alloc(void) {
 	if(obj_count >= OBJ_MAX) return -1;
@@ -14,7 +13,7 @@ int gameobj_alloc(void) {
 		return_slot:
 		obj_slot_used[i] = 1;
 		obj_count++;
-		return obj_count - 1;
+		return i;
 	}
 		
 	for (i = 0; i < OBJ_MAX; i++) {
