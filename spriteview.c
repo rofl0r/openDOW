@@ -123,6 +123,7 @@ const struct palpic *spritemaps[3] = { &players.header, &bullet.header, &crossha
 SDL_Surface *surface;
 bool fullscreen_active = false;
 int player_ids[2];
+int crosshair_id;
 
 void redraw_bg() {
 	unsigned lineoffset = 0, x, y;
@@ -158,6 +159,7 @@ vec2f *mousepos;
 static int init_crosshair() {
 	int id = gameobj_alloc();
 	if(id == -1) return -1;
+	crosshair_id = id;
 	objs[id].objtype = OBJ_CROSSHAIR;
 	mousepos = &objs[id].pos;
 	objs[id].vel = VEC(0, 0);
@@ -189,10 +191,10 @@ void switch_anim(int playerid, int aid);
 enum direction get_direction_from_vec(vec2f *vel);
 enum animation_id get_anim_from_direction(enum direction dir, int player);
 
-static void fire_bullet(int player_no, int dx, int dy, float speed, float range) {
+static void fire_bullet(int player_no, float speed, float range) {
 	vec2f from = get_sprite_center(player_ids[player_no]);
 	//get_anim_from_vel(0, objs[player].
-	vec2f to = VEC(dx, dy);
+	vec2f to = get_sprite_center(crosshair_id);
 	vec2f vel = velocity(&from, &to);
 	enum direction dir = get_direction_from_vec(&vel);
 	if(dir != DIR_INVALID) {
@@ -426,7 +428,7 @@ int main() {
 				case SDL_MOUSEBUTTONDOWN:
 					mousepos->x = sdl_event.button.x;
 					mousepos->y = sdl_event.button.y;
-					fire_bullet(player_no, sdl_event.button.x, sdl_event.button.y, 20, 300);
+					fire_bullet(player_no, 20, 300);
 					break;
 				case SDL_QUIT:
 					dun_goofed:
