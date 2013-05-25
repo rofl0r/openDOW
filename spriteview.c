@@ -421,6 +421,11 @@ int main() {
 								}
 							}
 							break;
+						case SDLK_RETURN:
+							if((sdl_event.key.keysym.mod & KMOD_LALT) ||
+							   (sdl_event.key.keysym.mod & KMOD_RALT))
+								SDL_WM_ToggleFullScreen(surface);
+							break;
 						case SDLK_KP_PLUS:
 						case SDLK_KP_MINUS:
 						default:
