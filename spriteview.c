@@ -269,11 +269,11 @@ char cursors_pressed[] = {
 vec2f get_vel_from_anim(int aid, float speed) {
 #define VELLUT(a, b, c) [a] = VEC(b, c)
 	static const vec2f vel_lut[] = {
-		VELLUT(ANIM_P1_MOVE_NW, -1, -1),
-		VELLUT(ANIM_P1_MOVE_NO, 1, -1),
+		VELLUT(ANIM_P1_MOVE_NW, -0.7071067769704655, -0.7071067769704655),
+		VELLUT(ANIM_P1_MOVE_NO, 0.7071067769704655, -0.7071067769704655),
 		VELLUT(ANIM_P1_MOVE_N, 0, -1),
-		VELLUT(ANIM_P1_MOVE_SW, -1, 1),
-		VELLUT(ANIM_P1_MOVE_SO, 1, 1),
+		VELLUT(ANIM_P1_MOVE_SW, -0.7071067769704655, 0.7071067769704655),
+		VELLUT(ANIM_P1_MOVE_SO, 0.7071067769704655, 0.7071067769704655),
 		VELLUT(ANIM_P1_MOVE_S, 0, 1),
 		VELLUT(ANIM_P1_MOVE_W, -1, 0),
 		VELLUT(ANIM_P1_MOVE_O, 1, 0),
@@ -399,7 +399,7 @@ int main() {
 			switch (sdl_event.type) {
 				case SDL_MOUSEBUTTONDOWN:
 					
-					fire_bullet(player, sdl_event.button.x, sdl_event.button.y, 5, 300);
+					fire_bullet(player, sdl_event.button.x, sdl_event.button.y, 20, 300);
 					break;
 				case SDL_QUIT:
 					return 0;
@@ -415,7 +415,7 @@ int main() {
 								int aid = get_anim_from_cursor();
 								if(aid != -1) {
 									switch_anim(player, aid);
-									objs[player].vel = get_vel_from_anim(aid, 20);
+									objs[player].vel = get_vel_from_anim(aid, 8);
 								} else {
 									objs[player].vel = VEC(0,0);
 								}
