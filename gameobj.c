@@ -25,4 +25,5 @@ int gameobj_alloc(void) {
 
 void gameobj_free(int id) {
 	obj_slot_used[id] = 0;
+	obj_count--;
 }
