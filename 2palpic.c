@@ -182,7 +182,10 @@ int main(int argc, char** argv) {
 		fwrite(buf, strlen(buf), 1, outfile);
 		
 		for(p = 0; p < pp.palcount; p++) {
-			snprintf(buf, sizeof(buf), "PRGB(%3u, %3u, %3u), ", (unsigned) pal[p].colors.r,(unsigned) pal[p].colors.g, (unsigned) pal[p].colors.b);
+			if(p == 0 && pp.flags & PPF_TRANSPARENT)
+				snprintf(buf, sizeof(buf), "PRGB(%3u, %3u, %3u), ", (unsigned) 0,(unsigned) 0, (unsigned) 0);
+			else 
+				snprintf(buf, sizeof(buf), "PRGB(%3u, %3u, %3u), ", (unsigned) pal[p].colors.r,(unsigned) pal[p].colors.g, (unsigned) pal[p].colors.b);
 			fwrite(buf, strlen(buf), 1, outfile);
 			//if(p % 8 == 7) 
 				fwrite(STRSZ("\n\t\t"), 1, outfile);
