@@ -18,6 +18,7 @@
 #include "players.c"
 #include "bullet.c"
 #include "crosshair4.c"
+#include "flash.c"
 #endif
 
 enum mousebutton {
@@ -128,7 +129,7 @@ static void get_last_move_event(SDL_Event* e) {
 #undef numpeek
 }
 
-const struct palpic *spritemaps[3] = { &players.header, &bullet.header, &crosshair4.header };
+const struct palpic *spritemaps[] = { &players.header, &bullet.header, &crosshair4.header, &flash.header };
 SDL_Surface *surface;
 bool fullscreen_active = false;
 int player_ids[2];
@@ -141,11 +142,13 @@ int player_ammo[2][AMMO_MAX];
 void redraw_bg() {
 	unsigned lineoffset = 0, x, y;
 	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
+	srand(1);
 	for(y = 0; y < VMODE_H; y++) {
 		//unsigned lineoffset = y * (surface->pitch / 4);
 		for(x = 0; x < VMODE_W; x++)
 			//ptr[lineoffset + x] = SRGB_BLUE;
-			*ptr++ = SRGB_BLUE;
+			if(rand()%16 == 1) *ptr++ = SRGB(0x55, 0x77, 0x77);
+			else *ptr++ = SRGB(0x33, 0x55, 0x55);
 	}
 }
 
@@ -199,6 +202,36 @@ static int init_bullet(vec2f *pos, vec2f *vel, int steps) {
 	return id;
 }
 
+static enum animation_id get_flash_animation_from_direction(enum direction dir) {
+	#define ANIMF(dir, anim) [dir] = anim
+	static const enum animation_id dir_to_anim[] = {
+		ANIMF(DIR_O, ANIM_FLASH_O),
+		ANIMF(DIR_NO, ANIM_FLASH_NO),
+		ANIMF(DIR_N, ANIM_FLASH_N),
+		ANIMF(DIR_NW, ANIM_FLASH_NW),
+		ANIMF(DIR_W, ANIM_FLASH_W),
+		ANIMF(DIR_SW, ANIM_FLASH_SW),
+		ANIMF(DIR_S, ANIM_FLASH_S),
+		ANIMF(DIR_SO, ANIM_FLASH_SO),
+	};
+	#undef ANIMF
+	assert(dir >= 0 && dir < DIR_MAX);
+	return dir_to_anim[dir];
+	
+}
+
+static int init_flash(vec2f *pos, enum direction dir) {
+	int id = gameobj_alloc();
+	if(id == -1) return -1;
+	objs[id].objtype = OBJ_BULLET;
+	objs[id].spritemap_id = 3;
+	objs[id].pos = *pos;
+	objs[id].vel = VEC(0, 0);
+	start_anim(id, get_flash_animation_from_direction(dir));
+	objs[id].objspecific.bullet.step_curr = 0;
+	objs[id].objspecific.bullet.step_max = 2;
+}
+
 static vec2f get_sprite_center(int obj_id) {
 	vec2f res = objs[obj_id].pos;
 	res.x += palpic_getspritewidth(spritemaps[objs[obj_id].spritemap_id]) * SCALE / 2;
@@ -240,12 +273,27 @@ static void fire_bullet(int player_no) {
 			MUZZ(DIR_O, 10, 2),
 			MUZZ(DIR_NO, 8, -7),
 		};
-		#undef MUZZ
+		
 		from.x += muzzle[dir].x * SCALE;
 		from.y += muzzle[dir].y * SCALE;
 		vel = velocity(&from, &to);
 		enum animation_id aid = get_anim_from_direction(dir, player_no);
 		if(aid != ANIM_INVALID) switch_anim(player_ids[player_no], aid);
+		static const vec2f flash_start[] = {
+			MUZZ(DIR_N, -1, -14),
+			MUZZ(DIR_NW, -10, -11),
+			MUZZ(DIR_W, -12, -1),
+			MUZZ(DIR_SW, -6, 2),
+			MUZZ(DIR_S, -3, 2),
+			MUZZ(DIR_SO, 1, 3),
+			MUZZ(DIR_O, 2, -3),
+			MUZZ(DIR_NO, 3, -11),
+		};
+		#undef MUZZ
+		vec2f ffrom = from;
+		ffrom.x += flash_start[dir].x;
+		ffrom.y += flash_start[dir].y;
+		init_flash(&ffrom, dir);
 	}
 	float dist = veclength(&vel);
 	float speed = pw->bullet_speed;
@@ -326,6 +374,9 @@ static void game_tick(int force_redraw) {
 	long sleepms = 1000/fps - ms_used;
 	if(sleepms >= 0) SDL_Delay(sleepms);
 	if(mousebutton_down[MB_LEFT]) mousebutton_down[MB_LEFT]++;
+	for(i = 0; i < paint_obj_count; i++)
+		if(objs[paint_objs[i]].objtype == OBJ_FLASH)
+			gameobj_free(paint_objs[i]);
 }
 
 enum cursor {
