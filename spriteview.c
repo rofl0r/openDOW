@@ -299,7 +299,7 @@ static void fire_bullet(int player_no) {
 	float dist = veclength(&vel);
 	float speed = pw->bullet_speed;
 	const float range_tab[] = {0,   0,   128, 160, 235, 235, 235, 235, 235, 235, 
-	                           235, 320, 320, 360, 360, 360, 360, 260, 360, 360, 640 };
+	                           400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 640 };
 	float range = range_tab[pw->range];
 	if(dist > range) 
 		dist = range;
@@ -323,9 +323,10 @@ static int get_next_anim_frame(enum animation_id aid, int curr) {
 }
 
 static void game_tick(int force_redraw) {
+	static uint32_t tickcounter = 0;
 	size_t obj_visited = 0;
 	int background_painted = 0;
-	const int fps = 60;
+	const int fps = 64;
 	struct timeval timer;
 	int paint_objs[OBJ_MAX];
 	size_t paint_obj_count = 0, i;
@@ -356,7 +357,8 @@ static void game_tick(int force_redraw) {
 			if(objs[i].vel.x != 0 || objs[i].vel.y != 0) {
 				objs[i].pos.x += objs[i].vel.x;
 				objs[i].pos.y += objs[i].vel.y;
-				objs[i].anim_curr = get_next_anim_frame(objs[i].animid, objs[i].anim_curr);
+				if(tickcounter % 4 == 0)
+					objs[i].anim_curr = get_next_anim_frame(objs[i].animid, objs[i].anim_curr);
 				force_redraw = 1;
 			}
 		}
@@ -378,6 +380,7 @@ static void game_tick(int force_redraw) {
 	for(i = 0; i < paint_obj_count; i++)
 		if(objs[paint_objs[i]].objtype == OBJ_FLASH)
 			gameobj_free(paint_objs[i]);
+	tickcounter++;
 }
 
 enum cursor {
@@ -514,7 +517,7 @@ int main() {
 	int starty = 10;
 	
 	//redraw(surface, startx, starty);
-	
+	const float player_speed = 2.5f;
 	const struct palpic* spritemap = &players.header;
 	struct { int *target; int dir; int max;} moves[] = {
 		[c_up] = {&starty, SCALE * -1, VMODE_H - (palpic_getspriteheight(spritemap) * SCALE)},
@@ -572,7 +575,7 @@ int main() {
 								enum animation_id aid = get_anim_from_cursor();
 								if(aid != ANIM_INVALID) {
 									switch_anim(player_id, aid);
-									objs[player_id].vel = get_vel_from_anim(aid, 8);
+									objs[player_id].vel = get_vel_from_anim(aid, player_speed);
 								} else {
 									objs[player_id].vel = VEC(0,0);
 								}
