@@ -404,20 +404,20 @@ char cursors_pressed[] = {
 	[c_right] = 0,
 };
 
-vec2f get_vel_from_anim(int aid, float speed) {
+vec2f get_vel_from_direction(enum direction dir, float speed) {
 #define VELLUT(a, b, c) [a] = VEC(b, c)
 	static const vec2f vel_lut[] = {
-		VELLUT(ANIM_P1_MOVE_NW, -0.7071067769704655, -0.7071067769704655),
-		VELLUT(ANIM_P1_MOVE_NO, 0.7071067769704655, -0.7071067769704655),
-		VELLUT(ANIM_P1_MOVE_N, 0, -1),
-		VELLUT(ANIM_P1_MOVE_SW, -0.7071067769704655, 0.7071067769704655),
-		VELLUT(ANIM_P1_MOVE_SO, 0.7071067769704655, 0.7071067769704655),
-		VELLUT(ANIM_P1_MOVE_S, 0, 1),
-		VELLUT(ANIM_P1_MOVE_W, -1, 0),
-		VELLUT(ANIM_P1_MOVE_O, 1, 0),
+		VELLUT(DIR_O, 1, 0),
+		VELLUT(DIR_NO, 0.7071067769704655, -0.7071067769704655),
+		VELLUT(DIR_N, 0, -1),
+		VELLUT(DIR_NW, -0.7071067769704655, -0.7071067769704655),
+		VELLUT(DIR_W, -1, 0),
+		VELLUT(DIR_SW, -0.7071067769704655, 0.7071067769704655),
+		VELLUT(DIR_S, 0, 1),
+		VELLUT(DIR_SO, 0.7071067769704655, 0.7071067769704655),
 	};
 #undef VELLUT
-	vec2f v = vel_lut[aid];
+	vec2f v = vel_lut[dir];
 	v.x *= speed;
 	v.y *= speed;
 	return v;
@@ -570,12 +570,16 @@ int main() {
 						case SDLK_RIGHT:
 						case SDLK_LEFT: 
 							cursors_pressed[cursor_lut[sdl_event.key.keysym.sym]] = 1;
-							check_anim:
-							{
-								enum animation_id aid = get_anim_from_cursor();
-								if(aid != ANIM_INVALID) {
-									switch_anim(player_id, aid);
-									objs[player_id].vel = get_vel_from_anim(aid, player_speed);
+							check_anim: {
+								enum direction dir = get_direction_from_cursor();
+								if(dir != DIR_INVALID) {
+									if(!mousebutton_down[MB_LEFT]) {
+										// change animation according to cursors,
+										// unless we're in automatic fire mode.
+										enum animation_id aid = get_anim_from_direction(dir, player_no);
+										if(aid != ANIM_INVALID) switch_anim(player_id, aid);
+									}
+									objs[player_id].vel = get_vel_from_direction(dir, player_speed);
 								} else {
 									objs[player_id].vel = VEC(0,0);
 								}
