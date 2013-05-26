@@ -384,7 +384,7 @@ static void game_tick(int force_redraw) {
 }
 
 enum cursor {
-	c_down,
+	c_down = 0,
 	c_up,
 	c_left,
 	c_right,
@@ -395,6 +395,10 @@ enum cursor cursor_lut[] = {
 	[SDLK_DOWN] = c_down,
 	[SDLK_LEFT] = c_left,
 	[SDLK_RIGHT] = c_right,
+	[SDLK_w] = c_up,
+	[SDLK_a] = c_left,
+	[SDLK_s] = c_down,
+	[SDLK_d] = c_right,
 };
 
 char cursors_pressed[] = {
@@ -565,6 +569,7 @@ int main() {
 					switch(sdl_event.key.keysym.sym) {
 						case SDLK_ESCAPE:
 							goto dun_goofed;
+						case SDLK_w: case SDLK_a: case SDLK_s: case SDLK_d:
 						case SDLK_UP:
 						case SDLK_DOWN:
 						case SDLK_RIGHT:
@@ -605,6 +610,7 @@ int main() {
 					break;
 				case SDL_KEYUP:
 					switch(sdl_event.key.keysym.sym) {
+						case SDLK_w: case SDLK_a: case SDLK_s: case SDLK_d:
 						case SDLK_UP:
 						case SDLK_DOWN:
 						case SDLK_RIGHT:
