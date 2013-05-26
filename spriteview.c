@@ -229,6 +229,21 @@ static void fire_bullet(int player_no) {
 	vec2f vel = velocity(&from, &to);
 	enum direction dir = get_direction_from_vec(&vel);
 	if(dir != DIR_INVALID) {
+		#define MUZZ(a, b, c) [a] = VEC(b, c)
+		static const vec2f muzzle[] = {
+			MUZZ(DIR_N, 5, -10),
+			MUZZ(DIR_NW, -7, -9),
+			MUZZ(DIR_W, -12, -1),
+			MUZZ(DIR_SW, -9, 5),
+			MUZZ(DIR_S, -6, 6),
+			MUZZ(DIR_SO, 3, 6),
+			MUZZ(DIR_O, 10, 2),
+			MUZZ(DIR_NO, 8, -7),
+		};
+		#undef MUZZ
+		from.x += muzzle[dir].x * SCALE;
+		from.y += muzzle[dir].y * SCALE;
+		vel = velocity(&from, &to);
 		enum animation_id aid = get_anim_from_direction(dir, player_no);
 		if(aid != ANIM_INVALID) switch_anim(player_ids[player_no], aid);
 	}
