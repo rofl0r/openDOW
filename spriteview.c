@@ -10,6 +10,7 @@
 #include "direction.h"
 #include "weapon.h"
 #include "palpic.h"
+#include "audio.h"
 
 #include <SDL/SDL.h>
 
@@ -281,7 +282,7 @@ static void fire_bullet(int player_no) {
 		enum animation_id aid = get_anim_from_direction(dir, player_no);
 		if(aid != ANIM_INVALID) switch_anim(player_ids[player_no], aid);
 		static const vec2f flash_start[] = {
-			MUZZ(DIR_N, -1, -14),
+			MUZZ(DIR_N, -3, -15),
 			MUZZ(DIR_NW, -10, -11),
 			MUZZ(DIR_W, -12, -1),
 			MUZZ(DIR_SW, -6, 2),
@@ -364,16 +365,20 @@ static void game_tick(int force_redraw) {
 		}
 	}
 	long ms_used = 0;
+	gettimestamp(&timer);
 	if(force_redraw) {
-		gettimestamp(&timer);
 		redraw_bg();
 		for(i = 0; i < paint_obj_count; i++) {
 			blit_sprite(objs[paint_objs[i]].pos.x, objs[paint_objs[i]].pos.y, surface->pixels, surface->pitch,
 			            SCALE, spritemaps[objs[paint_objs[i]].spritemap_id], objs[paint_objs[i]].anim_curr);
 		}
 		SDL_UpdateRect(surface, 0 ,0, VMODE_W, VMODE_H);
-		ms_used = mspassed(&timer);
 	}
+	int res = -2;
+	//if(tickcounter % 16 == 0)
+		res = audio_process();
+	ms_used = mspassed(&timer);
+	printf("audio processed: %d, ms_used %ld\n", res, ms_used);
 	long sleepms = 1000/fps - ms_used;
 	if(sleepms >= 0) SDL_Delay(sleepms);
 	if(mousebutton_down[MB_LEFT]) mousebutton_down[MB_LEFT]++;
@@ -516,6 +521,10 @@ int main() {
 	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	SDL_EnableKeyRepeat(100, 20);
 	SDL_ShowCursor(0);
+	
+	audio_init();
+	audio_open_music("DogsOfWar.DW", 1);
+	
 	
 	int startx = 10;
 	int starty = 10;
