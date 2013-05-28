@@ -310,6 +310,7 @@ static void fire_bullet(int player_no) {
 	vel.y = sin(deg) * speed;
 	int bid = init_bullet(&from, &vel, steps);
 	player_ammo[player_no][pw->ammo]--;
+	audio_play_wav("lz7a-3.wav");
 }
 
 static void init_game_objs() {
