@@ -429,8 +429,8 @@ vec2f get_vel_from_direction(enum direction dir, float speed) {
 	};
 #undef VELLUT
 	vec2f v = vel_lut[dir];
-	v.x *= speed;
-	v.y *= speed;
+	v.x *= speed * SCALE;
+	v.y *= speed * SCALE;
 	return v;
 }
 
@@ -532,7 +532,7 @@ int main() {
 	int starty = 10;
 	
 	//redraw(surface, startx, starty);
-	const float player_speed = 2.5f;
+	const float player_speed = 1.25f;
 	const struct palpic* spritemap = &players.header;
 	struct { int *target; int dir; int max;} moves[] = {
 		[c_up] = {&starty, SCALE * -1, VMODE_H - (palpic_getspriteheight(spritemap) * SCALE)},
