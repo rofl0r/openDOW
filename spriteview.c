@@ -299,9 +299,9 @@ static void fire_bullet(int player_no) {
 	}
 	float dist = veclength(&vel);
 	float speed = pw->bullet_speed;
-	const float range_tab[] = {0,   0,   128, 160, 235, 235, 235, 235, 235, 235, 
-	                           400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 640 };
-	float range = range_tab[pw->range];
+	const uint16_t range_tab[] = {0,   0,   64, 80, 118, 118, 118, 118, 118, 118, 
+	                              200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 320 };
+	float range = range_tab[pw->range] * SCALE;
 	if(dist > range) 
 		dist = range;
 	float steps = dist / speed;
