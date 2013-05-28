@@ -282,19 +282,19 @@ static void fire_bullet(int player_no) {
 		enum animation_id aid = get_anim_from_direction(dir, player_no);
 		if(aid != ANIM_INVALID) switch_anim(player_ids[player_no], aid);
 		static const vec2f flash_start[] = {
-			MUZZ(DIR_N, -3, -15),
-			MUZZ(DIR_NW, -10, -11),
-			MUZZ(DIR_W, -12, -1),
-			MUZZ(DIR_SW, -6, 2),
-			MUZZ(DIR_S, -3, 2),
-			MUZZ(DIR_SO, 1, 3),
-			MUZZ(DIR_O, 2, -3),
-			MUZZ(DIR_NO, 3, -11),
+			MUZZ(DIR_N, -1.5, -7.5),
+			MUZZ(DIR_NW, -5, -5.5),
+			MUZZ(DIR_W, -6, -0.5),
+			MUZZ(DIR_SW, -3, 1),
+			MUZZ(DIR_S, -1.5, 1),
+			MUZZ(DIR_SO, 0.5, 1.5),
+			MUZZ(DIR_O, 1, -1.5),
+			MUZZ(DIR_NO, 1.5, -5.5),
 		};
 		#undef MUZZ
 		vec2f ffrom = from;
-		ffrom.x += flash_start[dir].x;
-		ffrom.y += flash_start[dir].y;
+		ffrom.x += flash_start[dir].x * SCALE;
+		ffrom.y += flash_start[dir].y * SCALE;
 		init_flash(&ffrom, dir);
 	}
 	float dist = veclength(&vel);
