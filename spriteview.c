@@ -377,6 +377,7 @@ static void game_tick(int force_redraw) {
 	int res = -2;
 	//if(tickcounter % 16 == 0)
 		res = audio_process();
+	if(res == -1) audio_open_music("DogsOfWar.DW", 1);
 	ms_used = mspassed(&timer);
 	printf("audio processed: %d, ms_used %ld\n", res, ms_used);
 	long sleepms = 1000/fps - ms_used;
