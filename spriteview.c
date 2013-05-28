@@ -146,10 +146,14 @@ void redraw_bg() {
 	srand(1);
 	for(y = 0; y < VMODE_H; y++) {
 		//unsigned lineoffset = y * (surface->pitch / 4);
-		for(x = 0; x < VMODE_W; x++)
+		for(x = 0; x < VMODE_W; x++) {
+			if(x < 64*SCALE || x > VMODE_W - 64*SCALE)
+				*ptr++ = SRGB_BLACK;
+			else 
 			//ptr[lineoffset + x] = SRGB_BLUE;
 			if(rand()%16 == 1) *ptr++ = SRGB(0x55, 0x77, 0x77);
 			else *ptr++ = SRGB(0x33, 0x55, 0x55);
+		}
 	}
 }
 
