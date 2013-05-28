@@ -36,42 +36,43 @@ struct AudioPlayer {
 	unsigned char wave_buffer[COREMIXER_MAX_BUFFER * 2 * sizeof(float)];
 	pthread_attr_t attr;
 	pthread_t thread;
-	pthread_mutex_t mutex;
+	pthread_mutex_t music_mutex;
 	enum thread_status thread_music_status;
 };
 
 static struct AudioPlayer playa;
 
-#define lock() pthread_mutex_lock(&playa.mutex)
-#define unlock() pthread_mutex_unlock(&playa.mutex)
+#define mlock() pthread_mutex_lock(&playa.music_mutex)
+#define munlock() pthread_mutex_unlock(&playa.music_mutex)
 
 static void thread_func(void* data) {
 	while(1) {
-		lock();
+		mlock();
 		if(playa.thread_music_status == TS_STOPPING) {
 			playa.thread_music_status = TS_WAITING;
-			unlock();
+			munlock();
 			msleep(1);
 			continue;
 		} else if(playa.thread_music_status == TS_DONE || playa.thread_music_status == TS_WAITING) {
-			unlock();
+			munlock();
 			msleep(4);
 			continue;
 		}
-		unlock();
+		munlock();
 		if(CoreMixer_get_complete(&playa.hardware.core)) {
-			lock();
+			mlock();
 			playa.thread_music_status = TS_DONE;
-			unlock();
+			munlock();
 			continue;
 		}
 		playa.hardware.core.accurate(&playa.hardware.core);
 		if(playa.out_wave.pos) {
-			dprintf(2, "writing %zu bytes...\n", (size_t) playa.out_wave.pos);
+			//dprintf(2, "writing %zu bytes...\n", (size_t) playa.out_wave.pos);
 			AoWriter_write(&playa.writer.backend, playa.wave_buffer, playa.out_wave.pos);
-			dprintf(2, "done\n");
+			//dprintf(2, "done\n");
+			playa.out_wave.pos = 0;
 		}
-		playa.out_wave.pos = 0;
+		
 	}
 }
 
@@ -87,7 +88,7 @@ void audio_init(void) {
 	playa.hardware.core.wave = &playa.out_wave;
 	
 	playa.thread_music_status = TS_WAITING;
-	errno = pthread_mutex_init(&playa.mutex, 0);
+	errno = pthread_mutex_init(&playa.music_mutex, 0);
 	if(errno) perror("1");
 	errno = pthread_attr_init(&playa.attr);
 	if(errno) perror("2");
@@ -98,20 +99,20 @@ void audio_init(void) {
 }
 
 int audio_open_music(const char* filename, int track) {
-	lock();
+	mlock();
 	if(playa.thread_music_status != TS_WAITING) {
 		playa.thread_music_status = TS_STOPPING;
-		unlock();
+		munlock();
 		int done = 0;
 		do {
-			lock();
+			mlock();
 			if(playa.thread_music_status == TS_WAITING) done = 1;
-			unlock();
+			munlock();
 			if(!done) msleep(1);
 		} while(!done);
-		lock();
+		mlock();
 	}
-	unlock();
+	munlock();
 	ByteArray_open_file(&playa.music_stream, filename);
 	CorePlayer_load(&playa.player.core, &playa.music_stream);
 	assert(playa.player.core.version);
@@ -123,14 +124,14 @@ int audio_open_music(const char* filename, int track) {
 
 // return -1: when track is finished, 0 if something was played, 1 if nothing was played.
 int audio_process(void) {
-	lock();
+	mlock();
 	if(playa.thread_music_status == TS_DONE) {
-		unlock();
+		munlock();
 		return -1;
 	} else if (playa.thread_music_status == TS_WAITING) {
 		playa.thread_music_status = TS_PLAYING;
 	}
-	unlock();
+	munlock();
 	return 0;
 }
 
