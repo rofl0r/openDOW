@@ -314,7 +314,9 @@ static void fire_bullet(int player_no) {
 	vel.y = sin(deg) * speed;
 	int bid = init_bullet(&from, &vel, steps);
 	player_ammo[player_no][pw->ammo]--;
-	audio_play_wav("lz7a-3.wav");
+	const char *wf = weapon_sound_filename(pw->sound);
+	if(pw->sound != WS_NONE)
+		audio_play_wav(wf);
 }
 
 static void init_game_objs() {

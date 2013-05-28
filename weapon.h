@@ -28,11 +28,19 @@ enum weapon_flags {
 	WF_AUTOMATIC = 1,
 };
 
+enum __attribute__((__packed__)) weapon_sound {
+	WS_NONE = 0,
+	WS_PISTOL,
+	WS_GUN,
+	WS_MACHINEGUN,
+};
+
 struct weapon {
 	float bullet_speed;
 	uint16_t rpm;
 	uint16_t price;
 	enum ammo_id ammo;
+	enum weapon_sound sound;
 	uint8_t flags;
 	uint8_t range;
 };
@@ -64,6 +72,7 @@ enum __attribute__((__packed__)) weapon_id {
 extern const struct weapon weapons[];
 extern const struct ammo ammunition[];
 const char* weapon_name(enum weapon_id id);
+const char* weapon_sound_filename(enum weapon_sound ws);
 //RcB: DEP "weapon.c"
 
 #endif
