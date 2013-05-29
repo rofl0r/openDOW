@@ -87,10 +87,19 @@ static void thread_func(void* data) {
 				size_t i, avail = mine->bytesAvailable(mine);
 				for(i = 0; i < savepos && i < avail; i+= 2) {
 					int16_t music = ByteArray_readShort(&playa.out_wave);
-					int16_t sound = (float)ByteArray_readShort(mine) * 0.36;
+					int16_t sound = (float)ByteArray_readShort(mine) * 0.30;
+					int32_t sample = music + sound;
+					int overflow = 0;
+					if(sample > 32767) {
+						overflow = 1;
+						sample = 32767;
+					} else if (sample < -32768) {
+						overflow = 1;
+						sample = -32768;
+					}
 					ByteArray_set_position_rel(&playa.out_wave, -2);
-					if(music + sound > 32767) dprintf(2, "overflow\n");
-					ByteArray_writeShort(&playa.out_wave, music + sound);
+					if(overflow) dprintf(2, "overflow\n");
+					ByteArray_writeShort(&playa.out_wave, sample);
 				}
 				ByteArray_set_position(&playa.out_wave, savepos);
 			}
