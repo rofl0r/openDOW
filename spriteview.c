@@ -303,8 +303,8 @@ static void fire_bullet(int player_no) {
 	}
 	float dist = veclength(&vel);
 	float speed = pw->bullet_speed * SCALE;
-	const uint16_t range_tab[] = {0,   0,   64, 80, 118, 118, 118, 118, 118, 118, 
-	                              200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 320 };
+	const uint16_t range_tab[] = {0,   0,   66, 80, 118, 118, 118, 118, 118, 118, 
+	                              200, 200, 240, 240, 240, 240, 240, 240, 240, 240, 320 };
 	float range = range_tab[pw->range] * SCALE;
 	if(dist > range) 
 		dist = range;
@@ -386,7 +386,7 @@ static void game_tick(int force_redraw) {
 		res = audio_process();
 	if(res == -1) audio_open_music("DogsOfWar.DW", 1);
 	ms_used = mspassed(&timer);
-	printf("audio processed: %d, ms_used %ld\n", res, ms_used);
+	//printf("audio processed: %d, ms_used %ld\n", res, ms_used);
 	long sleepms = 1000/fps - ms_used;
 	if(sleepms >= 0) SDL_Delay(sleepms);
 	if(mousebutton_down[MB_LEFT]) mousebutton_down[MB_LEFT]++;
