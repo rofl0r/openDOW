@@ -163,6 +163,7 @@ int main(int argc, char** argv) {
 			 "#define SPRITE_COUNT %d\n"
 			 "#define WIDTH %d\n"
 			 "#define HEIGHT %d\n"
+			 "#define o 0\n"
 			 
 			 "#define STRUCT_NAME %s\n\n"
 			 "static const struct {\n"
@@ -196,6 +197,7 @@ int main(int argc, char** argv) {
 		unsigned counter = 0;
 		unsigned values_per_line = sprite_w;
 		const char *value_format = pp.palcount > 99 ? "%3u," : "%2u,";
+		const char *o_format = pp.palcount > 99 ? "  o," : " o,";
 		for(sprite = 0; sprite < sprite_count; sprite++) {
 			fprintf(outfile, "/* sprite #%.3u */\n\t\t", sprite);
 			for(y = 0; y < sprite_h; y++) {
@@ -206,7 +208,10 @@ int main(int argc, char** argv) {
 				for(x = 0; x < sprite_w; x++) {
 					for(p = 0; p < pp.palcount; p++) {
 						if(pal[p].val == bufptr->val) {
-							snprintf(buf, sizeof(buf), value_format, (unsigned) p);
+							if(p == 0)
+								snprintf(buf, sizeof(buf), o_format);
+							else
+								snprintf(buf, sizeof(buf), value_format, (unsigned) p);
 							fwrite(buf, strlen(buf), 1, outfile);
 							if(counter % values_per_line == values_per_line - 1) 
 								fwrite(STRSZ("\n\t\t"), 1, outfile);
@@ -226,6 +231,7 @@ int main(int argc, char** argv) {
 
 		snprintf(buf, sizeof(buf), 
 			 "};\n\n"
+			 "#undef o\n"
 			 "#undef PAL_COUNT\n"
 			 "#undef SPRITE_COUNT\n"
 			 "#undef WIDTH\n"
