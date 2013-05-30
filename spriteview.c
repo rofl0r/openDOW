@@ -22,6 +22,10 @@
 #include "flash.c"
 #endif
 
+#if __GNUC__ + 0 > 3
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
+
 enum mousebutton {
 	MB_LEFT = 0,
 	MB_RIGHT,
@@ -130,18 +134,19 @@ static void get_last_move_event(SDL_Event* e) {
 #undef numpeek
 }
 
-const struct palpic *spritemaps[] = { &players.header, &bullet.header, &crosshair4.header, &flash.header };
-SDL_Surface *surface;
-bool fullscreen_active = false;
-int player_ids[2];
-int crosshair_id;
-enum weapon_id player_weapons[2][WP_MAX];
-int weapon_count[2];
-enum weapon_id weapon_active[2]; // index into player_weapons[playerno]
-int player_ammo[2][AMMO_MAX];
+static const struct palpic *spritemaps[] = { &players.header, &bullet.header, &crosshair4.header, &flash.header };
+static SDL_Surface *surface;
+static bool fullscreen_active = false;
+static int player_ids[2];
+static int crosshair_id;
+static enum weapon_id player_weapons[2][WP_MAX];
+static int weapon_count[2];
+static enum weapon_id weapon_active[2]; // index into player_weapons[playerno]
+static int player_ammo[2][AMMO_MAX];
 
 void redraw_bg() {
 	unsigned lineoffset = 0, x, y;
+	(void) lineoffset;
 	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
 	srand(1);
 	for(y = 0; y < VMODE_H; y++) {
@@ -182,7 +187,7 @@ static int init_player(int player_no) {
 	return pid;
 }
 
-vec2f *mousepos;
+static vec2f *mousepos;
 static int init_crosshair() {
 	int id = gameobj_alloc();
 	if(id == -1) return -1;
@@ -192,6 +197,7 @@ static int init_crosshair() {
 	objs[id].vel = VEC(0, 0);
 	objs[id].spritemap_id = 2;
 	start_anim(id, ANIM_CROSSHAIR);
+	return id;
 }
 
 static int init_bullet(vec2f *pos, vec2f *vel, int steps) {
@@ -220,9 +226,7 @@ static enum animation_id get_flash_animation_from_direction(enum direction dir) 
 		ANIMF(DIR_SO, ANIM_FLASH_SO),
 	};
 	#undef ANIMF
-	assert(dir >= 0 && dir < DIR_MAX);
 	return dir_to_anim[dir];
-	
 }
 
 static int init_flash(vec2f *pos, enum direction dir) {
@@ -235,6 +239,7 @@ static int init_flash(vec2f *pos, enum direction dir) {
 	start_anim(id, get_flash_animation_from_direction(dir));
 	objs[id].objspecific.bullet.step_curr = 0;
 	objs[id].objspecific.bullet.step_max = 2;
+	return id;
 }
 
 static vec2f get_sprite_center(int obj_id) {
@@ -244,20 +249,20 @@ static vec2f get_sprite_center(int obj_id) {
 	return res;
 }
 
-void switch_anim(int playerid, int aid);
-enum direction get_direction_from_vec(vec2f *vel);
-enum animation_id get_anim_from_direction(enum direction dir, int player);
+static void switch_anim(int playerid, int aid);
+static enum direction get_direction_from_vec(vec2f *vel);
+static enum animation_id get_anim_from_direction(enum direction dir, int player);
 
 static enum weapon_id get_active_weapon_id(int player_no) {
 	return player_weapons[player_no][weapon_active[player_no]];
 }
 
-static struct weapon* get_active_weapon(int player_no) {
+static const struct weapon* get_active_weapon(int player_no) {
 	return &weapons[get_active_weapon_id(player_no)];
 }
 
 static void fire_bullet(int player_no) {
-	struct weapon *pw = get_active_weapon(player_no);
+	const struct weapon *pw = get_active_weapon(player_no);
 	if(player_ammo[player_no][pw->ammo] == 0) return;
 	vec2f from = get_sprite_center(player_ids[player_no]);
 	//get_anim_from_vel(0, objs[player].
@@ -312,7 +317,7 @@ static void fire_bullet(int player_no) {
 	float deg = atan2(vel.y, vel.x);
 	vel.x = cos(deg) * speed;
 	vel.y = sin(deg) * speed;
-	int bid = init_bullet(&from, &vel, steps);
+	init_bullet(&from, &vel, steps);
 	player_ammo[player_no][pw->ammo]--;
 	const char *wf = weapon_sound_filename(pw->sound);
 	if(pw->sound != WS_NONE)
@@ -333,14 +338,13 @@ static int get_next_anim_frame(enum animation_id aid, int curr) {
 static void game_tick(int force_redraw) {
 	static uint32_t tickcounter = 0;
 	size_t obj_visited = 0;
-	int background_painted = 0;
 	const int fps = 64;
 	struct timeval timer;
 	int paint_objs[OBJ_MAX];
 	size_t paint_obj_count = 0, i;
 	if(mousebutton_down[MB_LEFT] > 1) {
 		const int player_no = 0;
-		struct weapon *pw = get_active_weapon(player_no);
+		const struct weapon *pw = get_active_weapon(player_no);
 		//if(get_active_weapon_id(player_no) == WP_M134) __asm__("int3");
 		if (pw->flags & WF_AUTOMATIC) {
 			float shots_per_second = pw->rpm / 60.f;
@@ -403,7 +407,7 @@ enum cursor {
 	c_right,
 };
 
-enum cursor cursor_lut[] = {
+static enum cursor cursor_lut[] = {
 	[SDLK_UP] = c_up,
 	[SDLK_DOWN] = c_down,
 	[SDLK_LEFT] = c_left,
@@ -414,14 +418,14 @@ enum cursor cursor_lut[] = {
 	[SDLK_d] = c_right,
 };
 
-char cursors_pressed[] = {
+static char cursors_pressed[] = {
 	[c_up] = 0,
 	[c_down] = 0,
 	[c_left] = 0,
 	[c_right] = 0,
 };
 
-vec2f get_vel_from_direction(enum direction dir, float speed) {
+static vec2f get_vel_from_direction(enum direction dir, float speed) {
 #define VELLUT(a, b, c) [a] = VEC(b, c)
 	static const vec2f vel_lut[] = {
 		VELLUT(DIR_O, 1, 0),
@@ -440,7 +444,7 @@ vec2f get_vel_from_direction(enum direction dir, float speed) {
 	return v;
 }
 
-enum direction get_direction_from_vec(vec2f *vel) {
+static enum direction get_direction_from_vec(vec2f *vel) {
 	float deg_org, deg = atan2(vel->y, vel->x);
 	deg_org = deg;
 	if(deg < 0) deg *= -1.f;
@@ -461,7 +465,7 @@ enum direction get_direction_from_vec(vec2f *vel) {
 	return rad_lut[hexadrant];
 }
 
-enum direction get_direction_from_cursor(void) {
+static enum direction get_direction_from_cursor(void) {
 	enum direction dir = DIR_INVALID;
 	if(cursors_pressed[c_up]) {
 		if(cursors_pressed[c_left]) dir = DIR_NW;
@@ -479,7 +483,7 @@ enum direction get_direction_from_cursor(void) {
 	return dir;
 }
 
-enum animation_id get_anim_from_direction(enum direction dir, int player_no) {
+static enum animation_id get_anim_from_direction(enum direction dir, int player_no) {
 	#define DIRMAP(a, b) [a] = b
 	static const enum animation_id dir_map_p1[] = {
 		DIRMAP(DIR_N, ANIM_P1_MOVE_N),
@@ -506,19 +510,19 @@ enum animation_id get_anim_from_direction(enum direction dir, int player_no) {
 	return dir_map[dir];
 }
 
-enum animation_id get_anim_from_cursor(void) {
+static enum animation_id get_anim_from_cursor(void) {
 	enum direction dir = get_direction_from_cursor();
 	if(dir == DIR_INVALID) return ANIM_INVALID;
 	return get_anim_from_direction(dir, 0);
 }
 /* playerno is either 0 or 1, not player_id! */
-enum animation_id get_anim_from_vel(int player_no, vec2f *vel, vec2f *origin) {
+static enum animation_id get_anim_from_vel(int player_no, vec2f *vel) {
 	enum direction dir = get_direction_from_vec(vel);
 	if(dir == DIR_INVALID) return ANIM_INVALID;
 	return get_anim_from_direction(dir, player_no);
 }
 
-void switch_anim(int player_id, int aid) {
+static void switch_anim(int player_id, int aid) {
 	if(objs[player_id].animid == aid) return;
 	start_anim(player_id, aid);
 }

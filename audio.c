@@ -35,7 +35,7 @@ struct AudioPlayer {
 	struct ByteArray *wave_stream;
 	struct ByteArray wave_streams[2];
 	struct ByteArray out_wave;
-	unsigned char wave_buffer[COREMIXER_MAX_BUFFER * 2 * sizeof(float)];
+	char wave_buffer[COREMIXER_MAX_BUFFER * 2 * sizeof(float)];
 	pthread_attr_t attr;
 	pthread_t thread;
 	pthread_mutex_t music_mutex;
@@ -52,7 +52,8 @@ static struct AudioPlayer playa;
 #define slock() pthread_mutex_lock(&playa.sound_mutex)
 #define sunlock() pthread_mutex_unlock(&playa.sound_mutex)
 
-static void thread_func(void* data) {
+static void *thread_func(void* data) {
+	(void) data;
 	while(1) {
 		mlock();
 		if(playa.thread_music_status == TS_STOPPING) {
@@ -85,7 +86,7 @@ static void thread_func(void* data) {
 				off_t savepos = playa.out_wave.pos;
 				ByteArray_set_position(&playa.out_wave, 0);
 				size_t i, avail = mine->bytesAvailable(mine);
-				for(i = 0; i < savepos && i < avail; i+= 2) {
+				for(i = 0; i < (size_t) savepos && i < avail; i+= 2) {
 					int16_t music = ByteArray_readShort(&playa.out_wave);
 					int16_t sound = (float)ByteArray_readShort(mine) * 0.30;
 					int32_t sample = music + sound;
@@ -105,18 +106,18 @@ static void thread_func(void* data) {
 			}
 			mixin_done:
 			sunlock();
-			AoWriter_write(&playa.writer.backend, playa.wave_buffer, playa.out_wave.pos);
+			AoWriter_write(&playa.writer.ao, playa.wave_buffer, playa.out_wave.pos);
 			//dprintf(2, "done\n");
 			playa.out_wave.pos = 0;
 		}
-		
 	}
+	return 0;
 }
 
 void audio_init(void) {
 	Amiga_ctor(&playa.hardware.amiga);
-	DWPlayer_ctor(&playa.player.core, &playa.hardware.core);
-	AoWriter_init(&playa.writer.backend, "");
+	DWPlayer_ctor(&playa.player.dw, &playa.hardware.amiga);
+	AoWriter_init(&playa.writer.ao, 0);
 	ByteArray_ctor(&playa.music_stream);
 	ByteArray_ctor(&playa.wave_streams[0]);
 	ByteArray_ctor(&playa.wave_streams[1]);
@@ -175,7 +176,7 @@ static void close_all_but_playing_slot() {
 
 void audio_play_wav(const char* filename) {
 	slock();
-	if(playa.free_waveslot >= ARRAY_SIZE(playa.wave_streams)) {
+	if(playa.free_waveslot >= (int) ARRAY_SIZE(playa.wave_streams)) {
 		playa.free_waveslot = 0;
 		close_all_but_playing_slot();
 	}
