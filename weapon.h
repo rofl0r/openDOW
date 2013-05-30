@@ -59,6 +59,7 @@ enum __attribute__((__packed__)) weapon_id {
 	WP_L7A2,
 	WP_HK21,
 	WP_M60,
+	WP_MG42,
 	WP_M134,
 	WP_RPG7,
 	WP_LAW,
