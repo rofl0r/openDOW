@@ -26,6 +26,7 @@ struct ammo {
 
 enum weapon_flags {
 	WF_AUTOMATIC = 1,
+	WF_MUZZLEFLASH = 2,
 };
 
 enum __attribute__((__packed__)) weapon_sound {
