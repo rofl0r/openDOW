@@ -21,6 +21,7 @@
 #include "crosshair4.c"
 #include "flash.c"
 #include "weapon_sprites.c"
+#include "flame.c"
 #endif
 
 #if __GNUC__ + 0 > 3
@@ -135,7 +136,7 @@ static void get_last_move_event(SDL_Event* e) {
 #undef numpeek
 }
 
-static const struct palpic *spritemaps[] = { &players.header, &bullet.header, &crosshair4.header, &flash.header };
+static const struct palpic *spritemaps[] = { &players.header, &bullet.header, &crosshair4.header, &flash.header, &flame.header };
 static SDL_Surface *surface;
 static bool fullscreen_active = false;
 static int player_ids[2];
@@ -222,6 +223,13 @@ static int init_bullet(vec2f *pos, vec2f *vel, int steps) {
 	return id;
 }
 
+static int init_flame(vec2f *pos, vec2f *vel, int steps) {
+	int id = init_bullet(pos, vel, steps);
+	objs[id].spritemap_id = 4;
+	start_anim(id, ANIM_FLAME);
+	return id;
+}
+
 static enum animation_id get_flash_animation_from_direction(enum direction dir) {
 	#define ANIMF(dir, anim) [dir] = anim
 	static const enum animation_id dir_to_anim[] = {
@@ -299,25 +307,27 @@ static void fire_bullet(int player_no) {
 		vel = velocity(&from, &to);
 		enum animation_id aid = get_anim_from_direction(dir, player_no);
 		if(aid != ANIM_INVALID) switch_anim(player_ids[player_no], aid);
-		static const vec2f flash_start[] = {
-			MUZZ(DIR_N, -1.5, -7.5),
-			MUZZ(DIR_NW, -5, -5.5),
-			MUZZ(DIR_W, -6, -0.5),
-			MUZZ(DIR_SW, -3, 1),
-			MUZZ(DIR_S, -1.5, 1),
-			MUZZ(DIR_SO, 0.5, 1.5),
-			MUZZ(DIR_O, 1, -1.5),
-			MUZZ(DIR_NO, 1.5, -5.5),
-		};
+		if(pw->flags & WF_MUZZLEFLASH) {
+			static const vec2f flash_start[] = {
+				MUZZ(DIR_N, -1.5, -7.5),
+				MUZZ(DIR_NW, -5, -5.5),
+				MUZZ(DIR_W, -6, -0.5),
+				MUZZ(DIR_SW, -3, 1),
+				MUZZ(DIR_S, -1.5, 1),
+				MUZZ(DIR_SO, 0.5, 1.5),
+				MUZZ(DIR_O, 1, -1.5),
+				MUZZ(DIR_NO, 1.5, -5.5),
+			};
+			vec2f ffrom = from;
+			ffrom.x += flash_start[dir].x * SCALE;
+			ffrom.y += flash_start[dir].y * SCALE;
+			init_flash(&ffrom, dir);
+		}
 		#undef MUZZ
-		vec2f ffrom = from;
-		ffrom.x += flash_start[dir].x * SCALE;
-		ffrom.y += flash_start[dir].y * SCALE;
-		init_flash(&ffrom, dir);
 	}
 	float dist = veclength(&vel);
 	float speed = pw->bullet_speed * SCALE;
-	const uint16_t range_tab[] = {0,   0,   66, 80, 118, 118, 118, 118, 118, 118, 
+	const uint16_t range_tab[] = {0,   80,   66, 80, 118, 118, 118, 118, 118, 118, 
 	                              200, 200, 240, 240, 240, 240, 240, 240, 240, 240, 320 };
 	float range = range_tab[pw->range] * SCALE;
 	if(dist > range) 
@@ -326,7 +336,8 @@ static void fire_bullet(int player_no) {
 	float deg = atan2(vel.y, vel.x);
 	vel.x = cos(deg) * speed;
 	vel.y = sin(deg) * speed;
-	init_bullet(&from, &vel, steps);
+	if(pw->ammo == AMMO_GAS) init_flame(&from, &vel, steps);
+	else init_bullet(&from, &vel, steps);
 	player_ammo[player_no][pw->ammo]--;
 	const char *wf = weapon_sound_filename(pw->sound);
 	if(pw->sound != WS_NONE)
