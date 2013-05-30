@@ -20,6 +20,7 @@
 #include "bullet.c"
 #include "crosshair4.c"
 #include "flash.c"
+#include "weapon_sprites.c"
 #endif
 
 #if __GNUC__ + 0 > 3
@@ -143,6 +144,13 @@ static enum weapon_id player_weapons[2][WP_MAX];
 static int weapon_count[2];
 static enum weapon_id weapon_active[2]; // index into player_weapons[playerno]
 static int player_ammo[2][AMMO_MAX];
+static enum weapon_id get_active_weapon_id(int player_no);
+
+void draw_status_bar(void) {
+	enum weapon_id wid = get_active_weapon_id(0);
+	blit_sprite(((320 / 2) - (59 / 2)) * SCALE, (200 + (40/2) - (16/2)) * SCALE,
+	            surface->pixels, surface->pitch, SCALE, &weapon_sprites.header, wid);
+}
 
 void redraw_bg() {
 	unsigned lineoffset = 0, x, y;
@@ -160,6 +168,7 @@ void redraw_bg() {
 			else *ptr++ = SRGB(0x33, 0x55, 0x55);
 		}
 	}
+	draw_status_bar();
 }
 
 static void start_anim(int obj_id, enum animation_id aid) {
@@ -562,6 +571,7 @@ int main() {
 	SDL_Event sdl_event;
 	while(1) {
 		unsigned need_redraw = 0;
+		int weapon_inc = 0;
 		while (SDL_PollEvent(&sdl_event)) {
 			switch (sdl_event.type) {
 				case SDL_MOUSEMOTION:
@@ -619,11 +629,18 @@ int main() {
 							}
 							break;
 						case SDLK_KP_PLUS:
+							weapon_inc = 1;
+							goto toggle_weapon;
 						case SDLK_KP_MINUS:
-							player_weapons[player_no][0]++;
+							if((int)player_weapons[player_no][0] == 0)
+								weapon_inc = WP_MAX-1;
+							else weapon_inc = -1;
+							toggle_weapon:
+							player_weapons[player_no][0] += weapon_inc;
 							if(player_weapons[player_no][0] == WP_INVALID)
 								player_weapons[player_no][0] = 0;
 							printf("%s\n", weapon_name(player_weapons[player_no][0]));
+							need_redraw = 1;
 							break;
 						default:
 							break;
