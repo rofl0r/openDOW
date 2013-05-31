@@ -20,4 +20,12 @@ static inline float vecdist(vec2f* a, vec2f* b) {
 	return veclength(&vel);
 }
 
+static inline vec2f vecadd(vec2f* a, vec2f* b) {
+	return VEC(a->x + b->x, a->y + b->y);
+}
+
+static inline vec2f vecsub(vec2f* a, vec2f* b) {
+	return VEC(a->x - b->x, a->y - b->y);
+}
+
 #endif
