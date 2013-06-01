@@ -12,6 +12,7 @@
 #include "palpic.h"
 #include "sdl_rgb.h"
 #include "audio.h"
+#include "muzzle_tab.h"
 
 #include <SDL/SDL.h>
 
@@ -145,8 +146,21 @@ static int init_bullet(vec2f *pos, vec2f *vel, int steps) {
 	return id;
 }
 
-static int init_flame(vec2f *pos, vec2f *vel, int steps) {
-	int id = init_bullet(pos, vel, steps);
+static int init_flame(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
+	static const vec2f flame_origin[] = {
+		[DIR_O] = { 4.0, 8.0 },
+		[DIR_NO] = { 5.0, 11.0 },
+		[DIR_N] = { 7.5, 12.0 },
+		[DIR_NW] = { 10.0, 11.0 },
+		[DIR_W] = { 11.0, 8.0 },
+		[DIR_SW] = { 10.0, 5.0 },
+		[DIR_S] = { 7.5, 3.0 },
+		[DIR_SO] = { 4.0, 4.0 },
+	};
+	vec2f mypos = *pos;
+	mypos.x -= flame_origin[dir].x * SCALE;
+	mypos.y -= flame_origin[dir].y * SCALE;
+	int id = init_bullet(&mypos, vel, steps);
 	objs[id].spritemap_id = 4;
 	start_anim(id, ANIM_FLAME);
 	return id;
@@ -181,11 +195,21 @@ static int init_flash(vec2f *pos, enum direction dir) {
 	return id;
 }
 
-static vec2f get_sprite_center(int obj_id) {
-	vec2f res = objs[obj_id].pos;
-	res.x += palpic_getspritewidth(spritemaps[objs[obj_id].spritemap_id]) * SCALE / 2;
-	res.y += palpic_getspriteheight(spritemaps[objs[obj_id].spritemap_id]) * SCALE / 2;
+static vec2f get_sprite_center(const struct palpic *p) {
+	vec2f res;
+	res.x = palpic_getspritewidth(p) * SCALE / 2;
+	res.y = palpic_getspriteheight(p) * SCALE / 2;
 	return res;
+}
+
+static vec2f get_gameobj_pos(int obj_id) {
+	return objs[obj_id].pos;
+}
+
+static vec2f get_gameobj_center(int obj_id) {
+	vec2f res = objs[obj_id].pos;
+	vec2f add = get_sprite_center(spritemaps[objs[obj_id].spritemap_id]);
+	return vecadd(&res, &add);
 }
 
 static void switch_anim(int playerid, int aid);
@@ -203,49 +227,40 @@ static const struct weapon* get_active_weapon(int player_no) {
 static void fire_bullet(int player_no) {
 	const struct weapon *pw = get_active_weapon(player_no);
 	if(player_ammo[player_no][pw->ammo] == 0) return;
-	vec2f from = get_sprite_center(player_ids[player_no]);
+	vec2f from = get_gameobj_center(player_ids[player_no]);
 	//get_anim_from_vel(0, objs[player].
-	vec2f to = get_sprite_center(crosshair_id);
+	vec2f to = get_gameobj_center(crosshair_id);
 	srand(time(0) ^ player_ammo[player_no][pw->ammo]);
 	to.x += 4*SCALE - rand()%8*SCALE;
 	to.y += 4*SCALE - rand()%8*SCALE;
 	vec2f vel = velocity(&from, &to);
 	enum direction dir = get_direction_from_vec(&vel);
 	if(dir != DIR_INVALID) {
-		#define MUZZ(a, b, c) [a] = VEC(b, c)
-		static const vec2f muzzle[] = {
-			MUZZ(DIR_N, 5, -10),
-			MUZZ(DIR_NW, -7, -9),
-			MUZZ(DIR_W, -12, -1),
-			MUZZ(DIR_SW, -9, 5),
-			MUZZ(DIR_S, -6, 6),
-			MUZZ(DIR_SO, 3, 6),
-			MUZZ(DIR_O, 10, 2),
-			MUZZ(DIR_NO, 8, -7),
-		};
-		
-		from.x += muzzle[dir].x * SCALE;
-		from.y += muzzle[dir].y * SCALE;
-		vel = velocity(&from, &to);
 		enum animation_id aid = get_anim_from_direction(dir, player_no);
 		if(aid != ANIM_INVALID) switch_anim(player_ids[player_no], aid);
+		vec2f muzzle = muzzle_tab[objs[player_ids[player_no]].anim_curr];
+		
+		from = get_gameobj_pos(player_ids[player_no]);
+		from.x += muzzle.x * SCALE;
+		from.y += muzzle.y * SCALE;
+
 		if(pw->flags & WF_MUZZLEFLASH) {
 			static const vec2f flash_start[] = {
-				MUZZ(DIR_N, -1.5, -7.5),
-				MUZZ(DIR_NW, -5, -5.5),
-				MUZZ(DIR_W, -6, -0.5),
-				MUZZ(DIR_SW, -3, 1),
-				MUZZ(DIR_S, -1.5, 1),
-				MUZZ(DIR_SO, 0.5, 1.5),
-				MUZZ(DIR_O, 1, -1.5),
-				MUZZ(DIR_NO, 1.5, -5.5),
+				[DIR_O] = { 0.0, 1.0 },
+				[DIR_NO] = { 0.5, 6.0 },
+				[DIR_N] = { 1.0, 7.5 },
+				[DIR_NW] = { 6.0, 6.0 },
+				[DIR_W] = { 7.5, 1.0 },
+				[DIR_SW] = { 4.5, 0.0 },
+				[DIR_S] = { 1.0, 0.0 },
+				[DIR_SO] = { 0.0, 0.0 },
 			};
 			vec2f ffrom = from;
-			ffrom.x += flash_start[dir].x * SCALE;
-			ffrom.y += flash_start[dir].y * SCALE;
+			ffrom.x -= flash_start[dir].x * SCALE;
+			ffrom.y -= flash_start[dir].y * SCALE;
 			init_flash(&ffrom, dir);
 		}
-		#undef MUZZ
+		vel = velocity(&from, &to);		
 	}
 	float dist = veclength(&vel);
 	float speed = pw->bullet_speed * SCALE;
@@ -258,7 +273,7 @@ static void fire_bullet(int player_no) {
 	float deg = atan2(vel.y, vel.x);
 	vel.x = cos(deg) * speed;
 	vel.y = sin(deg) * speed;
-	if(pw->ammo == AMMO_GAS) init_flame(&from, &vel, steps);
+	if(pw->ammo == AMMO_GAS) init_flame(dir, &from, &vel, steps);
 	else init_bullet(&from, &vel, steps);
 	player_ammo[player_no][pw->ammo]--;
 	const char *wf = weapon_sound_filename(pw->sound);
