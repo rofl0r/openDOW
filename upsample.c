@@ -28,26 +28,28 @@ void upsample() {
 	size_t i = 0;
 	size_t upsample_factor = 44100 / playa.wavhdr.wave_hdr.samplerate;
 	size_t readbytes = playa.wavhdr.wave_hdr.bitwidth == 8 ? 1 : 2;
+	int chan[2] = { 0, 0 };
+	int next[2];
 	
 	while(mine->bytesAvailable(mine)) {
 		int16_t sound;
 		size_t c, u;
-		int chan[2];
 		for(c = 0; c < 2; c++) {
 			if(c < playa.wavhdr.wave_hdr.channels) {
-				if(readbytes == 1) chan[c] = ((uint8_t) ByteArray_readByte(mine) - 128) * 256;
-				else chan[c] = ByteArray_readShort(mine);
-				handle_overflow(&chan[c]);
+				if(readbytes == 1) next[c] = ((uint8_t) ByteArray_readByte(mine) - 128) * 256;
+				else next[c] = ByteArray_readShort(mine);
+				handle_overflow(&next[c]);
 			} else 
-				chan[c] = chan[c - 1];
+				next[c] = next[c - 1];
 		}
 		for(u = 0; u < upsample_factor; u++) {
 			for(c = 0; c < 2; c++) {
-				if(u == 0) {
-					ByteArray_writeShort(out, chan[c]);
-				} else ByteArray_writeShort(out, 0);
+				int interpolated = u == 0 ? chan[c] : 
+					chan[c] + ((next[c]-chan[c]) * ((float)u/(float)upsample_factor));
+				ByteArray_writeShort(out, interpolated);
 			}
 		}
+		for (c=0; c<2; c++) chan[c] = next[c];
 	}
 
 	return;
@@ -69,3 +71,4 @@ int main(int argc, char ** argv) {
 	ByteArray_dump_to_file(out, "test.raw");
 	
 }
+
