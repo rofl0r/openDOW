@@ -42,7 +42,7 @@ const struct weapon weapons[] = {
 	WEAP(WP_RPG7, 4, RPM(0), RANGE(300), AMMO_ROCKET40MM, 2600, 0, WS_NONE),
 	WEAP(WP_LAW, 4, RPM(0), RANGE(400), AMMO_INVALID, 2900, 0, WS_NONE), // comes with a single rocket preloaded, not reloadable
 	WEAP(WP_MAW, 4, RPM(0), RANGE(500), AMMO_ROCKET83MM, 2100, 0, WS_NONE),
-	WEAP(WP_ABC, 2, RPM(800), RANGE(100), AMMO_GAS, 9900, WF_AUTOMATIC, WS_NONE),
+	WEAP(WP_ABC, 2, RPM(800), RANGE(100), AMMO_GAS, 9900, WF_AUTOMATIC, WS_FLAMETHROWER),
 	WEAP(WP_GRENADES, 1.75, RPM(0), RANGE(100), AMMO_GRENADE, 50, 0, WS_NONE),
 };
 #undef WEAP
@@ -83,9 +83,10 @@ const char* weapon_name(enum weapon_id id) {
 
 const char* weapon_sound_filenames[] = {
 	[WS_NONE] = "",
-	[WS_PISTOL] = "pistol.wav",
-	[WS_GUN] = "m60.wav",
-	[WS_MACHINEGUN] = "lz7a-3.wav",
+	[WS_PISTOL] = "pistole_5512b.wav",
+	[WS_GUN] = "m60_5512b.wav",
+	[WS_MACHINEGUN] = "lz7a_5512b.wav",
+	[WS_FLAMETHROWER] = "gas_5512b.wav",
 };
 
 const char* weapon_sound_filename(enum weapon_sound ws) {

@@ -34,6 +34,7 @@ enum __attribute__((__packed__)) weapon_sound {
 	WS_PISTOL,
 	WS_GUN,
 	WS_MACHINEGUN,
+	WS_FLAMETHROWER,
 };
 
 struct weapon {
