@@ -53,6 +53,17 @@ static struct AudioPlayer playa;
 #define slock() pthread_mutex_lock(&playa.sound_mutex)
 #define sunlock() pthread_mutex_unlock(&playa.sound_mutex)
 
+static int handle_overflow(int *sample) {
+	if(*sample > 32767) {
+		*sample = 32767;
+		return 1;
+	} else if (*sample < -32768) {
+		*sample = -32768;
+		return -1;
+	}
+	return 0;
+}
+
 static void *thread_func(void* data) {
 	(void) data;
 	while(1) {
@@ -84,39 +95,42 @@ static void *thread_func(void* data) {
 					playa.play_waveslot = -1;
 					goto mixin_done;
 				}
-				off_t savepos = playa.out_wave.pos;
-				size_t i,j, avail = mine->bytesAvailable(mine);
+				struct ByteArray* out = &playa.out_wave;
+				off_t savepos = out->pos;
+				size_t avail = mine->bytesAvailable(mine);
 				size_t upsample_factor = 44100 / playa.wavhdr.wave_hdr.samplerate;
-				size_t step = upsample_factor * sizeof(int16_t) * 2;
+				size_t processed_m = 0, processed_w = 0;
 				size_t readbytes = playa.wavhdr.wave_hdr.bitwidth == 8 ? 1 : 2;
-				for(i = 0, j = 0; i < (size_t) savepos && j < avail; i+= step, j+=readbytes* playa.wavhdr.wave_hdr.channels) {
-					int16_t sound;
-					size_t c;
+				int chan[2] = { 0, 0 };
+				int next[2];
+				ByteArray_set_position(out, 0);
+				while(processed_m < savepos && processed_w < avail) {
+					size_t c, u;
 					for(c = 0; c < 2; c++) {
-						if(c == 0 || playa.wavhdr.wave_hdr.channels == 2) {
-							if(readbytes == 1)
-								sound = ((uint8_t) ByteArray_readByte(mine) - 128) * 256;
-							else 
-								sound = ByteArray_readShort(mine);
-							sound = (float)sound * 0.30;
-						}
-						ByteArray_set_position(&playa.out_wave, i + (c*sizeof(int16_t)));
-						int16_t music = ByteArray_readShort(&playa.out_wave);
-						int32_t sample = music + sound;
-						int overflow = 0;
-						if(sample > 32767) {
-							overflow = 1;
-							sample = 32767;
-						} else if (sample < -32768) {
-							overflow = 1;
-							sample = -32768;
-						}
-						ByteArray_set_position(&playa.out_wave, i + (c*sizeof(int16_t)));
-						ByteArray_writeShort(&playa.out_wave, sample);
-						if(overflow) dprintf(2, "overflow\n");
+						if(c < playa.wavhdr.wave_hdr.channels) {
+							if(readbytes == 1) next[c] = ((uint8_t) ByteArray_readByte(mine) - 128) * 256;
+							else next[c] = ByteArray_readShort(mine);
+							handle_overflow(&next[c]);
+						} else 
+							next[c] = next[c - 1];
+						processed_w += readbytes;
 					}
+					for(u = 0; u < upsample_factor; u++) {
+						for(c = 0; c < 2; c++) {
+							int interpolated = u == 0 ? chan[c] : 
+								chan[c] + ((next[c]-chan[c]) * ((float)u/(float)upsample_factor));
+							interpolated = (float) interpolated * 0.3; // decrease volume to avoid overflow
+							int music = ByteArray_readShort(out);
+							int sample = music + interpolated;
+							if(handle_overflow(&sample)) dprintf(2, "overflow\n");
+							ByteArray_set_position_rel(out, -2);
+							ByteArray_writeShort(out, sample);
+							processed_m += 2;
+						}
+					}
+					for (c=0; c<2; c++) chan[c] = next[c];
 				}
-				ByteArray_set_position(&playa.out_wave, savepos);
+				ByteArray_set_position(out, savepos);
 			}
 			mixin_done:
 			sunlock();
