@@ -34,6 +34,7 @@ struct AudioPlayer {
 	struct ByteArray music_stream;
 	struct ByteArray *wave_stream;
 	struct ByteArray wave_streams[2];
+	WAVE_HEADER_COMPLETE wavhdr;
 	struct ByteArray out_wave;
 	char wave_buffer[COREMIXER_MAX_BUFFER * 2 * sizeof(float)];
 	pthread_attr_t attr;
@@ -84,23 +85,36 @@ static void *thread_func(void* data) {
 					goto mixin_done;
 				}
 				off_t savepos = playa.out_wave.pos;
-				ByteArray_set_position(&playa.out_wave, 0);
-				size_t i, avail = mine->bytesAvailable(mine);
-				for(i = 0; i < (size_t) savepos && i < avail; i+= 2) {
-					int16_t music = ByteArray_readShort(&playa.out_wave);
-					int16_t sound = (float)ByteArray_readShort(mine) * 0.30;
-					int32_t sample = music + sound;
-					int overflow = 0;
-					if(sample > 32767) {
-						overflow = 1;
-						sample = 32767;
-					} else if (sample < -32768) {
-						overflow = 1;
-						sample = -32768;
+				size_t i,j, avail = mine->bytesAvailable(mine);
+				size_t upsample_factor = 44100 / playa.wavhdr.wave_hdr.samplerate;
+				size_t step = upsample_factor * sizeof(int16_t) * 2;
+				size_t readbytes = playa.wavhdr.wave_hdr.bitwidth == 8 ? 1 : 2;
+				for(i = 0, j = 0; i < (size_t) savepos && j < avail; i+= step, j+=readbytes* playa.wavhdr.wave_hdr.channels) {
+					int16_t sound;
+					size_t c;
+					for(c = 0; c < 2; c++) {
+						if(c == 0 || playa.wavhdr.wave_hdr.channels == 2) {
+							if(readbytes == 1)
+								sound = ((uint8_t) ByteArray_readByte(mine) - 128) * 256;
+							else 
+								sound = ByteArray_readShort(mine);
+							sound = (float)sound * 0.30;
+						}
+						ByteArray_set_position(&playa.out_wave, i + (c*sizeof(int16_t)));
+						int16_t music = ByteArray_readShort(&playa.out_wave);
+						int32_t sample = music + sound;
+						int overflow = 0;
+						if(sample > 32767) {
+							overflow = 1;
+							sample = 32767;
+						} else if (sample < -32768) {
+							overflow = 1;
+							sample = -32768;
+						}
+						ByteArray_set_position(&playa.out_wave, i + (c*sizeof(int16_t)));
+						ByteArray_writeShort(&playa.out_wave, sample);
+						if(overflow) dprintf(2, "overflow\n");
 					}
-					ByteArray_set_position_rel(&playa.out_wave, -2);
-					if(overflow) dprintf(2, "overflow\n");
-					ByteArray_writeShort(&playa.out_wave, sample);
 				}
 				ByteArray_set_position(&playa.out_wave, savepos);
 			}
@@ -185,9 +199,11 @@ void audio_play_wav(const char* filename) {
 		perror("open");
 		abort();
 	}
-	/* assuming 16bit, 44khz stereo wav for the beginning. */
-	ByteArray_set_position(mine, sizeof(WAVE_HEADER_COMPLETE));
 	ByteArray_set_endian(mine, BAE_LITTLE);
+	/* assuming 16bit, 44khz stereo wav for the beginning. */
+	ByteArray_readMultiByte(mine, (void*) &playa.wavhdr, sizeof(WAVE_HEADER_COMPLETE)); 
+	//ByteArray_set_position(mine, sizeof(WAVE_HEADER_COMPLETE));
+	
 	playa.play_waveslot = playa.free_waveslot;
 	playa.free_waveslot++;
 	sunlock();
