@@ -4,3 +4,8 @@
 *.a
 *.so
 *.lo
+*.png
+*.wav
+*.bmp
+*.xcf
+
