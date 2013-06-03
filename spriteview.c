@@ -13,17 +13,13 @@
 #include "sdl_rgb.h"
 #include "audio.h"
 #include "muzzle_tab.h"
+#include "spritemaps.h"
 
 #include <SDL/SDL.h>
 
 #ifndef IN_KDEVELOP_PARSER
 #include "../lib/include/bitarray.h"
-#include "players.c"
-#include "bullet.c"
-#include "crosshair4.c"
-#include "flash.c"
 #include "weapon_sprites.c"
-#include "flame.c"
 #endif
 
 enum mousebutton {
@@ -59,7 +55,6 @@ static void get_last_move_event(SDL_Event* e) {
 #undef numpeek
 }
 
-static const struct palpic *spritemaps[] = { &players.header, &bullet.header, &crosshair4.header, &flash.header, &flame.header };
 static SDL_Surface *surface;
 static bool fullscreen_active = false;
 static int player_ids[2];
@@ -109,7 +104,7 @@ static int init_player(int player_no) {
 	objs[pid].objtype = player_no == 0 ? OBJ_P1 : OBJ_P2;
 	objs[pid].pos = VEC( 10, 10 );
 	objs[pid].vel = VEC( 0, 0 );
-	objs[pid].spritemap_id = 0;
+	objs[pid].spritemap_id = SI_PLAYERS;
 	start_anim(pid, player_no == 0 ? ANIM_P1_MOVE_N : ANIM_P2_MOVE_N);
 	player_weapons[player_no][0] = WP_COLT45;
 	weapon_count[player_no] = 1;
@@ -128,7 +123,7 @@ static int init_crosshair() {
 	objs[id].objtype = OBJ_CROSSHAIR;
 	mousepos = &objs[id].pos;
 	objs[id].vel = VEC(0, 0);
-	objs[id].spritemap_id = 2;
+	objs[id].spritemap_id = SI_CROSSHAIR;
 	start_anim(id, ANIM_CROSSHAIR);
 	return id;
 }
@@ -137,7 +132,7 @@ static int init_bullet(vec2f *pos, vec2f *vel, int steps) {
 	int id = gameobj_alloc();
 	if(id == -1) return -1;
 	objs[id].objtype = OBJ_BULLET;
-	objs[id].spritemap_id = 1;
+	objs[id].spritemap_id = SI_BULLET;
 	objs[id].vel = *vel;
 	objs[id].pos = *pos;
 	start_anim(id, ANIM_BULLET);
@@ -161,7 +156,7 @@ static int init_flame(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
 	mypos.x -= flame_origin[dir].x * SCALE;
 	mypos.y -= flame_origin[dir].y * SCALE;
 	int id = init_bullet(&mypos, vel, steps);
-	objs[id].spritemap_id = 4;
+	objs[id].spritemap_id = SI_FLAME;
 	start_anim(id, ANIM_FLAME);
 	return id;
 }
@@ -186,7 +181,7 @@ static int init_flash(vec2f *pos, enum direction dir) {
 	int id = gameobj_alloc();
 	if(id == -1) return -1;
 	objs[id].objtype = OBJ_BULLET;
-	objs[id].spritemap_id = 3;
+	objs[id].spritemap_id = SI_FLASH;
 	objs[id].pos = *pos;
 	objs[id].vel = VEC(0, 0);
 	start_anim(id, get_flash_animation_from_direction(dir));
@@ -502,7 +497,7 @@ int main() {
 	
 	//redraw(surface, startx, starty);
 	const float player_speed = 1.25f;
-	const struct palpic* spritemap = &players.header;
+	const struct palpic* spritemap = spritemaps[SI_PLAYERS];
 	struct { int *target; int dir; int max;} moves[] = {
 		[c_up] = {&starty, SCALE * -1, VMODE_H - (palpic_getspriteheight(spritemap) * SCALE)},
 		[c_down] = {&starty, SCALE, VMODE_H - (palpic_getspriteheight(spritemap) * SCALE)},
