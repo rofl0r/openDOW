@@ -74,7 +74,10 @@ int main(int argc, char** argv) {
 	int to_c = (cp = strrchr(out_filename, '.')) && cp == out_filename + strlen(out_filename) - 2 && cp[1] == 'c';
 	char struct_name[256];
 	if(to_c) {
-		size_t l = snprintf(struct_name, sizeof struct_name, "%s", out_filename);
+		char *st_start = strrchr(out_filename, '/');
+		if(st_start) st_start++;
+		else st_start = out_filename;
+		size_t l = snprintf(struct_name, sizeof struct_name, "%s", st_start);
 		struct_name[l-2] = 0;
 	}
 	
