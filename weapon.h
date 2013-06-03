@@ -37,12 +37,20 @@ enum __attribute__((__packed__)) weapon_sound {
 	WS_FLAMETHROWER,
 };
 
+enum __attribute__((__packed__)) shot_type {
+	ST_BULLET = 0,
+	ST_GRENADE,
+	ST_LAUNCHER,
+	ST_FLAMES,
+};
+
 struct weapon {
 	float bullet_speed;
 	uint16_t rpm;
 	uint16_t price;
 	enum ammo_id ammo;
 	enum weapon_sound sound;
+	enum shot_type shot;
 	uint8_t flags;
 	uint8_t range;
 };
