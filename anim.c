@@ -46,5 +46,7 @@ const struct anim animations[] = {
 	ANIM(ANIM_FLASH_S, 6, 1),
 	ANIM(ANIM_FLASH_SO, 7, 1),
 	ANIM(ANIM_FLAME, 0, 12),
+	ANIM(ANIM_GRENADE_SMALL, 0, 1),
+	ANIM(ANIM_GRENADE_BIG, 1, 1),
 };
 

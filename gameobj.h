@@ -12,6 +12,7 @@ enum objtype {
 	OBJ_BULLET,
 	OBJ_CROSSHAIR,
 	OBJ_FLASH,
+	OBJ_GRENADE,
 };
 
 typedef struct gameobj {

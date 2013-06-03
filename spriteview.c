@@ -141,6 +141,15 @@ static int init_bullet(vec2f *pos, vec2f *vel, int steps) {
 	return id;
 }
 
+static int init_grenade(vec2f *pos, vec2f *vel, int steps) {
+	int id = init_bullet(pos, vel, steps);
+	if(id == -1) return -1;
+	objs[id].objtype = OBJ_GRENADE;
+	objs[id].spritemap_id = SI_GRENADE;
+	start_anim(id, ANIM_GRENADE_SMALL);
+	return id;
+}
+
 static int init_flame(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
 	static const vec2f flame_origin[] = {
 		[DIR_O] = { 4.0, 8.0 },
@@ -209,7 +218,7 @@ static vec2f get_gameobj_center(int obj_id) {
 
 static void switch_anim(int playerid, int aid);
 static enum direction get_direction_from_vec(vec2f *vel);
-static enum animation_id get_anim_from_direction(enum direction dir, int player);
+static enum animation_id get_anim_from_direction(enum direction dir, int player, int throwing);
 
 static enum weapon_id get_active_weapon_id(int player_no) {
 	return player_weapons[player_no][weapon_active[player_no]];
@@ -231,7 +240,7 @@ static void fire_bullet(int player_no) {
 	vec2f vel = velocity(&from, &to);
 	enum direction dir = get_direction_from_vec(&vel);
 	if(dir != DIR_INVALID) {
-		enum animation_id aid = get_anim_from_direction(dir, player_no);
+		enum animation_id aid = get_anim_from_direction(dir, player_no, pw->ammo == AMMO_GRENADE);
 		if(aid != ANIM_INVALID) switch_anim(player_ids[player_no], aid);
 		vec2f muzzle = muzzle_tab[objs[player_ids[player_no]].anim_curr];
 		
@@ -268,8 +277,20 @@ static void fire_bullet(int player_no) {
 	float deg = atan2(vel.y, vel.x);
 	vel.x = cos(deg) * speed;
 	vel.y = sin(deg) * speed;
-	if(pw->ammo == AMMO_GAS) init_flame(dir, &from, &vel, steps);
-	else init_bullet(&from, &vel, steps);
+	switch(pw->shot) {
+		case ST_LAUNCHER:
+		case ST_BULLET:
+			init_bullet(&from, &vel, steps);
+			break;
+		case ST_FLAMES:
+			init_flame(dir, &from, &vel, steps);
+			break;
+		case ST_GRENADE:
+			init_grenade(&from, &vel, steps);
+			break;
+		default:
+			abort();
+	}
 	player_ammo[player_no][pw->ammo]--;
 	const char *wf = weapon_sound_filename(pw->sound);
 	if(pw->sound != WS_NONE)
@@ -308,13 +329,18 @@ static void game_tick(int force_redraw) {
 	for(i = 0; obj_visited < obj_count_copy && i < OBJ_MAX; i++) {
 		if(obj_slot_used[i]) {
 			obj_visited++;
-			if(objs[i].objtype == OBJ_BULLET) {
+			if(objs[i].objtype == OBJ_BULLET || objs[i].objtype == OBJ_GRENADE) {
 				if(objs[i].objspecific.bullet.step_curr >= objs[i].objspecific.bullet.step_max) {
+					// TODO spawn explosion in case its a grenade
 					gameobj_free(i);
 					force_redraw = 1;
 					continue;
 				}
 				else objs[i].objspecific.bullet.step_curr++;
+				if(objs[i].objtype == OBJ_GRENADE) {
+					if(objs[i].objspecific.bullet.step_curr >= 32) objs[i].animid = ANIM_GRENADE_SMALL;
+					else if(objs[i].objspecific.bullet.step_curr >= 8) objs[i].animid = ANIM_GRENADE_BIG;
+				}
 			}
 			paint_objs[paint_obj_count++] = i;
 			if(objs[i].vel.x != 0 || objs[i].vel.y != 0) {
@@ -437,43 +463,68 @@ static enum direction get_direction_from_cursor(void) {
 	return dir;
 }
 
-static enum animation_id get_anim_from_direction(enum direction dir, int player_no) {
+static enum animation_id get_anim_from_direction(enum direction dir, int player_no, int throwing) {
 	#define DIRMAP(a, b) [a] = b
-	static const enum animation_id dir_map_p1[] = {
-		DIRMAP(DIR_N, ANIM_P1_MOVE_N),
-		DIRMAP(DIR_NW, ANIM_P1_MOVE_NW),
-		DIRMAP(DIR_W, ANIM_P1_MOVE_W),
-		DIRMAP(DIR_SW, ANIM_P1_MOVE_SW),
-		DIRMAP(DIR_S, ANIM_P1_MOVE_S),
-		DIRMAP(DIR_SO, ANIM_P1_MOVE_SO),
-		DIRMAP(DIR_O, ANIM_P1_MOVE_O),
-		DIRMAP(DIR_NO, ANIM_P1_MOVE_NO),
-	};
-	static const enum animation_id dir_map_p2[] = {
-		DIRMAP(DIR_N, ANIM_P2_MOVE_N),
-		DIRMAP(DIR_NW, ANIM_P2_MOVE_NW),
-		DIRMAP(DIR_W, ANIM_P2_MOVE_W),
-		DIRMAP(DIR_SW, ANIM_P2_MOVE_SW),
-		DIRMAP(DIR_S, ANIM_P2_MOVE_S),
-		DIRMAP(DIR_SO, ANIM_P2_MOVE_SO),
-		DIRMAP(DIR_O, ANIM_P2_MOVE_O),
-		DIRMAP(DIR_NO, ANIM_P2_MOVE_NO),
-	};
+	if(!throwing) {
+		static const enum animation_id dir_map_p1[] = {
+			DIRMAP(DIR_N, ANIM_P1_MOVE_N),
+			DIRMAP(DIR_NW, ANIM_P1_MOVE_NW),
+			DIRMAP(DIR_W, ANIM_P1_MOVE_W),
+			DIRMAP(DIR_SW, ANIM_P1_MOVE_SW),
+			DIRMAP(DIR_S, ANIM_P1_MOVE_S),
+			DIRMAP(DIR_SO, ANIM_P1_MOVE_SO),
+			DIRMAP(DIR_O, ANIM_P1_MOVE_O),
+			DIRMAP(DIR_NO, ANIM_P1_MOVE_NO),
+		};
+		static const enum animation_id dir_map_p2[] = {
+			DIRMAP(DIR_N, ANIM_P2_MOVE_N),
+			DIRMAP(DIR_NW, ANIM_P2_MOVE_NW),
+			DIRMAP(DIR_W, ANIM_P2_MOVE_W),
+			DIRMAP(DIR_SW, ANIM_P2_MOVE_SW),
+			DIRMAP(DIR_S, ANIM_P2_MOVE_S),
+			DIRMAP(DIR_SO, ANIM_P2_MOVE_SO),
+			DIRMAP(DIR_O, ANIM_P2_MOVE_O),
+			DIRMAP(DIR_NO, ANIM_P2_MOVE_NO),
+		};
+		const enum animation_id *dir_map = player_no == 0 ? dir_map_p1 : dir_map_p2;
+		return dir_map[dir];
+	} else {
+		static const enum animation_id dir_map_p1_g[] = {
+			DIRMAP(DIR_N, ANIM_P1_THROW_N),
+			DIRMAP(DIR_NW, ANIM_P1_THROW_NW),
+			DIRMAP(DIR_W, ANIM_P1_THROW_W),
+			DIRMAP(DIR_SW, ANIM_P1_THROW_SW),
+			DIRMAP(DIR_S, ANIM_P1_THROW_S),
+			DIRMAP(DIR_SO, ANIM_P1_THROW_SO),
+			DIRMAP(DIR_O, ANIM_P1_THROW_O),
+			DIRMAP(DIR_NO, ANIM_P1_THROW_NO),
+		};
+		static const enum animation_id dir_map_p2_g[] = {
+			DIRMAP(DIR_N, ANIM_P2_THROW_N),
+			DIRMAP(DIR_NW, ANIM_P2_THROW_NW),
+			DIRMAP(DIR_W, ANIM_P2_THROW_W),
+			DIRMAP(DIR_SW, ANIM_P2_THROW_SW),
+			DIRMAP(DIR_S, ANIM_P2_THROW_S),
+			DIRMAP(DIR_SO, ANIM_P2_THROW_SO),
+			DIRMAP(DIR_O, ANIM_P2_THROW_O),
+			DIRMAP(DIR_NO, ANIM_P2_THROW_NO),
+		};
+		const enum animation_id *dir_map = player_no == 0 ? dir_map_p1_g : dir_map_p2_g;
+		return dir_map[dir];
+	}
 	#undef DIRMAP
-	const enum animation_id *dir_map = player_no == 0 ? dir_map_p1 : dir_map_p2;
-	return dir_map[dir];
 }
 
 static enum animation_id get_anim_from_cursor(void) {
 	enum direction dir = get_direction_from_cursor();
 	if(dir == DIR_INVALID) return ANIM_INVALID;
-	return get_anim_from_direction(dir, 0);
+	return get_anim_from_direction(dir, 0, 0);
 }
 /* playerno is either 0 or 1, not player_id! */
 static enum animation_id get_anim_from_vel(int player_no, vec2f *vel) {
 	enum direction dir = get_direction_from_vec(vel);
 	if(dir == DIR_INVALID) return ANIM_INVALID;
-	return get_anim_from_direction(dir, player_no);
+	return get_anim_from_direction(dir, player_no, 0);
 }
 
 static void switch_anim(int player_id, int aid) {
@@ -557,7 +608,7 @@ int main() {
 									if(!mousebutton_down[MB_LEFT]) {
 										// change animation according to cursors,
 										// unless we're in automatic fire mode.
-										enum animation_id aid = get_anim_from_direction(dir, player_no);
+										enum animation_id aid = get_anim_from_direction(dir, player_no, 0);
 										if(aid != ANIM_INVALID) switch_anim(player_id, aid);
 									}
 									objs[player_id].vel = get_vel_from_direction(dir, player_speed);
