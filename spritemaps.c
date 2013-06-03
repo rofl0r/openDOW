@@ -1,10 +1,10 @@
 #include "spritemaps.h"
 
-#include "players.c"
-#include "bullet.c"
-#include "crosshair4.c"
-#include "flash.c"
-#include "flame.c"
+#include "sprites/players.c"
+#include "sprites/bullet.c"
+#include "sprites/crosshair4.c"
+#include "sprites/flash.c"
+#include "sprites/flame.c"
 
 #define spritemap_entry(x, y) [ x ] = &(y .header)
 const struct palpic *spritemaps[] = { 

@@ -6,7 +6,7 @@
 #define VMODE_H 800
 int SCALE = 16;
 
-#include "flame.c"
+#include "sprites/flame.c"
 #include "palpic.h"
 const struct palpic* pic = &flame.header;
 

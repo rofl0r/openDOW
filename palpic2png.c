@@ -1,5 +1,5 @@
 #include "palpic.h"
-#include "players.c"
+#include "sprites/players.c"
 #include "leptonica/allheaders.h"
 #include <string.h>
 //RcB: LINK "-llept"
