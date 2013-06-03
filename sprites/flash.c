@@ -1,4 +1,4 @@
-#include "palpic.h"
+#include "../palpic.h"
 #define PAL_COUNT 4
 #define SPRITE_COUNT 8
 #define WIDTH 8
