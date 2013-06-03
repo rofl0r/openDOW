@@ -82,14 +82,3 @@ const char* weapon_name(enum weapon_id id) {
 	return weapon_names[id];
 }
 
-const char* weapon_sound_filenames[] = {
-	[WS_NONE] = "",
-	[WS_PISTOL] = "pistole_5512b.wav",
-	[WS_GUN] = "m60_5512b.wav",
-	[WS_MACHINEGUN] = "lz7a_5512b.wav",
-	[WS_FLAMETHROWER] = "gas_5512b.wav",
-};
-
-const char* weapon_sound_filename(enum weapon_sound ws) {
-	return weapon_sound_filenames[ws];
-}

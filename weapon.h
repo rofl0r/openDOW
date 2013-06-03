@@ -2,6 +2,7 @@
 #define WEAPON_H
 
 #include <stdint.h>
+#include "wavesounds.h"
 
 enum __attribute__((__packed__)) ammo_id {
 	AMMO_45ACP = 0,
@@ -29,14 +30,6 @@ enum weapon_flags {
 	WF_MUZZLEFLASH = 2,
 };
 
-enum __attribute__((__packed__)) weapon_sound {
-	WS_NONE = 0,
-	WS_PISTOL,
-	WS_GUN,
-	WS_MACHINEGUN,
-	WS_FLAMETHROWER,
-};
-
 enum __attribute__((__packed__)) shot_type {
 	ST_BULLET = 0,
 	ST_GRENADE,
@@ -49,7 +42,7 @@ struct weapon {
 	uint16_t rpm;
 	uint16_t price;
 	enum ammo_id ammo;
-	enum weapon_sound sound;
+	enum wavesound_id sound;
 	enum shot_type shot;
 	uint8_t flags;
 	uint8_t range;
@@ -83,7 +76,6 @@ enum __attribute__((__packed__)) weapon_id {
 extern const struct weapon weapons[];
 extern const struct ammo ammunition[];
 const char* weapon_name(enum weapon_id id);
-const char* weapon_sound_filename(enum weapon_sound ws);
 //RcB: DEP "weapon.c"
 
 #endif

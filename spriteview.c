@@ -292,9 +292,9 @@ static void fire_bullet(int player_no) {
 			abort();
 	}
 	player_ammo[player_no][pw->ammo]--;
-	const char *wf = weapon_sound_filename(pw->sound);
+	const WAVE_HEADER_COMPLETE *wf = wavesounds[pw->sound];
 	if(pw->sound != WS_NONE)
-		audio_play_wav(wf);
+		audio_play_wave_resource(wf);
 }
 
 static void init_game_objs() {
