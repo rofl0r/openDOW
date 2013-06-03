@@ -296,7 +296,6 @@ static void game_tick(int force_redraw) {
 	static uint32_t tickcounter = 0;
 	size_t obj_visited = 0;
 	const int fps = 64;
-	struct timeval timer;
 	int paint_objs[OBJ_MAX];
 	size_t paint_obj_count = 0, i;
 	if(mousebutton_down[MB_LEFT] > 1) {
@@ -333,6 +332,7 @@ static void game_tick(int force_redraw) {
 		}
 	}
 	long ms_used = 0;
+	struct timeval timer;
 	gettimestamp(&timer);
 	if(force_redraw) {
 		redraw_bg();
@@ -342,12 +342,14 @@ static void game_tick(int force_redraw) {
 		}
 		SDL_UpdateRect(surface, 0 ,0, VMODE_W, VMODE_H);
 	}
-	int res = -2;
-	//if(tickcounter % 16 == 0)
-		res = audio_process();
+
+	ms_used = mspassed(&timer);
+	//if(ms_used) printf("repaint took: ms_used %ld\n", ms_used);
+	int res = audio_process();
 	if(res == -1) audio_open_music("DogsOfWar.DW", 1);
 	ms_used = mspassed(&timer);
-	//printf("audio processed: %d, ms_used %ld\n", res, ms_used);
+	//if(ms_used) printf("audio processed: %d, ms_used %ld\n", res, ms_used);
+	
 	long sleepms = 1000/fps - ms_used;
 	if(sleepms >= 0) SDL_Delay(sleepms);
 	if(mousebutton_down[MB_LEFT]) mousebutton_down[MB_LEFT]++;
