@@ -1,7 +1,7 @@
 #ifndef SPRITEMAPS_H
 #define SPRITEMAPS_H
 
-enum sprite_index {
+enum __attribute__ ((__packed__)) sprite_index {
 	SI_PLAYERS = 0,
 	SI_BULLET,
 	SI_CROSSHAIR,

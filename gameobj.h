@@ -3,6 +3,7 @@
 
 #include "vec2f.h"
 #include "anim.h"
+#include "spritemaps.h"
 #include <stdint.h>
 
 enum objtype {
@@ -16,7 +17,7 @@ enum objtype {
 typedef struct gameobj {
 	vec2f pos;
 	vec2f vel;
-	uint8_t spritemap_id;
+	enum sprite_index spritemap_id;
 	uint8_t anim_curr;
 	enum animation_id animid;
 	enum objtype objtype;
