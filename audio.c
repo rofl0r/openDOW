@@ -202,6 +202,26 @@ static void close_all_but_playing_slot() {
 	}
 }
 
+void audio_play_wave_resource(const WAVE_HEADER_COMPLETE* wave) {
+	if(!wave) return;
+	slock();
+	if(playa.free_waveslot >= (int) ARRAY_SIZE(playa.wave_streams)) {
+		playa.free_waveslot = 0;
+	}
+	struct ByteArray *mine = &playa.wave_streams[playa.free_waveslot];
+	if(!ByteArray_open_mem(mine, waveheader_get_data(wave), waveheader_get_datasize(wave))) {
+		perror("open");
+		abort();
+	}
+	ByteArray_set_endian(mine, BAE_LITTLE);
+	/* assuming 16bit, 44khz stereo wav for the beginning. */
+	playa.wavhdr = *wave;
+	
+	playa.play_waveslot = playa.free_waveslot;
+	playa.free_waveslot++;
+	sunlock();
+}
+
 void audio_play_wav(const char* filename) {
 	slock();
 	if(playa.free_waveslot >= (int) ARRAY_SIZE(playa.wave_streams)) {
@@ -215,7 +235,7 @@ void audio_play_wav(const char* filename) {
 	}
 	ByteArray_set_endian(mine, BAE_LITTLE);
 	/* assuming 16bit, 44khz stereo wav for the beginning. */
-	ByteArray_readMultiByte(mine, (void*) &playa.wavhdr, sizeof(WAVE_HEADER_COMPLETE)); 
+	ByteArray_readMultiByte(mine, (void*) &playa.wavhdr, sizeof(WAVE_HEADER_COMPLETE));
 	//ByteArray_set_position(mine, sizeof(WAVE_HEADER_COMPLETE));
 	
 	playa.play_waveslot = playa.free_waveslot;
