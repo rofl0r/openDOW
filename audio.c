@@ -1,5 +1,28 @@
 #include "audio.h"
+#define AUDIO_BACKEND_AO 1
+#define AUDIO_BACKEND_SDL 2
+#ifndef AUDIO_BACKEND
+#define AUDIO_BACKEND AUDIO_BACKEND_AO
+#endif
+
+#if AUDIO_BACKEND == AUDIO_BACKEND_AO
+//RcB: SKIPON "AUDIO_BACKEND=AUDIO_BACKEND_SDL"
 #include "../c-flod/backends/aowriter.h"
+//RcB: SKIPOFF "AUDIO_BACKEND=AUDIO_BACKEND_SDL"
+#define BACKEND_STRUCT AoWriter
+#define BACKEND_INIT AoWriter_init
+#define BACKEND_CLOSE AoWriter_close
+#define BACKEND_WRITE AoWriter_write
+#else
+//RcB: SKIPON "AUDIO_BACKEND=AUDIO_BACKEND_AO"
+#include "../c-flod/backends/sdlwriter.h"
+//RcB: SKIPOFF "AUDIO_BACKEND=AUDIO_BACKEND_AO"
+#define BACKEND_STRUCT SdlWriter
+#define BACKEND_INIT SdlWriter_init
+#define BACKEND_CLOSE SdlWriter_close
+#define BACKEND_WRITE SdlWriter_write
+
+#endif
 #include "../c-flod/backends/wave_format.h"
 #include "../c-flod/neoart/flod/core/CorePlayer.h"
 #include "../c-flod/neoart/flod/whittaker/DWPlayer.h"
@@ -29,10 +52,9 @@ struct AudioPlayer {
 	} hardware;
 	union {
 		struct Backend backend;
-		struct AoWriter ao;
+		struct BACKEND_STRUCT ao;
 	} writer;
 	struct ByteArray music_stream;
-	struct ByteArray *wave_stream;
 	struct ByteArray wave_streams[2];
 	WAVE_HEADER_COMPLETE wavhdr;
 	struct ByteArray out_wave;
@@ -104,7 +126,7 @@ static void *thread_func(void* data) {
 				int chan[2] = { 0, 0 };
 				int next[2];
 				ByteArray_set_position(out, 0);
-				while(processed_m < savepos && processed_w < avail) {
+				while(processed_m < (size_t)savepos && processed_w < avail) {
 					size_t c, u;
 					for(c = 0; c < 2; c++) {
 						if(c < playa.wavhdr.wave_hdr.channels) {
@@ -134,7 +156,7 @@ static void *thread_func(void* data) {
 			}
 			mixin_done:
 			sunlock();
-			AoWriter_write(&playa.writer.ao, playa.wave_buffer, playa.out_wave.pos);
+			BACKEND_WRITE(&playa.writer.ao, playa.wave_buffer, playa.out_wave.pos);
 			//dprintf(2, "done\n");
 			playa.out_wave.pos = 0;
 		}
@@ -145,11 +167,10 @@ static void *thread_func(void* data) {
 void audio_init(void) {
 	Amiga_ctor(&playa.hardware.amiga);
 	DWPlayer_ctor(&playa.player.dw, &playa.hardware.amiga);
-	AoWriter_init(&playa.writer.ao, 0);
+	BACKEND_INIT(&playa.writer.ao, 0);
 	ByteArray_ctor(&playa.music_stream);
 	ByteArray_ctor(&playa.wave_streams[0]);
 	ByteArray_ctor(&playa.wave_streams[1]);
-	playa.wave_stream = &playa.wave_streams[0];
 	ByteArray_ctor(&playa.out_wave);
 	playa.out_wave.endian = BAE_LITTLE;
 	ByteArray_open_mem(&playa.out_wave, playa.wave_buffer, sizeof(playa.wave_buffer));
@@ -194,6 +215,8 @@ int audio_open_music_resource(const unsigned char* data, size_t data_size, int t
 	return 0;
 }
 
+#if 0
+//FIXME: does not close file handle
 int audio_open_music(const char* filename, int track) {
 	mlock();
 	if(playa.thread_music_status != TS_WAITING) {
@@ -217,14 +240,8 @@ int audio_open_music(const char* filename, int track) {
 	playa.player.core.playSong = track;
 	return 0;
 }
+#endif
 
-static void close_all_but_playing_slot() {
-	size_t i;
-	for(i = 0; i < ARRAY_SIZE(playa.wave_streams); i++) {
-		/*if(i != playa.play_waveslot) */
-			ByteArray_close_file(&playa.wave_streams[i]);
-	}
-}
 
 void audio_play_wave_resource(const WAVE_HEADER_COMPLETE* wave) {
 	if(!wave) return;
@@ -234,7 +251,6 @@ void audio_play_wave_resource(const WAVE_HEADER_COMPLETE* wave) {
 	}
 	struct ByteArray *mine = &playa.wave_streams[playa.free_waveslot];
 	if(!ByteArray_open_mem(mine, waveheader_get_data(wave), waveheader_get_datasize(wave))) {
-		perror("open");
 		abort();
 	}
 	ByteArray_set_endian(mine, BAE_LITTLE);
@@ -246,6 +262,14 @@ void audio_play_wave_resource(const WAVE_HEADER_COMPLETE* wave) {
 	sunlock();
 }
 
+#if 0
+static void close_all_but_playing_slot() {
+	size_t i;
+	for(i = 0; i < ARRAY_SIZE(playa.wave_streams); i++) {
+		/*if(i != playa.play_waveslot) */
+			ByteArray_close_file(&playa.wave_streams[i]);
+	}
+}
 void audio_play_wav(const char* filename) {
 	slock();
 	if(playa.free_waveslot >= (int) ARRAY_SIZE(playa.wave_streams)) {
@@ -266,7 +290,7 @@ void audio_play_wav(const char* filename) {
 	playa.free_waveslot++;
 	sunlock();
 }
-
+#endif
 
 // return -1: when track is finished, 0 if something was played, 1 if nothing was played.
 int audio_process(void) {
@@ -280,6 +304,5 @@ int audio_process(void) {
 	munlock();
 	return 0;
 }
-
 
 
