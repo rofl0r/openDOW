@@ -1,5 +1,7 @@
 #include "../lib/include/timelib.h"
 #include "../lib/include/macros.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -38,7 +40,7 @@ unsigned long mousebutton_down[] = {
 };
 
 //RcB: LINK "-lSDL"
-
+#if 0
 static void get_last_move_event(SDL_Event* e) {
 #define numpeek 32
 	SDL_Event peek[numpeek];
@@ -58,6 +60,7 @@ static void get_last_move_event(SDL_Event* e) {
 	}
 #undef numpeek
 }
+#endif
 
 static SDL_Surface *surface;
 static bool fullscreen_active = false;
@@ -519,6 +522,7 @@ static enum animation_id get_anim_from_direction(enum direction dir, int player_
 	#undef DIRMAP
 }
 
+#if 0
 static enum animation_id get_anim_from_cursor(void) {
 	enum direction dir = get_direction_from_cursor();
 	if(dir == DIR_INVALID) return ANIM_INVALID;
@@ -530,6 +534,7 @@ static enum animation_id get_anim_from_vel(int player_no, vec2f *vel) {
 	if(dir == DIR_INVALID) return ANIM_INVALID;
 	return get_anim_from_direction(dir, player_no, 0);
 }
+#endif
 
 static void switch_anim(int player_id, int aid) {
 	if(objs[player_id].animid == aid) return;
