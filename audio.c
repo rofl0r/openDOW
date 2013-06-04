@@ -170,6 +170,30 @@ void audio_init(void) {
 	playa.play_waveslot = -1;
 }
 
+int audio_open_music_resource(const unsigned char* data, size_t data_size, int track) {
+	mlock();
+	if(playa.thread_music_status != TS_WAITING) {
+		playa.thread_music_status = TS_STOPPING;
+		munlock();
+		int done = 0;
+		do {
+			mlock();
+			if(playa.thread_music_status == TS_WAITING) done = 1;
+			munlock();
+			if(!done) msleep(1);
+		} while(!done);
+		mlock();
+	}
+	munlock();
+	ByteArray_open_mem(&playa.music_stream, (void*) data, data_size);
+	CorePlayer_load(&playa.player.core, &playa.music_stream);
+	assert(playa.player.core.version);
+	playa.player.core.initialize(&playa.player.core);
+	if(track > playa.player.core.lastSong) return -1;
+	playa.player.core.playSong = track;
+	return 0;
+}
+
 int audio_open_music(const char* filename, int track) {
 	mlock();
 	if(playa.thread_music_status != TS_WAITING) {
