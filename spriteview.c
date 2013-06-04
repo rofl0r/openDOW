@@ -20,6 +20,10 @@
 #ifndef IN_KDEVELOP_PARSER
 #include "../lib/include/bitarray.h"
 #include "weapon_sprites.c"
+#include "music/dogsofwar.c"
+extern const unsigned char dogsofwar_dw[];
+extern const unsigned long dogsofwar_dw_size;
+
 #endif
 
 enum mousebutton {
@@ -367,7 +371,7 @@ static void game_tick(int force_redraw) {
 	ms_used = mspassed(&timer);
 	//if(ms_used) printf("repaint took: ms_used %ld\n", ms_used);
 	int res = audio_process();
-	if(res == -1) audio_open_music("DogsOfWar.DW", 1);
+	if(res == -1) audio_open_music_resource(dogsofwar_dw, dogsofwar_dw_size, 1);
 	ms_used = mspassed(&timer);
 	//if(ms_used) printf("audio processed: %d, ms_used %ld\n", res, ms_used);
 	
@@ -540,7 +544,7 @@ int main() {
 	SDL_ShowCursor(0);
 	
 	audio_init();
-	audio_open_music("DogsOfWar.DW", 1);
+	audio_open_music_resource(dogsofwar_dw, dogsofwar_dw_size, 1);
 	
 	
 	int startx = 10;
