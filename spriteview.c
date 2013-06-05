@@ -62,6 +62,13 @@ static void get_last_move_event(SDL_Event* e) {
 }
 #endif
 
+static vec2f get_sprite_center(const struct palpic *p) {
+	vec2f res;
+	res.x = palpic_getspritewidth(p) * SCALE / 2;
+	res.y = palpic_getspriteheight(p) * SCALE / 2;
+	return res;
+}
+
 static SDL_Surface *surface;
 static bool fullscreen_active = false;
 static int player_ids[2];
@@ -160,7 +167,9 @@ static int init_grenade(vec2f *pos, vec2f *vel, int steps) {
 static int init_grenade_explosion(vec2f *pos) {
 	const int ticks_per_anim_frame = 4;
 	const int expl_anim_frames = 11;
-	int id = init_bullet(pos, &VEC(0,0), expl_anim_frames*ticks_per_anim_frame -4);
+	vec2f grenade_center = get_sprite_center(spritemaps[SI_GRENADE_EXPLOSION]);
+	vec2f mypos = vecsub(pos, &grenade_center);
+	int id = init_bullet(&mypos, &VEC(0,0), expl_anim_frames*ticks_per_anim_frame -4);
 	if(id == -1) return -1;
 	objs[id].spritemap_id = SI_GRENADE_EXPLOSION;
 	start_anim(id, ANIM_GRENADE_EXPLOSION);
@@ -215,13 +224,6 @@ static int init_flash(vec2f *pos, enum direction dir) {
 	objs[id].objspecific.bullet.step_curr = 0;
 	objs[id].objspecific.bullet.step_max = 2;
 	return id;
-}
-
-static vec2f get_sprite_center(const struct palpic *p) {
-	vec2f res;
-	res.x = palpic_getspritewidth(p) * SCALE / 2;
-	res.y = palpic_getspriteheight(p) * SCALE / 2;
-	return res;
 }
 
 static vec2f get_gameobj_pos(int obj_id) {
