@@ -25,9 +25,9 @@ sub file_ext {
 my $scale = shift @ARGV;
 my $suffix = shift @ARGV;
 die ("syntax: $0 downscalefactor suffix list-of-files") unless $scale =~ /^\d+$/ && defined($suffix);
-my $inp = shift @ARGV;
 for(@ARGV) {
 	my $newfile = name_wo_ext($_) . $suffix . file_ext($_);
 	my $cmd = $path . "/scaledown.out $scale $_ $newfile";
-	my $res = `$cmd`;
+	print $cmd, "\n";
+	system($cmd);
 }
