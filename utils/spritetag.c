@@ -1,13 +1,13 @@
 #include <stdint.h>
 #include <SDL/SDL.h>
 //RcB: LINK "-lSDL"
-#include "vec2f.h"
+#include "../vec2f.h"
 #define VMODE_W 1200
 #define VMODE_H 800
 int SCALE = 16;
 
-#include "sprites/flame.c"
-#include "palpic.h"
+#include "../sprites/flame.c"
+#include "../palpic.h"
 const struct palpic* pic = &flame.header;
 
 SDL_Surface *surface;
@@ -16,7 +16,7 @@ vec2f tag;
 int activesprite;
 int fullscreen_active;
 
-#include "sdl_rgb.h"
+#include "../sdl_rgb.h"
 
 static void update_screen() {
 	uint_fast16_t w = palpic_getspritewidth(pic);
