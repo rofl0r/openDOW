@@ -164,6 +164,7 @@ static int init_grenade_explosion(vec2f *pos) {
 	if(id == -1) return -1;
 	objs[id].spritemap_id = SI_GRENADE_EXPLOSION;
 	start_anim(id, ANIM_GRENADE_EXPLOSION);
+	audio_play_wave_resource(wavesounds[WS_GRENADE_EXPLOSION]);
 	return id;
 }
 
