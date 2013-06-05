@@ -1,5 +1,5 @@
-#include "../c-flod/backends/wave_format.h"
-#include "../c-flod/flashlib/ByteArray.h"
+#include "../../c-flod/backends/wave_format.h"
+#include "../../c-flod/flashlib/ByteArray.h"
 
 struct player {
 	int play_waveslot;
