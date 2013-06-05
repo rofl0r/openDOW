@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "palpic.h"
+#include "../palpic.h"
 #include <leptonica/allheaders.h>
 #define assert(x) if(!(x)) __asm__("int3");
 
