@@ -157,6 +157,16 @@ static int init_grenade(vec2f *pos, vec2f *vel, int steps) {
 	return id;
 }
 
+static int init_grenade_explosion(vec2f *pos) {
+	const int ticks_per_anim_frame = 4;
+	const int expl_anim_frames = 11;
+	int id = init_bullet(pos, &VEC(0,0), expl_anim_frames*ticks_per_anim_frame -4);
+	if(id == -1) return -1;
+	objs[id].spritemap_id = SI_GRENADE_EXPLOSION;
+	start_anim(id, ANIM_GRENADE_EXPLOSION);
+	return id;
+}
+
 static int init_flame(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
 	static const vec2f flame_origin[] = {
 		[DIR_O] = { 4.0, 8.0 },
@@ -338,7 +348,11 @@ static void game_tick(int force_redraw) {
 			obj_visited++;
 			if(objs[i].objtype == OBJ_BULLET || objs[i].objtype == OBJ_GRENADE) {
 				if(objs[i].objspecific.bullet.step_curr >= objs[i].objspecific.bullet.step_max) {
-					// TODO spawn explosion in case its a grenade
+					if(objs[i].objtype == OBJ_GRENADE) {
+						vec2f nextpos = vecadd(&objs[i].pos, &objs[i].vel);
+						init_grenade_explosion(&nextpos);
+						obj_count_copy++;
+					}
 					gameobj_free(i);
 					force_redraw = 1;
 					continue;
@@ -350,7 +364,7 @@ static void game_tick(int force_redraw) {
 				}
 			}
 			paint_objs[paint_obj_count++] = i;
-			if(objs[i].vel.x != 0 || objs[i].vel.y != 0) {
+			if((objs[i].objtype != OBJ_P1 &&  objs[i].objtype != OBJ_P2) || objs[i].vel.x != 0 || objs[i].vel.y != 0) {
 				objs[i].pos.x += objs[i].vel.x;
 				objs[i].pos.y += objs[i].vel.y;
 				if(tickcounter % 4 == 0)

@@ -8,6 +8,7 @@ enum __attribute__ ((__packed__)) sprite_index {
 	SI_FLASH,
 	SI_FLAME,
 	SI_GRENADE,
+	SI_GRENADE_EXPLOSION,
 };
 
 #include "palpic.h"

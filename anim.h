@@ -56,6 +56,7 @@ enum __attribute__ ((__packed__)) animation_id {
 	ANIM_FLAME,
 	ANIM_GRENADE_SMALL,
 	ANIM_GRENADE_BIG,
+	ANIM_GRENADE_EXPLOSION,
 	ANIM_MAX,
 	ANIM_INVALID = ANIM_MAX
 };
