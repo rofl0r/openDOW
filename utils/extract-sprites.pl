@@ -7,12 +7,17 @@ use Cwd 'abs_path';
 my $path = dirname(abs_path($0));
 my $dim = shift @ARGV;
 my $dimstr;
+
+sub syntax {
+	die("$0 -dim=x,y,w,h outfile%.2d.png blank-pic series-of-pics-to-be-diffed");
+}
+
 if ($dim =~ /-dim=(\d+),(\d+),(\d+),(\d+)/) {
 } else {
-	die("need -dim=x,y,w,h as first argv")
+	syntax();
 }
 my $name = shift @ARGV;
-die ("need name template containing %d as second argv") unless $name =~ /%.*d/;
+syntax() unless $name =~ /%.*d/;
 my $inp = shift @ARGV;
 my $x = 0;
 for(@ARGV) {

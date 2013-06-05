@@ -6,7 +6,7 @@ use File::Basename;
 use Cwd 'abs_path';
 my $path = dirname(abs_path($0));
 
-my $inp = shift @ARGV;
+my $inp = shift @ARGV or die ("$0 template-image series-of-images");
 my $x = 99999999999;
 my $y = 99999999999;
 my $wmax = -1;
