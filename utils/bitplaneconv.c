@@ -1,8 +1,11 @@
 #include "palpic.h"
-#include "flames.c"
+#include "sprites/enemymask.c"
 #include "leptonica/allheaders.h"
 #include <string.h>
 //RcB: LINK "-llept"
+
+#define BITPLANES 3
+#define sprite enemymask
 
 int main() {
 	const prgb color_tab[] = {
@@ -23,20 +26,22 @@ int main() {
 		PRGB(0x77, 0x77, 0x77), // dummy7
 		PRGB(0xbb, 0x99, 0x55), // light brown
 	};
-	const struct palpic* f = &flames.header;
-	PIX* o = pixCreate(f->width, f->height / 4, 32);
+	const struct palpic* f = &sprite.header;
+	PIX* o = pixCreate(f->width, f->height / BITPLANES, 32);
+	int w = palpic_getspritewidth(f);
+	int h = palpic_getspriteheight(f);
 	size_t i = 0;
-	uint8_t plane[16][16];
+	uint8_t plane[h][w];
 	prgb* bufptr = (prgb*) o->data;
-	for(i = 0; i < f->spritecount; i+=4) {
+	for(i = 0; i+(BITPLANES-1) < f->spritecount; i+=BITPLANES) {
 		memset(plane, 0, sizeof plane);
 		int x;
 		int y;
 		size_t j;
-		for(j = 0; j < 4; j++) {
+		for(j = 0; j < BITPLANES; j++) {
 			const uint8_t *source = palpic_getspritedata(f, i + j);
-			for(y = 0; y < 16; y++) {
-				for(x = 0; x < 16; x++) {
+			for(y = 0; y < h; y++) {
+				for(x = 0; x < w; x++) {
 					if(*source) plane[y][x] |= 1 << j;
 					source++;
 				}
