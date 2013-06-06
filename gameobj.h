@@ -4,6 +4,7 @@
 #include "vec2f.h"
 #include "anim.h"
 #include "spritemaps.h"
+#include "enemy.h"
 #include <stdint.h>
 
 enum objtype {
@@ -13,6 +14,8 @@ enum objtype {
 	OBJ_CROSSHAIR,
 	OBJ_FLASH,
 	OBJ_GRENADE,
+	OBJ_ENEMY_SHOOTER,
+	OBJ_ENEMY_BOMBER,
 };
 
 typedef struct gameobj {
@@ -27,6 +30,7 @@ typedef struct gameobj {
 			int step_max;
 			int step_curr;
 		} bullet;
+		struct enemy enemy;
 	} objspecific;
 } gameobj;
 

@@ -16,6 +16,7 @@
 #include "audio.h"
 #include "muzzle_tab.h"
 #include "spritemaps.h"
+#include "enemy.h"
 
 #include <SDL/SDL.h>
 
@@ -78,6 +79,8 @@ static int weapon_count[2];
 static enum weapon_id weapon_active[2]; // index into player_weapons[playerno]
 static int player_ammo[2][AMMO_MAX];
 static enum weapon_id get_active_weapon_id(int player_no);
+static void switch_anim(int obj_id, int aid);
+static vec2f get_vel_from_direction(enum direction dir, float speed);
 
 void draw_status_bar(void) {
 	enum weapon_id wid = get_active_weapon_id(0);
@@ -197,6 +200,46 @@ static int init_flame(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
 	return id;
 }
 
+#define ENEMY_SPEED 1
+static vec2f get_enemy_vel(struct enemy *e) {
+	int i = ENEMY_MAX_ROUTE -1;
+	enum direction dir;
+	for(; i >= 0; i--)
+		if(e->curr_step >= e->route[i].start_step) {
+			dir = e->route[i].dir;
+			break;
+		}
+	return get_vel_from_direction(dir, ENEMY_SPEED);
+}
+
+static int init_enemy(enum direction face_dir, vec2f *pos, struct enemy* enemy, int is_bomber) {
+	int id = gameobj_alloc();
+	if(id == -1) return -1;
+	const enum objtype enemy_objtype_lut[] = { [0] = OBJ_ENEMY_SHOOTER, [1] = OBJ_ENEMY_BOMBER };
+	const enum animation_id enemy_animation_lut[2][DIR_MAX] = { 
+		[0] = {
+			[DIR_S] = ANIM_ENEMY_GUNNER_DOWN, [DIR_O] = ANIM_ENEMY_GUNNER_RIGHT, [DIR_W] = ANIM_ENEMY_GUNNER_LEFT
+		},
+		[1] = {
+			[DIR_S] = ANIM_ENEMY_BOMBER_DOWN, [DIR_O] = ANIM_ENEMY_BOMBER_RIGHT, [DIR_W] = ANIM_ENEMY_BOMBER_LEFT
+		},
+	};
+	objs[id].objtype = enemy_objtype_lut[is_bomber];
+	switch_anim(id, enemy_animation_lut[is_bomber][face_dir]);
+	objs[id].pos = *pos;
+	objs[id].objspecific.enemy = *enemy;
+	objs[id].spritemap_id = SI_ENEMIES;
+	objs[id].vel = get_enemy_vel(enemy);
+	return id;
+}
+
+static int enemy_fires(struct enemy *e) {
+	int i;
+	for(i = 0; i < ENEMY_MAX_SHOT; i++)
+		if(e->curr_step == e->shots[i]) return 1;
+	return 0;
+}
+
 static enum animation_id get_flash_animation_from_direction(enum direction dir) {
 	#define ANIMF(dir, anim) [dir] = anim
 	static const enum animation_id dir_to_anim[] = {
@@ -236,7 +279,6 @@ static vec2f get_gameobj_center(int obj_id) {
 	return vecadd(&res, &add);
 }
 
-static void switch_anim(int playerid, int aid);
 static enum direction get_direction_from_vec(vec2f *vel);
 static enum animation_id get_anim_from_direction(enum direction dir, int player, int throwing);
 
@@ -364,6 +406,12 @@ static void game_tick(int force_redraw) {
 				if(objs[i].objtype == OBJ_GRENADE) {
 					if(objs[i].objspecific.bullet.step_curr >= 32) objs[i].animid = ANIM_GRENADE_SMALL;
 					else if(objs[i].objspecific.bullet.step_curr >= 8) objs[i].animid = ANIM_GRENADE_BIG;
+				}
+			} else if (objs[i].objtype == OBJ_ENEMY_SHOOTER || objs[i].objtype == OBJ_ENEMY_BOMBER) {
+				objs[i].objspecific.enemy.curr_step++;
+				objs[i].vel = get_enemy_vel(&objs[i].objspecific.enemy);
+				if(enemy_fires(&objs[i].objspecific.enemy)) {
+					//fire_bullet();
 				}
 			}
 			paint_objs[paint_obj_count++] = i;
@@ -553,9 +601,9 @@ static enum animation_id get_anim_from_vel(int player_no, vec2f *vel) {
 }
 #endif
 
-static void switch_anim(int player_id, int aid) {
-	if(objs[player_id].animid == aid) return;
-	start_anim(player_id, aid);
+static void switch_anim(int obj_id, int aid) {
+	if(objs[obj_id].animid == aid) return;
+	start_anim(obj_id, aid);
 }
 
 int main() {
@@ -622,6 +670,23 @@ int main() {
 					switch(sdl_event.key.keysym.sym) {
 						case SDLK_ESCAPE:
 							goto dun_goofed;
+						case SDLK_e: {
+							srand(time(0));
+							const enum direction face_dir[] = { DIR_S, DIR_O, DIR_W };
+							struct enemy e;
+							e.curr_step = 0;
+							e.route[0].start_step = 0;
+							e.route[1].start_step = 0;
+							e.route[2].start_step = 0;
+							e.route[2].dir = DIR_SO;
+							e.route[3].start_step = 64;
+							e.route[3].dir = DIR_O;
+							e.shots[0] = 0;
+							e.shots[1] = 0;
+							e.shots[2] = 0;
+							e.shots[3] = 0;
+							init_enemy(face_dir[rand()%3], &VEC(10, 10), &e, rand()%2);
+						} break;
 						case SDLK_w: case SDLK_a: case SDLK_s: case SDLK_d:
 						case SDLK_UP:
 						case SDLK_DOWN:
