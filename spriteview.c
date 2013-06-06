@@ -82,26 +82,44 @@ static enum weapon_id get_active_weapon_id(int player_no);
 static void switch_anim(int obj_id, int aid);
 static vec2f get_vel_from_direction(enum direction dir, float speed);
 
-void draw_status_bar(void) {
+#define SCREEN_MIN_X 64*SCALE
+#define SCREEN_MAX_X VMODE_W - 64*SCALE
+#define SCREEN_MIN_Y 0
+#define SCREEN_MAX_Y 200*SCALE
+
+static void draw_status_bar(void) {
 	enum weapon_id wid = get_active_weapon_id(0);
+	int x, y;
+	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
+	unsigned pitch = surface->pitch/4;
+	for(y = SCREEN_MAX_Y; y < VMODE_H; y++)
+		for (x = SCREEN_MIN_X; x < SCREEN_MAX_X; x++)
+			ptr[y*pitch + x] = SRGB_BLACK;
+		
 	blit_sprite(((320 / 2) - (59 / 2)) * SCALE, (200 + (40/2) - (16/2)) * SCALE,
 	            surface->pixels, surface->pitch, SCALE, &weapon_sprites.header, wid);
 }
 
-void redraw_bg() {
+static void clear_screen(void) {
+	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
+	unsigned pitch = surface->pitch/4;
+	unsigned x, y;
+	for(y = 0; y < VMODE_H; y++) for (x = 0; x < VMODE_W; x++)
+		ptr[y*pitch + x] = SRGB_BLACK;
+}
+
+static void redraw_bg() {
 	unsigned lineoffset = 0, x, y;
 	(void) lineoffset;
 	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
+	unsigned pitch = surface->pitch/4;
 	srand(1);
-	for(y = 0; y < VMODE_H; y++) {
+	for(y = SCREEN_MIN_Y; y < SCREEN_MAX_Y; y++) {
 		//unsigned lineoffset = y * (surface->pitch / 4);
-		for(x = 0; x < VMODE_W; x++) {
-			if(x < 64*SCALE || x > VMODE_W - 64*SCALE || y > 200*SCALE)
-				*ptr++ = SRGB_BLACK;
-			else 
+		for(x = SCREEN_MIN_X; x < SCREEN_MAX_X; x++) {
 			//ptr[lineoffset + x] = SRGB_BLUE;
-			if(rand()%16 == 1) *ptr++ = SRGB(0x55, 0x77, 0x77);
-			else *ptr++ = SRGB(0x33, 0x55, 0x55);
+			if(rand()%16 == 1) ptr[y*pitch + x] = SRGB(0x55, 0x77, 0x77);
+			else ptr[y*pitch + x] = SRGB(0x33, 0x55, 0x55);
 		}
 	}
 	draw_status_bar();
@@ -119,7 +137,7 @@ static int init_player(int player_no) {
 	if(pid == -1) return -1;
 	player_ids[player_no] = pid;
 	objs[pid].objtype = player_no == 0 ? OBJ_P1 : OBJ_P2;
-	objs[pid].pos = VEC( 10, 10 );
+	objs[pid].pos = VEC( SCREEN_MIN_X, SCREEN_MAX_Y - (25 * SCALE) );
 	objs[pid].vel = VEC( 0, 0 );
 	objs[pid].spritemap_id = SI_PLAYERS;
 	start_anim(pid, player_no == 0 ? ANIM_P1_MOVE_N : ANIM_P2_MOVE_N);
@@ -418,6 +436,15 @@ static void game_tick(int force_redraw) {
 			if((objs[i].objtype != OBJ_P1 &&  objs[i].objtype != OBJ_P2) || objs[i].vel.x != 0 || objs[i].vel.y != 0) {
 				objs[i].pos.x += objs[i].vel.x;
 				objs[i].pos.y += objs[i].vel.y;
+				if((objs[i].objtype == OBJ_ENEMY_BOMBER || objs[i].objtype == OBJ_ENEMY_SHOOTER) && (
+					objs[i].pos.x < SCREEN_MIN_X || objs[i].pos.x > SCREEN_MAX_X ||
+					objs[i].pos.y < SCREEN_MIN_Y || objs[i].pos.y > SCREEN_MAX_Y) )
+				{
+					dprintf(2, "removed enemy from %.2f,%.2f\n", objs[i].pos.x, objs[i].pos.y);
+					gameobj_free(i);
+					force_redraw = 1;
+					continue;
+				}
 				if(tickcounter % 4 == 0)
 					objs[i].anim_curr = get_next_anim_frame(objs[i].animid, objs[i].anim_curr);
 				force_redraw = 1;
@@ -433,7 +460,7 @@ static void game_tick(int force_redraw) {
 			blit_sprite(objs[paint_objs[i]].pos.x, objs[paint_objs[i]].pos.y, surface->pixels, surface->pitch,
 			            SCALE, spritemaps[objs[paint_objs[i]].spritemap_id], objs[paint_objs[i]].anim_curr);
 		}
-		SDL_UpdateRect(surface, 0 ,0, VMODE_W, VMODE_H);
+		SDL_UpdateRect(surface, SCREEN_MIN_X ,SCREEN_MIN_Y , SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
 	}
 
 	ms_used = mspassed(&timer);
@@ -630,7 +657,8 @@ int main() {
 		[c_right] = {&startx, SCALE, VMODE_W - (palpic_getspritewidth(spritemap) * SCALE)},
 	};
 	
-	SDL_Delay(1);
+	//SDL_Delay(1);
+	clear_screen();
 	
 	init_game_objs();
 	int player_no = 0;
@@ -685,7 +713,7 @@ int main() {
 							e.shots[1] = 0;
 							e.shots[2] = 0;
 							e.shots[3] = 0;
-							init_enemy(face_dir[rand()%3], &VEC(10, 10), &e, rand()%2);
+							init_enemy(face_dir[rand()%3], &VEC(SCREEN_MIN_X, SCREEN_MIN_Y), &e, rand()%2);
 						} break;
 						case SDLK_w: case SDLK_a: case SDLK_s: case SDLK_d:
 						case SDLK_UP:
@@ -712,6 +740,8 @@ int main() {
 							if((sdl_event.key.keysym.mod & KMOD_LALT) ||
 							   (sdl_event.key.keysym.mod & KMOD_RALT)) {
 								SDL_WM_ToggleFullScreen(surface);
+								clear_screen();
+								SDL_UpdateRect(surface,0,0,VMODE_W,VMODE_H);
 								fullscreen_active = !fullscreen_active;
 							}
 							break;
