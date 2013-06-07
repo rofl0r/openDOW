@@ -317,7 +317,7 @@ static enum animation_id get_flash_animation_from_direction(enum direction dir) 
 static int init_flash(vec2f *pos, enum direction dir) {
 	int id = gameobj_alloc();
 	if(id == -1) return -1;
-	objs[id].objtype = OBJ_BULLET;
+	objs[id].objtype = OBJ_FLASH;
 	objs[id].spritemap_id = SI_FLASH;
 	objs[id].pos = *pos;
 	objs[id].vel = VEC(0, 0);
@@ -518,12 +518,13 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 						const enum wavesound_id wid[] = { WS_SCREAM, WS_SCREAM2 };
 						srand(time(0));
 						audio_play_wave_resource(wavesounds[wid[rand()%2]]);
-						break;
+						goto next_bullet;
 					}
 					point = vecadd(&point, &velquarter);
 				}
 			}
 		}
+		next_bullet:
 		res = 1;
 	}
 	return res;
@@ -572,7 +573,13 @@ static void game_tick(int force_redraw) {
 		if(obj_slot_used[i]) {
 			struct gameobj *go = &objs[i];
 			obj_visited++;
-			if(go->objtype == OBJ_GRENADE) {
+			if(go->objtype == OBJ_FLASH) {
+				if(go->objspecific.bullet.step_curr >= go->objspecific.bullet.step_max) {
+					gameobj_free(i);
+					force_redraw = 1;
+					continue;
+				} else go->objspecific.bullet.step_curr++;
+			} else if(go->objtype == OBJ_GRENADE) {
 				if(go->objspecific.bullet.step_curr >= go->objspecific.bullet.step_max) {
 					vec2f nextpos = vecadd(&go->pos, &go->vel);
 					init_grenade_explosion(&nextpos);
