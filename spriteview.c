@@ -89,6 +89,7 @@ static sblist go_explosions;
 static sblist go_walls;
 static sblist go_enemies;
 static sblist go_players;
+static sblist go_flames;
 static void add_pbullet(uint8_t bullet_id) {
 	sblist_add(&go_player_bullets, &bullet_id);
 }
@@ -106,6 +107,9 @@ static void add_explosion(uint8_t expl_id) {
 }
 static void add_wall(uint8_t wall_id) {
 	sblist_add(&go_walls, &wall_id);
+}
+static void add_flame(uint8_t id) {
+	sblist_add(&go_flames, &id);
 }
 static void golist_remove(sblist *l, uint8_t objid) {
 	size_t i;
@@ -256,6 +260,7 @@ static int init_flame(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
 	objs[id].objtype = OBJ_FLAME;
 	objs[id].spritemap_id = SI_FLAME;
 	start_anim(id, ANIM_FLAME);
+	add_flame(id);
 	return id;
 }
 
@@ -404,10 +409,10 @@ static void fire_bullet(int player_no) {
 		case ST_LAUNCHER:
 		case ST_BULLET:
 			id = init_bullet(&from, &vel, steps);
-			add_pbullet(id);
+			if(id != -1) add_pbullet(id);
 			break;
 		case ST_FLAMES:
-			init_flame(dir, &from, &vel, steps);
+			id = init_flame(dir, &from, &vel, steps);
 			break;
 		case ST_GRENADE:
 			init_grenade(&from, &vel, steps);
@@ -426,10 +431,11 @@ static void init_game_objs() {
 	init_crosshair();
 	sblist_init(&go_players, 1, 4);
 	sblist_init(&go_player_bullets, 1, 32);
+	sblist_init(&go_flames, 1, 32);
 	sblist_init(&go_enemy_bullets, 1, 32);
 	sblist_init(&go_explosions, 1, 16);
 	sblist_init(&go_walls, 1, 32);
-	sblist_init(&go_enemies, 1, 32);	
+	sblist_init(&go_enemies, 1, 32);
 }
 
 static int get_next_anim_frame(enum animation_id aid, int curr) {
@@ -490,14 +496,17 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 	uint8_t *bullet_id;
 	ssize_t li;
 	int res = 0;
+	int is_flame = 0;
 	
 	sblist_iter_counter2(bullet_list, li, bullet_id) {
 		struct gameobj *bullet = &objs[*bullet_id];
+		if(bullet->objtype == OBJ_FLAME) is_flame = 1;
 		ssize_t lj;
 		uint8_t *target_id;
 		sblist_iter_counter2(target_list, lj, target_id) {
 			struct gameobj *target = &objs[*target_id];
 			if(is_death_anim(target->animid)) continue;
+			// FIXME: in case of flames, we need to take the dimensions into account.
 			vec2f temp = get_gameobj_center(*target_id);
 			float dist1 = vecdist(&bullet->pos, &temp);
 			vec2f newpos = vecadd(&bullet->pos, &bullet->vel);
@@ -513,14 +522,17 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 				size_t k;
 				for(k = 0; k < 4; k++) {
 					if(point_in_mask(&point, *target_id)) {
-						switch_anim(*target_id, get_die_anim(*target_id));
-						gameobj_free(*bullet_id);
-						sblist_delete(bullet_list, li);
-						li--;
+						enum animation_id death_anim = is_flame ? ANIM_ENEMY_BURNT : get_die_anim(*target_id);
+						switch_anim(*target_id, death_anim);
 						const enum wavesound_id wid[] = { WS_SCREAM, WS_SCREAM2 };
 						srand(time(0));
 						audio_play_wave_resource(wavesounds[wid[rand()%2]]);
-						goto next_bullet;
+						if(!is_flame) {
+							gameobj_free(*bullet_id);
+							sblist_delete(bullet_list, li);
+							li--;
+							goto next_bullet;
+						} else break;
 					}
 					point = vecadd(&point, &velquarter);
 				}
@@ -566,8 +578,10 @@ static void game_tick(int force_redraw) {
 	*/
 	
 	if(hit_bullets(&go_player_bullets, &go_enemies)) force_redraw = 1;
+	if(hit_bullets(&go_flames, &go_enemies)) force_redraw = 1;
 	if(hit_bullets(&go_enemy_bullets, &go_players)) force_redraw = 1;
 	if(remove_bullets(&go_player_bullets)) force_redraw = 1;
+	if(remove_bullets(&go_flames)) force_redraw = 1;
 	if(remove_bullets(&go_enemy_bullets)) force_redraw = 1;
 	
 	size_t obj_count_copy = obj_count;
@@ -575,7 +589,7 @@ static void game_tick(int force_redraw) {
 		if(obj_slot_used[i]) {
 			struct gameobj *go = &objs[i];
 			obj_visited++;
-			if(go->objtype == OBJ_FLASH || go->objtype == OBJ_FLAME) {
+			if(go->objtype == OBJ_FLASH) {
 				if(go->objspecific.bullet.step_curr >= go->objspecific.bullet.step_max) {
 					gameobj_free(i);
 					force_redraw = 1;
