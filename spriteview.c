@@ -512,9 +512,12 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 				for(k = 0; k < 4; k++) {
 					if(point_in_mask(&point, *target_id)) {
 						switch_anim(*target_id, get_die_anim(*target_id));
-						gameobj_free(*bullet_id);						
+						gameobj_free(*bullet_id);
 						sblist_delete(bullet_list, li);
 						li--;
+						const enum wavesound_id wid[] = { WS_SCREAM, WS_SCREAM2 };
+						srand(time(0));
+						audio_play_wave_resource(wavesounds[wid[rand()%2]]);
 						break;
 					}
 					point = vecadd(&point, &velquarter);
@@ -591,23 +594,21 @@ static void game_tick(int force_redraw) {
 			if((go->objtype != OBJ_P1 &&  go->objtype != OBJ_P2) || go->vel.x != 0 || go->vel.y != 0) {
 				go->pos.x += go->vel.x;
 				go->pos.y += go->vel.y;
-				if((go->objtype == OBJ_ENEMY_BOMBER || go->objtype == OBJ_ENEMY_SHOOTER) &&
-					(
-					 (go->pos.x < SCREEN_MIN_X || go->pos.x > SCREEN_MAX_X ||
-					  go->pos.y < SCREEN_MIN_Y || go->pos.y > SCREEN_MAX_Y) || 
-					 (go->anim_curr == animations[go->animid].last &&
+				if(go->objtype == OBJ_ENEMY_BOMBER || go->objtype == OBJ_ENEMY_SHOOTER) {
+					if(go->pos.x < SCREEN_MIN_X || go->pos.x > SCREEN_MAX_X ||
+					  go->pos.y < SCREEN_MIN_Y || go->pos.y > SCREEN_MAX_Y) {
+						remove_enemy:
+						dprintf(2, "removed enemy from %.2f,%.2f\n", go->pos.x, go->pos.y);
+						gameobj_free(i);
+						golist_remove(&go_enemies, i);
+						force_redraw = 1;
+						continue;
+					} else if(go->anim_curr == animations[go->animid].last &&
 					  (go->animid == ANIM_ENEMY_BOMBER_DIE || 
 					   go->animid == ANIM_ENEMY_GUNNER_DIE || 
-					   go->animid == ANIM_ENEMY_BURNT)
-					 )
-				        )
-				  )
-				{
-					dprintf(2, "removed enemy from %.2f,%.2f\n", go->pos.x, go->pos.y);
-					gameobj_free(i);
-					golist_remove(&go_enemies, i);
-					force_redraw = 1;
-					continue;
+					   go->animid == ANIM_ENEMY_BURNT)) {
+						goto remove_enemy;
+					}
 				}
 				if(tickcounter % 4 == 0)
 					go->anim_curr = get_next_anim_frame(go->animid, go->anim_curr);
