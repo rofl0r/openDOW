@@ -1,5 +1,6 @@
 #include "gameobj.h"
 #include <stddef.h>
+#include <assert.h>
 
 gameobj objs[OBJ_MAX];
 uint8_t obj_slot_used[OBJ_MAX];
@@ -23,6 +24,7 @@ int gameobj_alloc(void) {
 }
 
 void gameobj_free(int id) {
+	assert(obj_slot_used[id] == 1);
 	obj_slot_used[id] = 0;
 	obj_count--;
 }
