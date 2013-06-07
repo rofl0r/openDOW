@@ -592,7 +592,8 @@ static void game_tick(int force_redraw) {
 				else if(go->objspecific.bullet.step_curr >= 8) go->animid = ANIM_GRENADE_BIG;
 			} else if (go->objtype == OBJ_ENEMY_SHOOTER || go->objtype == OBJ_ENEMY_BOMBER) {
 				go->objspecific.enemy.curr_step++;
-				go->vel = get_enemy_vel(&go->objspecific.enemy);
+				if(!is_death_anim(go->animid)) go->vel = get_enemy_vel(&go->objspecific.enemy);
+				else go->vel = VEC(0, 0);
 				if(enemy_fires(&go->objspecific.enemy)) {
 					//fire_bullet();
 				}
