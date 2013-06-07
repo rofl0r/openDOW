@@ -1,5 +1,6 @@
 #include "../lib/include/timelib.h"
 #include "../lib/include/macros.h"
+#include "../lib/include/sblist.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -81,6 +82,42 @@ static int player_ammo[2][AMMO_MAX];
 static enum weapon_id get_active_weapon_id(int player_no);
 static void switch_anim(int obj_id, int aid);
 static vec2f get_vel_from_direction(enum direction dir, float speed);
+// used by game_tick
+static sblist go_player_bullets;
+static sblist go_enemy_bullets;
+static sblist go_explosions;
+static sblist go_walls;
+static sblist go_enemies;
+static sblist go_players;
+static void add_pbullet(uint8_t bullet_id) {
+	sblist_add(&go_player_bullets, &bullet_id);
+}
+static void add_ebullet(uint8_t bullet_id) {
+	sblist_add(&go_enemy_bullets, &bullet_id);
+}
+static void add_player(uint8_t player_id) {
+	sblist_add(&go_players, &player_id);
+}
+static void add_enemy(uint8_t enem_id) {
+	sblist_add(&go_enemies, &enem_id);
+}
+static void add_explosion(uint8_t expl_id) {
+	sblist_add(&go_explosions, &expl_id);
+}
+static void add_wall(uint8_t wall_id) {
+	sblist_add(&go_walls, &wall_id);
+}
+static void golist_remove(sblist *l, uint8_t objid) {
+	size_t i;
+	uint8_t *itemid;
+	sblist_iter_counter2(l, i, itemid) {
+		if(*itemid == objid) {
+			sblist_delete(l, i);
+			return;
+		}
+	}
+}
+
 
 #define SCREEN_MIN_X 64*SCALE
 #define SCREEN_MAX_X VMODE_W - 64*SCALE
@@ -147,6 +184,7 @@ static int init_player(int player_no) {
 	size_t i = 0;
 	for(; i < AMMO_MAX; i++)
 		player_ammo[player_no][i] = 50000;
+	add_player(pid);
 	return pid;
 }
 
@@ -195,6 +233,7 @@ static int init_grenade_explosion(vec2f *pos) {
 	objs[id].spritemap_id = SI_GRENADE_EXPLOSION;
 	start_anim(id, ANIM_GRENADE_EXPLOSION);
 	audio_play_wave_resource(wavesounds[WS_GRENADE_EXPLOSION]);
+	add_explosion(id);
 	return id;
 }
 
@@ -248,6 +287,7 @@ static int init_enemy(enum direction face_dir, vec2f *pos, struct enemy* enemy, 
 	objs[id].objspecific.enemy = *enemy;
 	objs[id].spritemap_id = SI_ENEMIES;
 	objs[id].vel = get_enemy_vel(enemy);
+	add_enemy(id);
 	return id;
 }
 
@@ -357,10 +397,12 @@ static void fire_bullet(int player_no) {
 	float deg = atan2(vel.y, vel.x);
 	vel.x = cos(deg) * speed;
 	vel.y = sin(deg) * speed;
+	int id;
 	switch(pw->shot) {
 		case ST_LAUNCHER:
 		case ST_BULLET:
-			init_bullet(&from, &vel, steps);
+			id = init_bullet(&from, &vel, steps);
+			add_pbullet(id);
 			break;
 		case ST_FLAMES:
 			init_flame(dir, &from, &vel, steps);
@@ -380,12 +422,108 @@ static void fire_bullet(int player_no) {
 static void init_game_objs() {
 	init_player(0);
 	init_crosshair();
+	sblist_init(&go_players, 1, 4);
+	sblist_init(&go_player_bullets, 1, 32);
+	sblist_init(&go_enemy_bullets, 1, 32);
+	sblist_init(&go_explosions, 1, 16);
+	sblist_init(&go_walls, 1, 32);
+	sblist_init(&go_enemies, 1, 32);	
 }
 
 static int get_next_anim_frame(enum animation_id aid, int curr) {
 	curr++;
 	if(curr > animations[aid].last) return animations[aid].first;
 	return curr;
+}
+
+static int point_in_mask(vec2f *point, int obj_id) {
+	vec2f pos_in_pic = VEC((point->x - objs[obj_id].pos.x) / SCALE,
+			       (point->y - objs[obj_id].pos.y) / SCALE);
+	const struct palpic *p = spritemaps[objs[obj_id].spritemap_id];
+	unsigned h = palpic_getspriteheight(p), w = palpic_getspritewidth(p);
+	if(pos_in_pic.x < 0 || pos_in_pic.y < 0 || pos_in_pic.x > w || pos_in_pic.y > h) return 0;
+	uint8_t *data = palpic_getspritedata(p, objs[obj_id].anim_curr);
+	if(data[(unsigned) pos_in_pic.y * w + (unsigned) pos_in_pic.x] != 0) return 1;
+	return 0;
+}
+
+static enum animation_id get_die_anim(unsigned id) {
+	if(objs[id].objtype == OBJ_P1)
+		return ANIM_P1_DIE;
+	else if(objs[id].objtype == OBJ_P1)
+		return ANIM_P2_DIE;
+	else if(objs[id].animid == ANIM_ENEMY_BOMBER_DOWN ||
+	        objs[id].animid == ANIM_ENEMY_BOMBER_LEFT || 
+	        objs[id].animid == ANIM_ENEMY_BOMBER_RIGHT)
+		return ANIM_ENEMY_BOMBER_DIE;
+	return ANIM_ENEMY_GUNNER_DIE;
+}
+
+/* remove bullets that have reached their maximum number of steps */
+static int remove_bullets(sblist *list) {
+	int res = 0;
+	uint8_t *item_id;
+	ssize_t li;
+	sblist_iter_counter2(list, li, item_id) {
+		struct gameobj *bullet = &objs[*item_id];
+		if(bullet->objspecific.bullet.step_curr >= bullet->objspecific.bullet.step_max) {
+			gameobj_free(*item_id);
+			sblist_delete(list, li);
+			li--;
+		} else {
+			bullet->objspecific.bullet.step_curr++;
+		}
+		res = 1;
+	}
+	return res;
+}
+
+static int is_death_anim(enum animation_id anim) {
+	return anim == ANIM_ENEMY_BOMBER_DIE || anim == ANIM_ENEMY_GUNNER_DIE || 
+	       anim == ANIM_ENEMY_BURNT || anim == ANIM_P1_DIE || anim == ANIM_P2_DIE;
+}
+
+// removes bullets and other objects if they collide. return 1 if anything happened
+static int hit_bullets(sblist *bullet_list, sblist *target_list) {
+	uint8_t *bullet_id;
+	ssize_t li;
+	int res = 0;
+	
+	sblist_iter_counter2(bullet_list, li, bullet_id) {
+		struct gameobj *bullet = &objs[*bullet_id];
+		ssize_t lj;
+		uint8_t *target_id;
+		sblist_iter_counter2(target_list, lj, target_id) {
+			struct gameobj *target = &objs[*target_id];
+			if(is_death_anim(target->animid)) continue;
+			vec2f temp = get_gameobj_center(*target_id);
+			float dist1 = vecdist(&bullet->pos, &temp);
+			vec2f newpos = vecadd(&bullet->pos, &bullet->vel);
+			float dist2 = vecdist(&newpos, &temp);
+			
+			unsigned w = palpic_getspritewidth(spritemaps[target->spritemap_id]),
+			         h = palpic_getspriteheight(spritemaps[target->spritemap_id]);
+			float longest_side_div2 = ((float) MAX(h, w) / 2) * SCALE;
+			
+			if(dist1 < longest_side_div2 || dist2 < longest_side_div2) {
+				vec2f velquarter = VEC(bullet->vel.x * 0.25, bullet->vel.y * 0.25);
+				vec2f point = bullet->pos;
+				size_t k;
+				for(k = 0; k < 4; k++) {
+					if(point_in_mask(&point, *target_id)) {
+						switch_anim(*target_id, get_die_anim(*target_id));
+						gameobj_free(*bullet_id);						
+						sblist_delete(bullet_list, li);
+						li--;
+						break;
+					}
+					point = vecadd(&point, &velquarter);
+				}
+			}
+		}
+		res = 1;
+	}
+	return res;
 }
 
 static void game_tick(int force_redraw) {
@@ -405,48 +543,74 @@ static void game_tick(int force_redraw) {
 				fire_bullet(player_no);
 		}
 	}
+	/* 1) remove bullets/rockets hitting walls (and spawn expl in the latter case)- TODO
+	 * 2) check player bullets against enemies, remove bullets and enemies
+	 * 3) check enemy bullets against players, remove bullets and players
+	 * 4) bullets: move* 
+	 * 5) check grenades, remove and spawn exposions if necessary
+	 * 6) enemies: move, kill player on hit
+	 * 7) player: move
+	 */
+	/*
+	// remove dead enemies
+	sblist_iter_counter2(&go_enemies, li, &item_id) {
+		if(objs[item_id].anim_curr == animations[objs[item_id].animid].last &&
+		   (objs[item_id].animid == ANIM_ENEMY_BOMBER_DIE || objs[item_id].animid == ANIM_ENEMY_GUNNER_DIE))
+	}
+	*/
+	
+	if(hit_bullets(&go_player_bullets, &go_enemies)) force_redraw = 1;
+	if(hit_bullets(&go_enemy_bullets, &go_players)) force_redraw = 1;
+	if(remove_bullets(&go_player_bullets)) force_redraw = 1;
+	if(remove_bullets(&go_enemy_bullets)) force_redraw = 1;
+	
 	size_t obj_count_copy = obj_count;
 	for(i = 0; obj_visited < obj_count_copy && i < OBJ_MAX; i++) {
 		if(obj_slot_used[i]) {
+			struct gameobj *go = &objs[i];
 			obj_visited++;
-			if(objs[i].objtype == OBJ_BULLET || objs[i].objtype == OBJ_GRENADE) {
-				if(objs[i].objspecific.bullet.step_curr >= objs[i].objspecific.bullet.step_max) {
-					if(objs[i].objtype == OBJ_GRENADE) {
-						vec2f nextpos = vecadd(&objs[i].pos, &objs[i].vel);
-						init_grenade_explosion(&nextpos);
-						obj_count_copy++;
-					}
+			if(go->objtype == OBJ_GRENADE) {
+				if(go->objspecific.bullet.step_curr >= go->objspecific.bullet.step_max) {
+					vec2f nextpos = vecadd(&go->pos, &go->vel);
+					init_grenade_explosion(&nextpos);
+					obj_count_copy++;
 					gameobj_free(i);
 					force_redraw = 1;
 					continue;
-				}
-				else objs[i].objspecific.bullet.step_curr++;
-				if(objs[i].objtype == OBJ_GRENADE) {
-					if(objs[i].objspecific.bullet.step_curr >= 32) objs[i].animid = ANIM_GRENADE_SMALL;
-					else if(objs[i].objspecific.bullet.step_curr >= 8) objs[i].animid = ANIM_GRENADE_BIG;
-				}
-			} else if (objs[i].objtype == OBJ_ENEMY_SHOOTER || objs[i].objtype == OBJ_ENEMY_BOMBER) {
-				objs[i].objspecific.enemy.curr_step++;
-				objs[i].vel = get_enemy_vel(&objs[i].objspecific.enemy);
-				if(enemy_fires(&objs[i].objspecific.enemy)) {
+				} else go->objspecific.bullet.step_curr++;
+				if(go->objspecific.bullet.step_curr >= 32) go->animid = ANIM_GRENADE_SMALL;
+				else if(go->objspecific.bullet.step_curr >= 8) go->animid = ANIM_GRENADE_BIG;
+			} else if (go->objtype == OBJ_ENEMY_SHOOTER || go->objtype == OBJ_ENEMY_BOMBER) {
+				go->objspecific.enemy.curr_step++;
+				go->vel = get_enemy_vel(&go->objspecific.enemy);
+				if(enemy_fires(&go->objspecific.enemy)) {
 					//fire_bullet();
 				}
 			}
 			paint_objs[paint_obj_count++] = i;
-			if((objs[i].objtype != OBJ_P1 &&  objs[i].objtype != OBJ_P2) || objs[i].vel.x != 0 || objs[i].vel.y != 0) {
-				objs[i].pos.x += objs[i].vel.x;
-				objs[i].pos.y += objs[i].vel.y;
-				if((objs[i].objtype == OBJ_ENEMY_BOMBER || objs[i].objtype == OBJ_ENEMY_SHOOTER) && (
-					objs[i].pos.x < SCREEN_MIN_X || objs[i].pos.x > SCREEN_MAX_X ||
-					objs[i].pos.y < SCREEN_MIN_Y || objs[i].pos.y > SCREEN_MAX_Y) )
+			if((go->objtype != OBJ_P1 &&  go->objtype != OBJ_P2) || go->vel.x != 0 || go->vel.y != 0) {
+				go->pos.x += go->vel.x;
+				go->pos.y += go->vel.y;
+				if((go->objtype == OBJ_ENEMY_BOMBER || go->objtype == OBJ_ENEMY_SHOOTER) &&
+					(
+					 (go->pos.x < SCREEN_MIN_X || go->pos.x > SCREEN_MAX_X ||
+					  go->pos.y < SCREEN_MIN_Y || go->pos.y > SCREEN_MAX_Y) || 
+					 (go->anim_curr == animations[go->animid].last &&
+					  (go->animid == ANIM_ENEMY_BOMBER_DIE || 
+					   go->animid == ANIM_ENEMY_GUNNER_DIE || 
+					   go->animid == ANIM_ENEMY_BURNT)
+					 )
+				        )
+				  )
 				{
-					dprintf(2, "removed enemy from %.2f,%.2f\n", objs[i].pos.x, objs[i].pos.y);
+					dprintf(2, "removed enemy from %.2f,%.2f\n", go->pos.x, go->pos.y);
 					gameobj_free(i);
+					golist_remove(&go_enemies, i);
 					force_redraw = 1;
 					continue;
 				}
 				if(tickcounter % 4 == 0)
-					objs[i].anim_curr = get_next_anim_frame(objs[i].animid, objs[i].anim_curr);
+					go->anim_curr = get_next_anim_frame(go->animid, go->anim_curr);
 				force_redraw = 1;
 			}
 		}
@@ -634,6 +798,7 @@ static void switch_anim(int obj_id, int aid) {
 }
 
 int main() {
+
 	SDL_Init(SDL_INIT_VIDEO);
 	surface = SDL_SetVideoMode(VMODE_W, VMODE_H, 32, SDL_RESIZABLE | SDL_HWPALETTE);
 	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
