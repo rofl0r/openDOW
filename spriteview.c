@@ -472,7 +472,7 @@ static int remove_bullets(sblist *list) {
 	int res = 0;
 	uint8_t *item_id;
 	ssize_t li;
-	sblist_iter_counter2(list, li, item_id) {
+	sblist_iter_counter2s(list, li, item_id) {
 		struct gameobj *bullet = &objs[*item_id];
 		if(bullet->objspecific.bullet.step_curr >= bullet->objspecific.bullet.step_max) {
 			gameobj_free(*item_id);
@@ -498,10 +498,10 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 	int res = 0;
 	int is_flame = 0;
 	
-	sblist_iter_counter2(bullet_list, li, bullet_id) {
+	sblist_iter_counter2s(bullet_list, li, bullet_id) {
 		struct gameobj *bullet = &objs[*bullet_id];
 		if(bullet->objtype == OBJ_FLAME) is_flame = 1;
-		ssize_t lj;
+		size_t lj;
 		uint8_t *target_id;
 		sblist_iter_counter2(target_list, lj, target_id) {
 			struct gameobj *target = &objs[*target_id];
@@ -666,6 +666,9 @@ static void game_tick(int force_redraw) {
 		if(objs[paint_objs[i]].objtype == OBJ_FLASH)
 			gameobj_free(paint_objs[i]);
 	tickcounter++;
+	char buf [4];
+	snprintf(buf, 4, "%d", (int) obj_count);
+	SDL_WM_SetCaption(buf, 0);
 }
 
 enum cursor {
