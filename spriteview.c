@@ -252,6 +252,8 @@ static int init_flame(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
 	mypos.x -= flame_origin[dir].x * SCALE;
 	mypos.y -= flame_origin[dir].y * SCALE;
 	int id = init_bullet(&mypos, vel, steps);
+	if(id == -1) return -1;
+	objs[id].objtype = OBJ_FLAME;
 	objs[id].spritemap_id = SI_FLAME;
 	start_anim(id, ANIM_FLAME);
 	return id;
@@ -573,7 +575,7 @@ static void game_tick(int force_redraw) {
 		if(obj_slot_used[i]) {
 			struct gameobj *go = &objs[i];
 			obj_visited++;
-			if(go->objtype == OBJ_FLASH) {
+			if(go->objtype == OBJ_FLASH || go->objtype == OBJ_FLAME) {
 				if(go->objspecific.bullet.step_curr >= go->objspecific.bullet.step_max) {
 					gameobj_free(i);
 					force_redraw = 1;
