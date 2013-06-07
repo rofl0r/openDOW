@@ -1,6 +1,7 @@
 #include "palpic.h"
 #include "sdl_rgb.h"
 
+#if 0
 static sdl_rgb_t convert_prgb(prgb col) {
 	sdl_rgb_t ret;
 	ret.colors.r = col.colors.r;
@@ -9,7 +10,11 @@ static sdl_rgb_t convert_prgb(prgb col) {
 	ret.colors.a = 0;
 	return ret;
 }
-
+#else
+/* warning: this macro is to get reasonable performance in -O0 mode
+ * it only work as long as the sdl ARGB and the prgb RGBA type remain unchanged */
+#define convert_prgb(x) ((sdl_rgb_t){ .asInt  = x .val >> 8 } )
+#endif
 void blit_sprite(int x_pos, int y_pos, void *video_mem, unsigned videomem_pitch, 
 	         unsigned scale, const struct palpic* pic, uint16_t spritenum) {
 	unsigned sprite_width = palpic_getspritewidth(pic);
