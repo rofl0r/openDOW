@@ -615,29 +615,36 @@ static void game_tick(int force_redraw) {
 				}
 			}
 			paint_objs[paint_obj_count++] = i;
-			if((go->objtype != OBJ_P1 &&  go->objtype != OBJ_P2) || go->vel.x != 0 || go->vel.y != 0) {
+			if(go->vel.x != 0 || go->vel.y != 0) {
 				go->pos.x += go->vel.x;
 				go->pos.y += go->vel.y;
 				if(go->objtype == OBJ_ENEMY_BOMBER || go->objtype == OBJ_ENEMY_SHOOTER) {
 					if(go->pos.x < SCREEN_MIN_X || go->pos.x > SCREEN_MAX_X ||
-					  go->pos.y < SCREEN_MIN_Y || go->pos.y > SCREEN_MAX_Y) {
+					   go->pos.y < SCREEN_MIN_Y || go->pos.y > SCREEN_MAX_Y) {
 						remove_enemy:
 						dprintf(2, "removed enemy from %.2f,%.2f\n", go->pos.x, go->pos.y);
 						gameobj_free(i);
 						golist_remove(&go_enemies, i);
 						force_redraw = 1;
 						continue;
-					} else if(go->anim_curr == animations[go->animid].last &&
-					  (go->animid == ANIM_ENEMY_BOMBER_DIE || 
-					   go->animid == ANIM_ENEMY_GUNNER_DIE || 
-					   go->animid == ANIM_ENEMY_BURNT)) {
-						goto remove_enemy;
 					}
 				}
-				if(tickcounter % 4 == 0)
-					go->anim_curr = get_next_anim_frame(go->animid, go->anim_curr);
 				force_redraw = 1;
 			}
+			if((go->objtype == OBJ_ENEMY_BOMBER || go->objtype == OBJ_ENEMY_SHOOTER) &&
+			   go->anim_curr == animations[go->animid].last &&
+					  (go->animid == ANIM_ENEMY_BOMBER_DIE || 
+					   go->animid == ANIM_ENEMY_GUNNER_DIE || 
+					   go->animid == ANIM_ENEMY_BURNT))
+				goto remove_enemy;
+			if(go->objtype != OBJ_P1 &&  go->objtype != OBJ_P2) {
+				if(tickcounter % 4 == 0) {
+					uint8_t anim_curr = go->anim_curr;
+					go->anim_curr = get_next_anim_frame(go->animid, go->anim_curr);
+					if(go->anim_curr != anim_curr) force_redraw = 1;
+				}
+			}
+			
 		}
 	}
 	long ms_used = 0;
