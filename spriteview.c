@@ -615,7 +615,9 @@ static void game_tick(int force_redraw) {
 				}
 			}
 			paint_objs[paint_obj_count++] = i;
+			int ismoving = 0;
 			if(go->vel.x != 0 || go->vel.y != 0) {
+				ismoving = 1;
 				go->pos.x += go->vel.x;
 				go->pos.y += go->vel.y;
 				if(go->objtype == OBJ_ENEMY_BOMBER || go->objtype == OBJ_ENEMY_SHOOTER) {
@@ -637,7 +639,7 @@ static void game_tick(int force_redraw) {
 					   go->animid == ANIM_ENEMY_GUNNER_DIE || 
 					   go->animid == ANIM_ENEMY_BURNT))
 				goto remove_enemy;
-			if(go->objtype != OBJ_P1 &&  go->objtype != OBJ_P2) {
+			if(ismoving || (go->objtype != OBJ_P1 && go->objtype != OBJ_P2)) {
 				if(tickcounter % 4 == 0) {
 					uint8_t anim_curr = go->anim_curr;
 					go->anim_curr = get_next_anim_frame(go->animid, go->anim_curr);
