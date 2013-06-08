@@ -428,8 +428,6 @@ static void fire_bullet(int player_no) {
 }
 
 static void init_game_objs() {
-	init_player(0);
-	init_crosshair();
 	sblist_init(&go_players, 1, 4);
 	sblist_init(&go_player_bullets, 1, 32);
 	sblist_init(&go_flames, 1, 32);
@@ -437,6 +435,8 @@ static void init_game_objs() {
 	sblist_init(&go_explosions, 1, 16);
 	sblist_init(&go_walls, 1, 32);
 	sblist_init(&go_enemies, 1, 32);
+	init_player(0);
+	init_crosshair();
 }
 
 static int get_next_anim_frame(enum animation_id aid, int curr) {
@@ -506,9 +506,13 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 	sblist_iter_counter2s(bullet_list, li, bullet_id) {
 		struct gameobj *bullet = &objs[*bullet_id];
 		if(bullet->objtype == OBJ_FLAME) bullet_subtybe = BS_FLAME;
-		else if(bullet->objtype == OBJ_GRENADE_EXPLOSION) bullet_subtybe = BS_GRENADE_EXPL;
+		else if(bullet->objtype == OBJ_GRENADE_EXPLOSION) {
+			/* grenade kills only in the explosion, not in the smoke phase */
+			if(bullet->objspecific.bullet.step_curr > 22) continue;
+			bullet_subtybe = BS_GRENADE_EXPL;
+		}
 		vec2f bullet_center = get_gameobj_center(*bullet_id);
-		const float bullet_radius[] = { [BS_BULLET] = 1.f, [BS_FLAME] = 6.f, [BS_GRENADE_EXPL] = 11.f };
+		const float bullet_radius[] = { [BS_BULLET] = 1.f, [BS_FLAME] = 6.f, [BS_GRENADE_EXPL] = 16.f };
 
 		size_t lj;
 		uint8_t *target_id;
@@ -537,7 +541,7 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 						const enum wavesound_id wid[] = { WS_SCREAM, WS_SCREAM2 };
 						srand(time(0));
 						audio_play_wave_resource(wavesounds[wid[rand()%2]]);
-						if(bullet_subtybe != BS_FLAME) {
+						if(bullet_subtybe == BS_BULLET) {
 							gameobj_free(*bullet_id);
 							sblist_delete(bullet_list, li);
 							li--;
@@ -589,9 +593,12 @@ static void game_tick(int force_redraw) {
 	
 	if(hit_bullets(&go_player_bullets, &go_enemies)) force_redraw = 1;
 	if(hit_bullets(&go_flames, &go_enemies)) force_redraw = 1;
+	if(hit_bullets(&go_explosions, &go_enemies)) force_redraw = 1;
+	if(hit_bullets(&go_explosions, &go_players)) force_redraw = 1;
 	if(hit_bullets(&go_enemy_bullets, &go_players)) force_redraw = 1;
 	if(remove_bullets(&go_player_bullets)) force_redraw = 1;
 	if(remove_bullets(&go_flames)) force_redraw = 1;
+	if(remove_bullets(&go_explosions)) force_redraw = 1;
 	if(remove_bullets(&go_enemy_bullets)) force_redraw = 1;
 	
 	size_t obj_count_copy = obj_count;
@@ -649,7 +656,7 @@ static void game_tick(int force_redraw) {
 					   go->animid == ANIM_ENEMY_GUNNER_DIE || 
 					   go->animid == ANIM_ENEMY_BURNT))
 				goto remove_enemy;
-			if(ismoving || (go->objtype != OBJ_P1 && go->objtype != OBJ_P2)) {
+			if(ismoving || (go->objtype != OBJ_P1 && go->objtype != OBJ_P2) || is_death_anim(go->animid)) {
 				if(tickcounter % 4 == 0) {
 					uint8_t anim_curr = go->anim_curr;
 					go->anim_curr = get_next_anim_frame(go->animid, go->anim_curr);
