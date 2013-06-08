@@ -234,6 +234,7 @@ static int init_grenade_explosion(vec2f *pos) {
 	vec2f mypos = vecsub(pos, &grenade_center);
 	int id = init_bullet(&mypos, &VEC(0,0), expl_anim_frames*ticks_per_anim_frame -4);
 	if(id == -1) return -1;
+	objs[id].objtype = OBJ_GRENADE_EXPLOSION;
 	objs[id].spritemap_id = SI_GRENADE_EXPLOSION;
 	start_anim(id, ANIM_GRENADE_EXPLOSION);
 	audio_play_wave_resource(wavesounds[WS_GRENADE_EXPLOSION]);
@@ -496,38 +497,47 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 	uint8_t *bullet_id;
 	ssize_t li;
 	int res = 0;
-	int is_flame = 0;
+	enum bulletsubtype {
+		BS_BULLET = 0,
+		BS_FLAME = 1,
+		BS_GRENADE_EXPL = 2,
+	} bullet_subtybe = BS_BULLET;
 	
 	sblist_iter_counter2s(bullet_list, li, bullet_id) {
 		struct gameobj *bullet = &objs[*bullet_id];
-		if(bullet->objtype == OBJ_FLAME) is_flame = 1;
+		if(bullet->objtype == OBJ_FLAME) bullet_subtybe = BS_FLAME;
+		else if(bullet->objtype == OBJ_GRENADE_EXPLOSION) bullet_subtybe = BS_GRENADE_EXPL;
+		vec2f bullet_center = get_gameobj_center(*bullet_id);
+		const float bullet_radius[] = { [BS_BULLET] = 1.f, [BS_FLAME] = 6.f, [BS_GRENADE_EXPL] = 11.f };
+
 		size_t lj;
 		uint8_t *target_id;
 		sblist_iter_counter2(target_list, lj, target_id) {
 			struct gameobj *target = &objs[*target_id];
 			if(is_death_anim(target->animid)) continue;
-			// FIXME: in case of flames, we need to take the dimensions into account.
 			vec2f temp = get_gameobj_center(*target_id);
-			float dist1 = vecdist(&bullet->pos, &temp);
-			vec2f newpos = vecadd(&bullet->pos, &bullet->vel);
-			float dist2 = vecdist(&newpos, &temp);
+			float dist1 = vecdist(&bullet_center, &temp) - bullet_radius[bullet_subtybe] * SCALE;
+			vec2f newpos = vecadd(&bullet_center, &bullet->vel);
+			float dist2 = vecdist(&newpos, &temp) - bullet_radius[bullet_subtybe] * SCALE;
 			
 			unsigned w = palpic_getspritewidth(spritemaps[target->spritemap_id]),
 			         h = palpic_getspriteheight(spritemaps[target->spritemap_id]);
 			float longest_side_div2 = ((float) MAX(h, w) / 2) * SCALE;
-			
+			if(dist1 < 1.f*SCALE || dist2 < 1.f*SCALE) { dprintf(2, "hit1\n"); goto hit; }
 			if(dist1 < longest_side_div2 || dist2 < longest_side_div2) {
 				vec2f velquarter = VEC(bullet->vel.x * 0.25, bullet->vel.y * 0.25);
-				vec2f point = bullet->pos;
+				vec2f point = bullet_center;
 				size_t k;
 				for(k = 0; k < 4; k++) {
 					if(point_in_mask(&point, *target_id)) {
-						enum animation_id death_anim = is_flame ? ANIM_ENEMY_BURNT : get_die_anim(*target_id);
+						hit:
+						;
+						enum animation_id death_anim = bullet_subtybe == BS_FLAME ? ANIM_ENEMY_BURNT : get_die_anim(*target_id);
 						switch_anim(*target_id, death_anim);
 						const enum wavesound_id wid[] = { WS_SCREAM, WS_SCREAM2 };
 						srand(time(0));
 						audio_play_wave_resource(wavesounds[wid[rand()%2]]);
-						if(!is_flame) {
+						if(bullet_subtybe != BS_FLAME) {
 							gameobj_free(*bullet_id);
 							sblist_delete(bullet_list, li);
 							li--;
