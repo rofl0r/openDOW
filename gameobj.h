@@ -39,6 +39,14 @@ typedef struct gameobj {
 int gameobj_alloc(void);
 void gameobj_free(int id);
 
+void gameobj_start_anim(int obj_id, enum animation_id aid);
+void gameobj_init(int id, vec2f *pos, vec2f* vel, 
+		  enum sprite_index spritemap_id,
+		  enum animation_id animid, enum objtype objtype);
+
+void gameobj_init_bulletdata(int id, int steps);
+
+
 #define OBJ_MAX 255
 extern gameobj objs[OBJ_MAX];
 extern uint8_t obj_slot_used[OBJ_MAX];

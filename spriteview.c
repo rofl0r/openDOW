@@ -166,22 +166,13 @@ static void redraw_bg() {
 	draw_status_bar();
 }
 
-static void start_anim(int obj_id, enum animation_id aid) {
-	if(obj_id == -1) return;
-	objs[obj_id].animid = aid;
-	objs[obj_id].anim_curr = animations[aid].first;
-}
-
 static int init_player(int player_no) {
 	assert(player_no == 0 || player_no == 1);
 	int pid = gameobj_alloc();
+	gameobj_init(pid, &VEC( SCREEN_MIN_X, SCREEN_MAX_Y - (25 * SCALE) ), &VEC( 0, 0 ), 
+		     SI_PLAYERS, player_no == 0 ? ANIM_P1_MOVE_N : ANIM_P2_MOVE_N, player_no == 0 ? OBJ_P1 : OBJ_P2);
 	if(pid == -1) return -1;
 	player_ids[player_no] = pid;
-	objs[pid].objtype = player_no == 0 ? OBJ_P1 : OBJ_P2;
-	objs[pid].pos = VEC( SCREEN_MIN_X, SCREEN_MAX_Y - (25 * SCALE) );
-	objs[pid].vel = VEC( 0, 0 );
-	objs[pid].spritemap_id = SI_PLAYERS;
-	start_anim(pid, player_no == 0 ? ANIM_P1_MOVE_N : ANIM_P2_MOVE_N);
 	player_weapons[player_no][0] = WP_COLT45;
 	weapon_count[player_no] = 1;
 	weapon_active[player_no] = 0;
@@ -195,35 +186,24 @@ static int init_player(int player_no) {
 static vec2f *mousepos;
 static int init_crosshair() {
 	int id = gameobj_alloc();
+	gameobj_init(id, &VEC(VMODE_W/2, VMODE_H/2), &VEC(0,0), SI_CROSSHAIR, ANIM_CROSSHAIR, OBJ_CROSSHAIR);
 	if(id == -1) return -1;
 	crosshair_id = id;
-	objs[id].objtype = OBJ_CROSSHAIR;
 	mousepos = &objs[id].pos;
-	objs[id].vel = VEC(0, 0);
-	objs[id].spritemap_id = SI_CROSSHAIR;
-	start_anim(id, ANIM_CROSSHAIR);
 	return id;
 }
 
 static int init_bullet(vec2f *pos, vec2f *vel, int steps) {
 	int id = gameobj_alloc();
-	if(id == -1) return -1;
-	objs[id].objtype = OBJ_BULLET;
-	objs[id].spritemap_id = SI_BULLET;
-	objs[id].vel = *vel;
-	objs[id].pos = *pos;
-	start_anim(id, ANIM_BULLET);
-	objs[id].objspecific.bullet.step_curr = 0;
-	objs[id].objspecific.bullet.step_max = steps;
+	gameobj_init(id, pos, vel, SI_BULLET, ANIM_BULLET, OBJ_BULLET);
+	gameobj_init_bulletdata(id, steps);
 	return id;
 }
 
 static int init_grenade(vec2f *pos, vec2f *vel, int steps) {
-	int id = init_bullet(pos, vel, steps);
-	if(id == -1) return -1;
-	objs[id].objtype = OBJ_GRENADE;
-	objs[id].spritemap_id = SI_GRENADE;
-	start_anim(id, ANIM_GRENADE_SMALL);
+	int id = gameobj_alloc();
+	gameobj_init(id, pos, vel, SI_GRENADE, ANIM_GRENADE_SMALL, OBJ_GRENADE);
+	gameobj_init_bulletdata(id, steps);
 	return id;
 }
 
@@ -232,11 +212,10 @@ static int init_grenade_explosion(vec2f *pos) {
 	const int expl_anim_frames = 11;
 	vec2f grenade_center = get_sprite_center(spritemaps[SI_GRENADE_EXPLOSION]);
 	vec2f mypos = vecsub(pos, &grenade_center);
-	int id = init_bullet(&mypos, &VEC(0,0), expl_anim_frames*ticks_per_anim_frame -4);
+	int id = gameobj_alloc();
 	if(id == -1) return -1;
-	objs[id].objtype = OBJ_GRENADE_EXPLOSION;
-	objs[id].spritemap_id = SI_GRENADE_EXPLOSION;
-	start_anim(id, ANIM_GRENADE_EXPLOSION);
+	gameobj_init(id, &mypos, &VEC(0,0), SI_GRENADE_EXPLOSION, ANIM_GRENADE_EXPLOSION, OBJ_GRENADE_EXPLOSION);
+	gameobj_init_bulletdata(id, expl_anim_frames*ticks_per_anim_frame -4);
 	audio_play_wave_resource(wavesounds[WS_GRENADE_EXPLOSION]);
 	add_explosion(id);
 	return id;
@@ -256,11 +235,10 @@ static int init_flame(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
 	vec2f mypos = *pos;
 	mypos.x -= flame_origin[dir].x * SCALE;
 	mypos.y -= flame_origin[dir].y * SCALE;
-	int id = init_bullet(&mypos, vel, steps);
+	int id = gameobj_alloc();
 	if(id == -1) return -1;
-	objs[id].objtype = OBJ_FLAME;
-	objs[id].spritemap_id = SI_FLAME;
-	start_anim(id, ANIM_FLAME);
+	gameobj_init(id, &mypos, vel, SI_FLAME, ANIM_FLAME, OBJ_FLAME);
+	gameobj_init_bulletdata(id, steps);
 	add_flame(id);
 	return id;
 }
@@ -289,12 +267,9 @@ static int init_enemy(enum direction face_dir, vec2f *pos, struct enemy* enemy, 
 			[DIR_S] = ANIM_ENEMY_BOMBER_DOWN, [DIR_O] = ANIM_ENEMY_BOMBER_RIGHT, [DIR_W] = ANIM_ENEMY_BOMBER_LEFT
 		},
 	};
-	objs[id].objtype = enemy_objtype_lut[is_bomber];
-	switch_anim(id, enemy_animation_lut[is_bomber][face_dir]);
-	objs[id].pos = *pos;
+	vec2f vel = get_enemy_vel(enemy);
+	gameobj_init(id, pos, &vel, SI_ENEMIES, enemy_animation_lut[is_bomber][face_dir], enemy_objtype_lut[is_bomber]);
 	objs[id].objspecific.enemy = *enemy;
-	objs[id].spritemap_id = SI_ENEMIES;
-	objs[id].vel = get_enemy_vel(enemy);
 	add_enemy(id);
 	return id;
 }
@@ -324,14 +299,8 @@ static enum animation_id get_flash_animation_from_direction(enum direction dir) 
 
 static int init_flash(vec2f *pos, enum direction dir) {
 	int id = gameobj_alloc();
-	if(id == -1) return -1;
-	objs[id].objtype = OBJ_FLASH;
-	objs[id].spritemap_id = SI_FLASH;
-	objs[id].pos = *pos;
-	objs[id].vel = VEC(0, 0);
-	start_anim(id, get_flash_animation_from_direction(dir));
-	objs[id].objspecific.bullet.step_curr = 0;
-	objs[id].objspecific.bullet.step_max = 2;
+	gameobj_init(id, pos, &VEC(0, 0), SI_FLASH, get_flash_animation_from_direction(dir), OBJ_FLASH);
+	gameobj_init_bulletdata(id, 2);
 	return id;
 }
 
@@ -848,7 +817,7 @@ static enum animation_id get_anim_from_vel(int player_no, vec2f *vel) {
 
 static void switch_anim(int obj_id, int aid) {
 	if(objs[obj_id].animid == aid) return;
-	start_anim(obj_id, aid);
+	gameobj_start_anim(obj_id, aid);
 }
 
 int main() {

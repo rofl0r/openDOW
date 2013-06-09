@@ -28,3 +28,28 @@ void gameobj_free(int id) {
 	obj_slot_used[id] = 0;
 	obj_count--;
 }
+
+void gameobj_start_anim(int obj_id, enum animation_id aid) {
+	if(obj_id == -1) return;
+	objs[obj_id].animid = aid;
+	objs[obj_id].anim_curr = animations[aid].first;
+}
+
+void gameobj_init(int id, vec2f *pos, vec2f* vel, 
+		  enum sprite_index spritemap_id,
+		  enum animation_id animid, enum objtype objtype) {
+	if(id == -1) return;
+	struct gameobj *o = &objs[id];
+	o->pos = *pos;
+	o->vel = *vel;
+	o->spritemap_id = spritemap_id;
+	gameobj_start_anim(id, animid);
+	o->objtype = objtype;
+}
+
+void gameobj_init_bulletdata(int id, int steps) {
+	if(id == -1) return;
+	struct gameobj *o = &objs[id];
+	o->objspecific.bullet.step_curr = 0;
+	o->objspecific.bullet.step_max = steps;
+}
