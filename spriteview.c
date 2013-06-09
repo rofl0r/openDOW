@@ -529,10 +529,9 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 
 static void game_tick(int force_redraw) {
 	static uint32_t tickcounter = 0;
-	size_t obj_visited = 0;
+	size_t obj_visited;
 	const int fps = 64;
-	int paint_objs[OBJ_MAX];
-	size_t paint_obj_count = 0, i;
+	size_t i;
 	if(mousebutton_down[MB_LEFT] > 1) {
 		const int player_no = 0;
 		const struct weapon *pw = get_active_weapon(player_no);
@@ -571,7 +570,7 @@ static void game_tick(int force_redraw) {
 	if(remove_bullets(&go_enemy_bullets)) force_redraw = 1;
 	
 	size_t obj_count_copy = obj_count;
-	for(i = 0; obj_visited < obj_count_copy && i < OBJ_MAX; i++) {
+	for(i = 0, obj_visited = 0; obj_visited < obj_count_copy && i < OBJ_MAX; i++) {
 		if(obj_slot_used[i]) {
 			struct gameobj *go = &objs[i];
 			obj_visited++;
@@ -600,7 +599,6 @@ static void game_tick(int force_redraw) {
 					//fire_bullet();
 				}
 			}
-			paint_objs[paint_obj_count++] = i;
 			int ismoving = 0;
 			if(go->vel.x != 0 || go->vel.y != 0) {
 				ismoving = 1;
@@ -640,9 +638,13 @@ static void game_tick(int force_redraw) {
 	gettimestamp(&timer);
 	if(force_redraw) {
 		redraw_bg();
-		for(i = 0; i < paint_obj_count; i++) {
-			blit_sprite(objs[paint_objs[i]].pos.x, objs[paint_objs[i]].pos.y, surface->pixels, surface->pitch,
-			            SCALE, spritemaps[objs[paint_objs[i]].spritemap_id], objs[paint_objs[i]].anim_curr);
+		for(i = 0, obj_visited = 0; obj_visited < obj_count && i < OBJ_MAX; i++) {
+			if(obj_slot_used[i]) {
+				struct gameobj *o = &objs[i];
+				blit_sprite(o->pos.x, o->pos.y, surface->pixels, surface->pitch,
+					    SCALE, spritemaps[o->spritemap_id], o->anim_curr);
+				obj_visited++;
+			}
 		}
 		SDL_UpdateRect(surface, SCREEN_MIN_X ,SCREEN_MIN_Y , SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
 	}
@@ -657,9 +659,7 @@ static void game_tick(int force_redraw) {
 	long sleepms = 1000/fps - ms_used;
 	if(sleepms >= 0) SDL_Delay(sleepms);
 	if(mousebutton_down[MB_LEFT]) mousebutton_down[MB_LEFT]++;
-	for(i = 0; i < paint_obj_count; i++)
-		if(objs[paint_objs[i]].objtype == OBJ_FLASH)
-			gameobj_free(paint_objs[i]);
+
 	tickcounter++;
 	char buf [4];
 	snprintf(buf, 4, "%d", (int) obj_count);
