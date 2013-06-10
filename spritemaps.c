@@ -7,6 +7,7 @@
 #include "sprites/flame.c"
 #include "sprites/grenade.c"
 #include "sprites/grenade_explosion.c"
+#include "sprites/rocket.c"
 #include "sprites/enemies.c"
 
 #define spritemap_entry(x, y) [ x ] = &(y .header)
@@ -19,4 +20,5 @@ const struct palpic *spritemaps[] = {
 	spritemap_entry(SI_GRENADE, grenade),
 	spritemap_entry(SI_GRENADE_EXPLOSION, grenade_explosion),
 	spritemap_entry(SI_ENEMIES, enemies),
+	spritemap_entry(SI_ROCKET, rocket),
 };

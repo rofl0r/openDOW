@@ -243,6 +243,39 @@ static int init_flame(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
 	return id;
 }
 
+static int init_rocket(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
+	static const vec2f rocket_origin[] = {
+		[DIR_N] = { 1.0, 10.0 },
+		[DIR_S] = { 1.0, 0.0 },
+		[DIR_O] = { 0.0, 1.0 },
+		[DIR_W] = { 10.0, 1.0 },
+		[DIR_NO] = { 0.0, 7.0 },
+		[DIR_SO] = { 0.0, 0.0 },
+		[DIR_SW] = { 7.0, 0.0 },
+		[DIR_NW] = { 7.0, 7.0 },
+	};
+	static const enum animation_id rocket_anim[] = {
+		[DIR_N] = ANIM_ROCKET_N,
+		[DIR_S] = ANIM_ROCKET_S,
+		[DIR_O] = ANIM_ROCKET_O,
+		[DIR_W] = ANIM_ROCKET_W,
+		[DIR_NO] = ANIM_ROCKET_NO,
+		[DIR_SO] = ANIM_ROCKET_SO,
+		[DIR_SW] = ANIM_ROCKET_SW,
+		[DIR_NW] = ANIM_ROCKET_NW,
+	};
+	vec2f mypos = *pos;
+	mypos.x -= rocket_origin[dir].x * SCALE;
+	mypos.y -= rocket_origin[dir].y * SCALE;
+	int id = gameobj_alloc();
+	if(id == -1) return -1;
+	gameobj_init(id, &mypos, vel, SI_ROCKET, rocket_anim[dir], OBJ_ROCKET);
+	gameobj_init_bulletdata(id, steps);
+	add_flame(id);
+	return id;
+}
+
+
 #define ENEMY_SPEED 1
 static vec2f get_enemy_vel(struct enemy *e) {
 	int i = ENEMY_MAX_ROUTE -1;
@@ -377,6 +410,8 @@ static void fire_bullet(int player_no) {
 	int id;
 	switch(pw->shot) {
 		case ST_LAUNCHER:
+			id = init_rocket(dir, &from, &vel, steps);
+			break;
 		case ST_BULLET:
 			id = init_bullet(&from, &vel, steps);
 			if(id != -1) add_pbullet(id);
