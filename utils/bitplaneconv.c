@@ -1,11 +1,11 @@
-#include "palpic.h"
-#include "sprites/enemymask.c"
+#include "../palpic.h"
+#include "../sprites/explosionmask.c"
 #include "leptonica/allheaders.h"
 #include <string.h>
 //RcB: LINK "-llept"
 
-#define BITPLANES 3
-#define sprite enemymask
+#define BITPLANES 4
+#define sprite explosionmask
 
 int main() {
 	const prgb color_tab[] = {
