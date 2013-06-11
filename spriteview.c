@@ -221,6 +221,33 @@ static int init_grenade_explosion(vec2f *pos) {
 	return id;
 }
 
+static int init_big_explosion(vec2f *pos) {
+	const int ticks_per_anim_frame = 4;
+	const int expl_anim_frames = 5;
+	vec2f rocket_center = get_sprite_center(spritemaps[SI_BIG_EXPLOSION]);
+	vec2f mypos = vecsub(pos, &rocket_center);
+	int id = gameobj_alloc();
+	if(id == -1) return -1;
+	gameobj_init(id, &mypos, &VEC(0,0), SI_BIG_EXPLOSION, ANIM_BIG_EXPLOSION, OBJ_BIG_EXPLOSION);
+	gameobj_init_bulletdata(id, expl_anim_frames*ticks_per_anim_frame -4);
+	audio_play_wave_resource(wavesounds[WS_GRENADE_EXPLOSION]);
+	add_explosion(id);
+	return id;
+}
+
+static int init_rocket_explosion(vec2f *pos) {
+	vec2f ax = vecadd(pos, &VEC(-15*SCALE, 9*SCALE));
+	vec2f bx = vecadd(pos, &VEC(1*SCALE, -6*SCALE));
+	vec2f cx = vecadd(pos, &VEC(-8*SCALE, -8*SCALE));
+	vec2f dx = vecadd(pos, &VEC(8*SCALE, 8*SCALE));
+	int ret = 0;
+	ret += init_grenade_explosion(&ax) != -1;
+	ret += init_grenade_explosion(&bx) != -1;
+	ret += init_big_explosion(&cx) != -1;
+	ret += init_big_explosion(&dx) != -1;
+	return ret;
+}
+
 static int init_flame(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
 	static const vec2f flame_origin[] = {
 		[DIR_O] = { 4.0, 8.0 },
@@ -271,7 +298,6 @@ static int init_rocket(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
 	if(id == -1) return -1;
 	gameobj_init(id, &mypos, vel, SI_ROCKET, rocket_anim[dir], OBJ_ROCKET);
 	gameobj_init_bulletdata(id, steps);
-	add_flame(id);
 	return id;
 }
 
@@ -505,6 +531,7 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 		BS_BULLET = 0,
 		BS_FLAME = 1,
 		BS_GRENADE_EXPL = 2,
+		BS_BIG_EXPL = 3,
 	} bullet_subtybe = BS_BULLET;
 	
 	sblist_iter_counter2s(bullet_list, li, bullet_id) {
@@ -514,9 +541,11 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 			/* grenade kills only in the explosion, not in the smoke phase */
 			if(bullet->objspecific.bullet.step_curr > 22) continue;
 			bullet_subtybe = BS_GRENADE_EXPL;
-		}
+		} else if(bullet->objtype == OBJ_BIG_EXPLOSION)
+			bullet_subtybe = BS_BIG_EXPL;
 		vec2f bullet_center = get_gameobj_center(*bullet_id);
-		const float bullet_radius[] = { [BS_BULLET] = 1.f, [BS_FLAME] = 6.f, [BS_GRENADE_EXPL] = 16.f };
+		const float bullet_radius[] = { [BS_BULLET] = 1.f, [BS_FLAME] = 6.f, 
+		                                [BS_GRENADE_EXPL] = 16.f, [BS_BIG_EXPL] = 19.f };
 
 		size_t lj;
 		uint8_t *target_id;
@@ -615,17 +644,21 @@ static void game_tick(int force_redraw) {
 					force_redraw = 1;
 					continue;
 				} else go->objspecific.bullet.step_curr++;
-			} else if(go->objtype == OBJ_GRENADE) {
+			} else if(go->objtype == OBJ_GRENADE || go->objtype == OBJ_ROCKET) {
 				if(go->objspecific.bullet.step_curr >= go->objspecific.bullet.step_max) {
 					vec2f nextpos = vecadd(&go->pos, &go->vel);
-					init_grenade_explosion(&nextpos);
-					obj_count_copy++;
+					size_t inc = 1;
+					if(go->objtype == OBJ_GRENADE) init_grenade_explosion(&nextpos);
+					else inc = init_rocket_explosion(&nextpos);
+					obj_count_copy += inc;
 					gameobj_free(i);
 					force_redraw = 1;
 					continue;
 				} else go->objspecific.bullet.step_curr++;
-				if(go->objspecific.bullet.step_curr >= 32) go->animid = ANIM_GRENADE_SMALL;
-				else if(go->objspecific.bullet.step_curr >= 8) go->animid = ANIM_GRENADE_BIG;
+				if(go->objtype == OBJ_GRENADE) {
+					if(go->objspecific.bullet.step_curr >= 32) go->animid = ANIM_GRENADE_SMALL;
+					else if(go->objspecific.bullet.step_curr >= 8) go->animid = ANIM_GRENADE_BIG;
+				}
 			} else if (go->objtype == OBJ_ENEMY_SHOOTER || go->objtype == OBJ_ENEMY_BOMBER) {
 				go->objspecific.enemy.curr_step++;
 				if(!is_death_anim(go->animid)) go->vel = get_enemy_vel(&go->objspecific.enemy);
@@ -659,7 +692,8 @@ static void game_tick(int force_redraw) {
 					   go->animid == ANIM_ENEMY_BURNT))
 				goto remove_enemy;
 			if(ismoving || (go->objtype != OBJ_P1 && go->objtype != OBJ_P2) || is_death_anim(go->animid)) {
-				if(tickcounter % 4 == 0) {
+				unsigned anim_delay = go->objtype == OBJ_BIG_EXPLOSION ? 8 : 4;
+				if(tickcounter % anim_delay == 0) {
 					uint8_t anim_curr = go->anim_curr;
 					go->anim_curr = get_next_anim_frame(go->animid, go->anim_curr);
 					if(go->anim_curr != anim_curr) force_redraw = 1;

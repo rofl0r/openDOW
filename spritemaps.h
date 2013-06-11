@@ -10,6 +10,7 @@ enum __attribute__ ((__packed__)) sprite_index {
 	SI_GRENADE,
 	SI_GRENADE_EXPLOSION,
 	SI_ROCKET,
+	SI_BIG_EXPLOSION,
 	SI_ENEMIES,
 };
 
