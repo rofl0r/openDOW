@@ -1,11 +1,13 @@
 #include "../palpic.h"
-#include "../sprites/players.c"
 #include "leptonica/allheaders.h"
 #include <string.h>
 //RcB: LINK "-llept"
 
+#include "../sprites/grenade_explosion.c"
+#define sprite grenade_explosion
+
 int main() {
-	const struct palpic* f = &players.header;
+	const struct palpic* f = & sprite .header;
 	PIX* o = pixCreate(f->width, f->height, 32);
 	prgb* palette = palpic_getpalette(f);
 	prgb* bufptr = (prgb*) o->data;
