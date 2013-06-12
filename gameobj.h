@@ -22,12 +22,16 @@ enum objtype {
 	OBJ_ENEMY_BOMBER,
 };
 
+typedef uint8_t anim_step;
+#define ANIM_STEP_INIT (anim_step) -1
+
 typedef struct gameobj {
 	vec2f pos;
 	vec2f vel;
 	enum sprite_index spritemap_id;
-	uint8_t anim_curr;
+	anim_step anim_curr;
 	enum animation_id animid;
+	uint8_t anim_frame;
 	enum objtype objtype;
 	union objspec {
 		struct {

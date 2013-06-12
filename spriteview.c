@@ -90,6 +90,7 @@ static sblist go_walls;
 static sblist go_enemies;
 static sblist go_players;
 static sblist go_flames;
+static sblist go_explosives;
 static void add_pbullet(uint8_t bullet_id) {
 	sblist_add(&go_player_bullets, &bullet_id);
 }
@@ -111,6 +112,9 @@ static void add_wall(uint8_t wall_id) {
 static void add_flame(uint8_t id) {
 	sblist_add(&go_flames, &id);
 }
+static void add_explosive(uint8_t id) {
+	sblist_add(&go_explosives, &id);
+}
 static void golist_remove(sblist *l, uint8_t objid) {
 	size_t i;
 	uint8_t *itemid;
@@ -122,6 +126,12 @@ static void golist_remove(sblist *l, uint8_t objid) {
 	}
 }
 
+static int get_next_anim_frame(enum animation_id aid, anim_step curr) {
+	if(curr == ANIM_STEP_INIT) return animations[aid].first;
+	curr++;
+	if(curr > animations[aid].last) return animations[aid].first;
+	return curr;
+}
 
 #define SCREEN_MIN_X 64*SCALE
 #define SCREEN_MAX_X VMODE_W - 64*SCALE
@@ -204,6 +214,7 @@ static int init_grenade(vec2f *pos, vec2f *vel, int steps) {
 	int id = gameobj_alloc();
 	gameobj_init(id, pos, vel, SI_GRENADE, ANIM_GRENADE_SMALL, OBJ_GRENADE);
 	gameobj_init_bulletdata(id, steps);
+	add_explosive(id);
 	return id;
 }
 
@@ -215,21 +226,21 @@ static int init_grenade_explosion(vec2f *pos) {
 	int id = gameobj_alloc();
 	if(id == -1) return -1;
 	gameobj_init(id, &mypos, &VEC(0,0), SI_GRENADE_EXPLOSION, ANIM_GRENADE_EXPLOSION, OBJ_GRENADE_EXPLOSION);
-	gameobj_init_bulletdata(id, expl_anim_frames*ticks_per_anim_frame -4);
+	gameobj_init_bulletdata(id, expl_anim_frames*ticks_per_anim_frame -1);
 	audio_play_wave_resource(wavesounds[WS_GRENADE_EXPLOSION]);
 	add_explosion(id);
 	return id;
 }
 
 static int init_big_explosion(vec2f *pos) {
-	const int ticks_per_anim_frame = 4;
+	const int ticks_per_anim_frame = 8;
 	const int expl_anim_frames = 5;
 	vec2f rocket_center = get_sprite_center(spritemaps[SI_BIG_EXPLOSION]);
 	vec2f mypos = vecsub(pos, &rocket_center);
 	int id = gameobj_alloc();
 	if(id == -1) return -1;
 	gameobj_init(id, &mypos, &VEC(0,0), SI_BIG_EXPLOSION, ANIM_BIG_EXPLOSION, OBJ_BIG_EXPLOSION);
-	gameobj_init_bulletdata(id, expl_anim_frames*ticks_per_anim_frame -4);
+	gameobj_init_bulletdata(id, expl_anim_frames*ticks_per_anim_frame -1);
 	audio_play_wave_resource(wavesounds[WS_GRENADE_EXPLOSION]);
 	add_explosion(id);
 	return id;
@@ -298,6 +309,7 @@ static int init_rocket(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
 	if(id == -1) return -1;
 	gameobj_init(id, &mypos, vel, SI_ROCKET, rocket_anim[dir], OBJ_ROCKET);
 	gameobj_init_bulletdata(id, steps);
+	add_explosive(id);
 	return id;
 }
 
@@ -398,7 +410,9 @@ static void fire_bullet(int player_no) {
 	if(dir != DIR_INVALID) {
 		enum animation_id aid = get_anim_from_direction(dir, player_no, pw->ammo == AMMO_GRENADE);
 		if(aid != ANIM_INVALID) switch_anim(player_ids[player_no], aid);
-		vec2f muzzle = muzzle_tab[objs[player_ids[player_no]].anim_curr];
+		anim_step curranim = objs[player_ids[player_no]].anim_curr;
+		if(curranim == ANIM_STEP_INIT) curranim = get_next_anim_frame(objs[player_ids[player_no]].animid, ANIM_STEP_INIT);
+		vec2f muzzle = muzzle_tab[curranim];
 		
 		from = get_gameobj_pos(player_ids[player_no]);
 		from.x += muzzle.x * SCALE;
@@ -463,16 +477,11 @@ static void init_game_objs() {
 	sblist_init(&go_flames, 1, 32);
 	sblist_init(&go_enemy_bullets, 1, 32);
 	sblist_init(&go_explosions, 1, 16);
+	sblist_init(&go_explosives, 1, 16);
 	sblist_init(&go_walls, 1, 32);
 	sblist_init(&go_enemies, 1, 32);
 	init_player(0);
 	init_crosshair();
-}
-
-static int get_next_anim_frame(enum animation_id aid, int curr) {
-	curr++;
-	if(curr > animations[aid].last) return animations[aid].first;
-	return curr;
 }
 
 static int point_in_mask(vec2f *point, int obj_id) {
@@ -481,7 +490,10 @@ static int point_in_mask(vec2f *point, int obj_id) {
 	const struct palpic *p = spritemaps[objs[obj_id].spritemap_id];
 	unsigned h = palpic_getspriteheight(p), w = palpic_getspritewidth(p);
 	if(pos_in_pic.x < 0 || pos_in_pic.y < 0 || pos_in_pic.x > w || pos_in_pic.y > h) return 0;
-	uint8_t *data = palpic_getspritedata(p, objs[obj_id].anim_curr);
+	assert(objs[obj_id].anim_curr != ANIM_STEP_INIT);
+	anim_step curranim = objs[obj_id].anim_curr;
+	if(curranim == ANIM_STEP_INIT) curranim = get_next_anim_frame(objs[obj_id].animid, ANIM_STEP_INIT);
+	uint8_t *data = palpic_getspritedata(p, curranim);
 	if(data[(unsigned) pos_in_pic.y * w + (unsigned) pos_in_pic.x] != 0) return 1;
 	return 0;
 }
@@ -517,6 +529,31 @@ static int remove_bullets(sblist *list) {
 	return res;
 }
 
+static int remove_explosives(void) {
+	sblist *list = &go_explosives;
+	int res = 0;
+	uint8_t *item_id;
+	ssize_t li;
+	sblist_iter_counter2s(list, li, item_id) {
+		struct gameobj *go = &objs[*item_id];
+		if(go->objspecific.bullet.step_curr >= go->objspecific.bullet.step_max) {
+			if(go->objtype == OBJ_GRENADE) init_grenade_explosion(&go->pos);
+			else init_rocket_explosion(&go->pos);
+			gameobj_free(*item_id);
+			sblist_delete(list, li);
+			li--;
+		} else  {
+			go->objspecific.bullet.step_curr++;
+			if(go->objtype == OBJ_GRENADE) {
+				if(go->objspecific.bullet.step_curr >= 32) go->animid = ANIM_GRENADE_SMALL;
+				else if(go->objspecific.bullet.step_curr >= 8) go->animid = ANIM_GRENADE_BIG;
+			}
+		}
+		res = 1;
+	}
+	return res;
+}
+
 static int is_death_anim(enum animation_id anim) {
 	return anim == ANIM_ENEMY_BOMBER_DIE || anim == ANIM_ENEMY_GUNNER_DIE || 
 	       anim == ANIM_ENEMY_BURNT || anim == ANIM_P1_DIE || anim == ANIM_P2_DIE;
@@ -541,8 +578,9 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 			/* grenade kills only in the explosion, not in the smoke phase */
 			if(bullet->objspecific.bullet.step_curr > 22) continue;
 			bullet_subtybe = BS_GRENADE_EXPL;
-		} else if(bullet->objtype == OBJ_BIG_EXPLOSION)
+		} else if(bullet->objtype == OBJ_BIG_EXPLOSION) {
 			bullet_subtybe = BS_BIG_EXPL;
+		}
 		vec2f bullet_center = get_gameobj_center(*bullet_id);
 		const float bullet_radius[] = { [BS_BULLET] = 1.f, [BS_FLAME] = 6.f, 
 		                                [BS_GRENADE_EXPL] = 16.f, [BS_BIG_EXPL] = 19.f };
@@ -591,8 +629,27 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 	return res;
 }
 
+uint32_t tickcounter;
+
+static int advance_animations(void) {
+	size_t i, obj_visited;
+	int res = 0;
+	for(i = 0, obj_visited = 0; obj_visited < obj_count && i < OBJ_MAX; i++) {
+		if(!obj_slot_used[i]) continue;
+		struct gameobj *go = &objs[i];
+		if((go->vel.x != 0 || go->vel.y != 0) || (go->objtype != OBJ_P1 && go->objtype != OBJ_P2) || is_death_anim(go->animid)) {
+			unsigned anim_delay = go->objtype == OBJ_BIG_EXPLOSION ? 8 : 4;
+			if(go->anim_curr == ANIM_STEP_INIT || tickcounter % anim_delay == go->anim_frame) {
+				go->anim_curr = get_next_anim_frame(go->animid, go->anim_curr);
+				res = 1;
+			}
+		}
+		obj_visited++;
+	}
+	return res;
+}
+
 static void game_tick(int force_redraw) {
-	static uint32_t tickcounter = 0;
 	size_t obj_visited;
 	const int fps = 64;
 	size_t i;
@@ -622,7 +679,7 @@ static void game_tick(int force_redraw) {
 		   (objs[item_id].animid == ANIM_ENEMY_BOMBER_DIE || objs[item_id].animid == ANIM_ENEMY_GUNNER_DIE))
 	}
 	*/
-	
+	if(advance_animations()) force_redraw = 1;
 	if(hit_bullets(&go_player_bullets, &go_enemies)) force_redraw = 1;
 	if(hit_bullets(&go_flames, &go_enemies)) force_redraw = 1;
 	if(hit_bullets(&go_explosions, &go_enemies)) force_redraw = 1;
@@ -632,33 +689,20 @@ static void game_tick(int force_redraw) {
 	if(remove_bullets(&go_flames)) force_redraw = 1;
 	if(remove_bullets(&go_explosions)) force_redraw = 1;
 	if(remove_bullets(&go_enemy_bullets)) force_redraw = 1;
+	if(remove_explosives()) force_redraw = 1;
 	
 	size_t obj_count_copy = obj_count;
 	for(i = 0, obj_visited = 0; obj_visited < obj_count_copy && i < OBJ_MAX; i++) {
 		if(obj_slot_used[i]) {
 			struct gameobj *go = &objs[i];
 			obj_visited++;
+			if(go->anim_curr == ANIM_STEP_INIT) force_redraw = 1;
 			if(go->objtype == OBJ_FLASH) {
 				if(go->objspecific.bullet.step_curr >= go->objspecific.bullet.step_max) {
 					gameobj_free(i);
 					force_redraw = 1;
 					continue;
 				} else go->objspecific.bullet.step_curr++;
-			} else if(go->objtype == OBJ_GRENADE || go->objtype == OBJ_ROCKET) {
-				if(go->objspecific.bullet.step_curr >= go->objspecific.bullet.step_max) {
-					vec2f nextpos = vecadd(&go->pos, &go->vel);
-					size_t inc = 1;
-					if(go->objtype == OBJ_GRENADE) init_grenade_explosion(&nextpos);
-					else inc = init_rocket_explosion(&nextpos);
-					obj_count_copy += inc;
-					gameobj_free(i);
-					force_redraw = 1;
-					continue;
-				} else go->objspecific.bullet.step_curr++;
-				if(go->objtype == OBJ_GRENADE) {
-					if(go->objspecific.bullet.step_curr >= 32) go->animid = ANIM_GRENADE_SMALL;
-					else if(go->objspecific.bullet.step_curr >= 8) go->animid = ANIM_GRENADE_BIG;
-				}
 			} else if (go->objtype == OBJ_ENEMY_SHOOTER || go->objtype == OBJ_ENEMY_BOMBER) {
 				go->objspecific.enemy.curr_step++;
 				if(!is_death_anim(go->animid)) go->vel = get_enemy_vel(&go->objspecific.enemy);
@@ -691,15 +735,6 @@ static void game_tick(int force_redraw) {
 					   go->animid == ANIM_ENEMY_GUNNER_DIE || 
 					   go->animid == ANIM_ENEMY_BURNT))
 				goto remove_enemy;
-			if(ismoving || (go->objtype != OBJ_P1 && go->objtype != OBJ_P2) || is_death_anim(go->animid)) {
-				unsigned anim_delay = go->objtype == OBJ_BIG_EXPLOSION ? 8 : 4;
-				if(tickcounter % anim_delay == 0) {
-					uint8_t anim_curr = go->anim_curr;
-					go->anim_curr = get_next_anim_frame(go->animid, go->anim_curr);
-					if(go->anim_curr != anim_curr) force_redraw = 1;
-				}
-			}
-			
 		}
 	}
 	long ms_used = 0;
@@ -708,12 +743,11 @@ static void game_tick(int force_redraw) {
 	if(force_redraw) {
 		redraw_bg();
 		for(i = 0, obj_visited = 0; obj_visited < obj_count && i < OBJ_MAX; i++) {
-			if(obj_slot_used[i]) {
-				struct gameobj *o = &objs[i];
-				blit_sprite(o->pos.x, o->pos.y, surface->pixels, surface->pitch,
-					    SCALE, spritemaps[o->spritemap_id], o->anim_curr);
-				obj_visited++;
-			}
+			if(!obj_slot_used[i]) continue;
+			struct gameobj *o = &objs[i];
+			blit_sprite(o->pos.x, o->pos.y, surface->pixels, surface->pitch,
+					SCALE, spritemaps[o->spritemap_id], o->anim_curr == ANIM_STEP_INIT ? get_next_anim_frame(o->animid, o->anim_curr) : o->anim_curr);
+			obj_visited++;
 		}
 		SDL_UpdateRect(surface, SCREEN_MIN_X ,SCREEN_MIN_Y , SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
 	}
@@ -728,7 +762,7 @@ static void game_tick(int force_redraw) {
 	long sleepms = 1000/fps - ms_used;
 	if(sleepms >= 0) SDL_Delay(sleepms);
 	if(mousebutton_down[MB_LEFT]) mousebutton_down[MB_LEFT]++;
-
+	
 	tickcounter++;
 	char buf [4];
 	snprintf(buf, 4, "%d", (int) obj_count);

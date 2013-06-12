@@ -29,10 +29,13 @@ void gameobj_free(int id) {
 	obj_count--;
 }
 
+extern uint32_t tickcounter;
 void gameobj_start_anim(int obj_id, enum animation_id aid) {
 	if(obj_id == -1) return;
 	objs[obj_id].animid = aid;
-	objs[obj_id].anim_curr = animations[aid].first;
+	objs[obj_id].anim_curr = ANIM_STEP_INIT;
+	size_t tick_frames = objs[obj_id].objtype == OBJ_BIG_EXPLOSION ? 8 : 4;
+	objs[obj_id].anim_frame = tickcounter % tick_frames;
 }
 
 void gameobj_init(int id, vec2f *pos, vec2f* vel, 
