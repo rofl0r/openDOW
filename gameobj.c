@@ -43,8 +43,8 @@ void gameobj_init(int id, vec2f *pos, vec2f* vel,
 	o->pos = *pos;
 	o->vel = *vel;
 	o->spritemap_id = spritemap_id;
-	gameobj_start_anim(id, animid);
 	o->objtype = objtype;
+	gameobj_start_anim(id, animid);
 }
 
 void gameobj_init_bulletdata(int id, int steps) {
