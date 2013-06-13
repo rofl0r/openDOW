@@ -18,6 +18,7 @@
 #include "muzzle_tab.h"
 #include "spritemaps.h"
 #include "enemy.h"
+#include "font.h"
 
 #include <SDL/SDL.h>
 
@@ -71,7 +72,7 @@ static vec2f get_sprite_center(const struct palpic *p) {
 	return res;
 }
 
-static SDL_Surface *surface;
+SDL_Surface *surface;
 static bool fullscreen_active = false;
 static int player_ids[2];
 static int crosshair_id;
@@ -149,6 +150,10 @@ static void draw_status_bar(void) {
 		
 	blit_sprite(((320 / 2) - (59 / 2)) * SCALE, (200 + (40/2) - (16/2)) * SCALE,
 	            surface->pixels, surface->pitch, SCALE, &weapon_sprites.header, wid, 0);
+	
+	char buf[16];
+	snprintf(buf, 16, "%.6u", objs[player_ids[0]].objspecific.playerdata.score);
+	font_print(SCREEN_MIN_X + 8, SCREEN_MAX_Y + 8, buf, 6, 1 * SCALE, PRGB(255,255,255));
 }
 
 static void clear_screen(void) {
@@ -183,6 +188,7 @@ static int init_player(int player_no) {
 		     SI_PLAYERS, player_no == 0 ? ANIM_P1_MOVE_N : ANIM_P2_MOVE_N, player_no == 0 ? OBJ_P1 : OBJ_P2);
 	if(pid == -1) return -1;
 	player_ids[player_no] = pid;
+	objs[pid].objspecific.playerdata.score = 0;
 	player_weapons[player_no][0] = WP_COLT45;
 	weapon_count[player_no] = 1;
 	weapon_active[player_no] = 0;
@@ -607,6 +613,9 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 					if(point_in_mask(&point, *target_id)) {
 						hit:
 						;
+						if(bullet_list == &go_player_bullets) {
+							objs[player_ids[0]].objspecific.playerdata.score += 50;
+						}
 						enum animation_id death_anim = bullet_subtybe == BS_FLAME ? ANIM_ENEMY_BURNT : get_die_anim(*target_id);
 						switch_anim(*target_id, death_anim);
 						const enum wavesound_id wid[] = { WS_SCREAM, WS_SCREAM2 };

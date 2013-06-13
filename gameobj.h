@@ -39,6 +39,9 @@ typedef struct gameobj {
 			int step_curr;
 		} bullet;
 		struct enemy enemy;
+		struct {
+			unsigned score;
+		} playerdata;
 	} objspecific;
 } gameobj;
 
