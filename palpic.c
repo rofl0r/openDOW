@@ -16,10 +16,10 @@ static sdl_rgb_t convert_prgb(prgb col) {
 #define convert_prgb(x) ((sdl_rgb_t){ .asInt  = x .val >> 8 } )
 #endif
 void blit_sprite(int x_pos, int y_pos, void *video_mem, unsigned videomem_pitch, 
-	         unsigned scale, const struct palpic* pic, uint16_t spritenum) {
+	         unsigned scale, const struct palpic* pic, uint16_t spritenum, const prgb *palette) {
 	unsigned sprite_width = palpic_getspritewidth(pic);
 	unsigned sprite_height = palpic_getspriteheight(pic);
-	const prgb* palette = palpic_getpalette(pic);
+	if(!palette) palette = palpic_getpalette(pic);
 	const uint8_t *bitmap = palpic_getspritedata(pic, spritenum);
 	unsigned int scale_y, scale_x, y, x;
 	unsigned lineoffset = y_pos * (videomem_pitch / 4);

@@ -89,7 +89,7 @@ static inline uint8_t* palpic_getspritedata(const struct palpic* p, uint16_t spr
 }
 
 void blit_sprite(int x_pos, int y_pos, void *video_mem, unsigned videomem_pitch, 
-	         unsigned scale, const struct palpic* pic, uint16_t spritenum);
+	         unsigned scale, const struct palpic* pic, uint16_t spritenum, const prgb *palette);
 
 //RcB: DEP "palpic.c"
 

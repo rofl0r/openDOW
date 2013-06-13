@@ -148,7 +148,7 @@ static void draw_status_bar(void) {
 			ptr[y*pitch + x] = SRGB_BLACK;
 		
 	blit_sprite(((320 / 2) - (59 / 2)) * SCALE, (200 + (40/2) - (16/2)) * SCALE,
-	            surface->pixels, surface->pitch, SCALE, &weapon_sprites.header, wid);
+	            surface->pixels, surface->pitch, SCALE, &weapon_sprites.header, wid, 0);
 }
 
 static void clear_screen(void) {
@@ -746,7 +746,8 @@ static void game_tick(int force_redraw) {
 			if(!obj_slot_used[i]) continue;
 			struct gameobj *o = &objs[i];
 			blit_sprite(o->pos.x, o->pos.y, surface->pixels, surface->pitch,
-					SCALE, spritemaps[o->spritemap_id], o->anim_curr == ANIM_STEP_INIT ? get_next_anim_frame(o->animid, o->anim_curr) : o->anim_curr);
+			            SCALE, spritemaps[o->spritemap_id], 
+			            o->anim_curr == ANIM_STEP_INIT ? get_next_anim_frame(o->animid, o->anim_curr) : o->anim_curr, 0);
 			obj_visited++;
 		}
 		SDL_UpdateRect(surface, SCREEN_MIN_X ,SCREEN_MIN_Y , SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
