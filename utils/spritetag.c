@@ -62,13 +62,16 @@ static void print_tag() {
 	printf("%s", buf);
 }
 
+/* draws a grid around each pixel. if SCALE == 1, the entire sprite will be overpainted */
 static void draw_grid() {
 	int x, w = palpic_getspritewidth(pic);
 	int y, h = palpic_getspriteheight(pic);
 	sdl_rgb_t *pix = (sdl_rgb_t*) surface->pixels;
 	unsigned pitch = surface->pitch / 4;
+	/* draw horizontal lines */
 	for(y = 0; y <= h * SCALE; y += SCALE) for(x = 0; x <= w * SCALE; x++) 
 		pix[y * pitch + x] = SRGB(255,255,255);
+	/* draw vertical lines */
 	for(y = 0; y <= h * SCALE; y ++) for(x = 0; x <= w * SCALE; x += SCALE) 
 		pix[y * pitch + x] = SRGB(255,0,255);
 }
@@ -83,7 +86,7 @@ static void draw() {
 	
 	clear();
 	
-	blit_sprite(0, 0, surface->pixels, surface->pitch, SCALE, pic, activesprite);
+	blit_sprite(0, 0, surface->pixels, surface->pitch, SCALE, pic, activesprite, 0);
 	
 	if(grid_enabled) draw_grid();
 	
