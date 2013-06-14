@@ -15,14 +15,14 @@ static sdl_rgb_t convert_prgb(prgb col) {
  * it only work as long as the sdl ARGB and the prgb RGBA type remain unchanged */
 #define convert_prgb(x) ((sdl_rgb_t){ .asInt  = x .val >> 8 } )
 #endif
-void blit_sprite(int x_pos, int y_pos, void *video_mem, unsigned videomem_pitch, 
+void blit_sprite(int x_pos, int y_pos, struct vo_desc *video, 
 	         unsigned scale, const struct palpic* pic, uint16_t spritenum, const prgb *palette) {
 	unsigned sprite_width = palpic_getspritewidth(pic);
 	unsigned sprite_height = palpic_getspriteheight(pic);
 	if(!palette) palette = palpic_getpalette(pic);
 	const uint8_t *bitmap = palpic_getspritedata(pic, spritenum);
 	unsigned int scale_y, scale_x, y, x;
-	unsigned lineoffset = y_pos * (videomem_pitch / 4);
+	unsigned lineoffset = y_pos * (video->pitch / 4);
 	unsigned pixel_start = 0;
 	static const sdl_rgb_t mask_colors_transp[2] = {
 		[0] = (SRGB_BLACK),
@@ -35,7 +35,7 @@ void blit_sprite(int x_pos, int y_pos, void *video_mem, unsigned videomem_pitch,
 	const sdl_rgb_t *mask_colors = (pic->flags & PPF_TRANSPARENT ? mask_colors_transp : mask_colors_non_transp);
 	for (y = 0; y < sprite_height; y++) {
 		for(scale_y = 0; scale_y < scale; scale_y++) {
-			sdl_rgb_t *ptr = &((sdl_rgb_t *) video_mem)[lineoffset + x_pos];
+			sdl_rgb_t *ptr = &((sdl_rgb_t *) video->mem)[lineoffset + x_pos];
 			const uint8_t *p = &bitmap[pixel_start];
 			for (x = 0; x < sprite_width; x++) {
 				prgb col = palette[*p++];
@@ -46,7 +46,7 @@ void blit_sprite(int x_pos, int y_pos, void *video_mem, unsigned videomem_pitch,
 					ptr++;
 				}
 			}
-			lineoffset += videomem_pitch / 4;
+			lineoffset += video->pitch / 4;
 		}
 		pixel_start += sprite_width;
 	}
