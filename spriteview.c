@@ -182,19 +182,47 @@ static void init_maps() {
 
 static void draw_map() {
 	int y, x, my, mx;
-	for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < 6; my++, y+=32*SCALE)
+	if(map_off >= 192) {
+		if(map_lower + 1 < map->screen_count) {
+			map_lower++;
+			map_off -= 192;
+		} else map_off = 8;
+	}
+	if(map_lower + 1 < map->screen_count) {
+		for(my = 6-map_off/32-!!(map_off%32), y = SCREEN_MIN_Y + (!!(map_off%32)*32-(map_off%32))*-SCALE; my < 6; my++, y+=32*SCALE)
+			for(mx = 0, x = SCREEN_MIN_X; mx < 3; mx++, x += 64*SCALE)
+				blit_sprite(x, y, &video,
+					SCALE, map_bg, map_screens[map_lower+1].bg[my][mx], 0);
+		for(my = 12-map_off/16-!!(map_off%16), y = SCREEN_MIN_Y + (!!(map_off%16)*16-(map_off%16))*-SCALE; my < 12; my++, y+=16*SCALE)
+			for(mx = 0, x = SCREEN_MIN_X; mx < 12; mx++, x += 16*SCALE)
+				blit_sprite(x, y, &video,
+					SCALE, map_fg, map_screens[map_lower+1].fg[my][mx], 0);
+	}
+	int yleft = 200-map_off;
+	if(yleft > 192) yleft = 192;
+	for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < yleft/32+!!(yleft%32); my++, y+=32*SCALE)
 		for(mx = 0, x = SCREEN_MIN_X; mx < 3; mx++, x += 64*SCALE)
 			blit_sprite(x, y, &video,
 				    SCALE, map_bg, map_screens[map_lower].bg[my][mx], 0);
-	for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < 12; my++, y+=16*SCALE)
+	for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < yleft/16+!!(yleft%16); my++, y+=16*SCALE)
 		for(mx = 0, x = SCREEN_MIN_X; mx < 12; mx++, x += 16*SCALE)
 			blit_sprite(x, y, &video,
 				    SCALE, map_fg, map_screens[map_lower].fg[my][mx], 0);
+			
+	if(map_off < 8 && map_lower) {
+		for(mx = 0, x = SCREEN_MIN_X; mx < 3; mx++, x += 64*SCALE)
+			blit_sprite(x, SCALE*(192+map_off), &video,
+				    SCALE, map_bg, map_screens[map_lower-1].bg[0][mx], 0);
+		for(mx = 0, x = SCREEN_MIN_X; mx < 12; mx++, x += 16*SCALE)
+			blit_sprite(x, SCALE*(192+map_off), &video,
+				    SCALE, map_fg, map_screens[map_lower-1].fg[0][mx], 0);
+	}
 	
 }
 
 static void scroll_map() {
-	
+	map_off += 6;
+	objs[player_ids[0]].pos.y += 6;
 }
 
 static void redraw_bg() {
@@ -1075,6 +1103,7 @@ int main() {
 										if(aid != ANIM_INVALID) switch_anim(player_id, aid);
 									}
 									objs[player_id].vel = get_vel_from_direction(dir, player_speed);
+									if(dir == DIR_N) scroll_map();
 								} else {
 									objs[player_id].vel = VEC(0,0);
 								}
