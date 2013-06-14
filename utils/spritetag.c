@@ -11,6 +11,17 @@ int SCALE = 16;
 const struct palpic* pic = &flame.header;
 
 SDL_Surface *surface;
+struct vo_desc video;
+
+static void init_video() {
+	SDL_Init(SDL_INIT_VIDEO);
+	surface = SDL_SetVideoMode(VMODE_W, VMODE_H, 32, SDL_RESIZABLE | SDL_HWPALETTE);
+	video.mem = surface->pixels;
+	video.pitch = surface->pitch;
+	video.width = VMODE_W;
+	video.height = VMODE_H;
+}
+
 vec2f mousepos;
 vec2f tag;
 int activesprite;
@@ -86,7 +97,7 @@ static void draw() {
 	
 	clear();
 	
-	blit_sprite(0, 0, surface->pixels, surface->pitch, SCALE, pic, activesprite, 0);
+	blit_sprite(0, 0, &video, SCALE, pic, activesprite, 0);
 	
 	if(grid_enabled) draw_grid();
 	
@@ -110,8 +121,7 @@ static void tick(unsigned need_redraw) {
 }
 
 int main() {
-	SDL_Init(SDL_INIT_VIDEO);
-	surface = SDL_SetVideoMode(VMODE_W, VMODE_H, 32, SDL_RESIZABLE | SDL_HWPALETTE);
+	init_video();
 	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	SDL_EnableKeyRepeat(100, 20);
 	tick(1);
