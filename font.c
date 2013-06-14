@@ -17,6 +17,7 @@
 
 
 extern SDL_Surface *surface;
+extern struct vo_desc video;
 
 static int chartofontindex(int c) {
 	switch(c) {
@@ -35,5 +36,5 @@ void font_print(int x, int y, char *str, size_t len, unsigned scale, prgb color)
 	size_t i;
 	prgb col[2] = {PRGB(0,0,0), color };
 	for(i = 0; i < len; i++, x+=8*scale)
-		blit_sprite(x,y,surface->pixels, surface->pitch, scale, &font.header, chartofontindex(str[i]), col);
+		blit_sprite(x,y, &video, scale, &font.header, chartofontindex(str[i]), col);
 }

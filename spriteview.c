@@ -19,6 +19,7 @@
 #include "spritemaps.h"
 #include "enemy.h"
 #include "font.h"
+#include "maps/map_pakistan.c"
 
 #include <SDL/SDL.h>
 
@@ -139,6 +140,8 @@ static int get_next_anim_frame(enum animation_id aid, anim_step curr) {
 #define SCREEN_MIN_Y 0
 #define SCREEN_MAX_Y 200*SCALE
 
+struct vo_desc video;
+
 static void draw_status_bar(void) {
 	enum weapon_id wid = get_active_weapon_id(0);
 	int x, y;
@@ -149,7 +152,7 @@ static void draw_status_bar(void) {
 			ptr[y*pitch + x] = SRGB_BLACK;
 		
 	blit_sprite(((320 / 2) - (59 / 2)) * SCALE, (200 + (40/2) - (16/2)) * SCALE,
-	            surface->pixels, surface->pitch, SCALE, &weapon_sprites.header, wid, 0);
+	            &video, SCALE, &weapon_sprites.header, wid, 0);
 	
 	char buf[16];
 	snprintf(buf, 16, "%.6u", objs[player_ids[0]].objspecific.playerdata.score);
@@ -163,12 +166,43 @@ static void clear_screen(void) {
 	for(y = 0; y < VMODE_H; y++) for (x = 0; x < VMODE_W; x++)
 		ptr[y*pitch + x] = SRGB_BLACK;
 }
+#include "sprites/bg_desert.c"
+#include "sprites/map_desert.c"
+const struct map *map = &map_pakistan.header;
+const struct map_screen* map_screens = map_pakistan.screens;
+const struct palpic *map_bg = &bg_desert.header;
+const struct palpic *map_fg = &map_desert.header;
+unsigned map_off;
+unsigned map_lower;
+
+static void init_maps() {
+	map_off = 8;
+	map_lower = 1;
+}
+
+static void draw_map() {
+	int y, x, my, mx;
+	for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < 6; my++, y+=32*SCALE)
+		for(mx = 0, x = SCREEN_MIN_X; mx < 3; mx++, x += 64*SCALE)
+			blit_sprite(x, y, &video,
+				    SCALE, map_bg, map_screens[map_lower].bg[my][mx], 0);
+	for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < 12; my++, y+=16*SCALE)
+		for(mx = 0, x = SCREEN_MIN_X; mx < 12; mx++, x += 16*SCALE)
+			blit_sprite(x, y, &video,
+				    SCALE, map_fg, map_screens[map_lower].fg[my][mx], 0);
+	
+}
+
+static void scroll_map() {
+	
+}
 
 static void redraw_bg() {
 	unsigned lineoffset = 0, x, y;
 	(void) lineoffset;
 	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
 	unsigned pitch = surface->pitch/4;
+	/*
 	srand(1);
 	for(y = SCREEN_MIN_Y; y < SCREEN_MAX_Y; y++) {
 		//unsigned lineoffset = y * (surface->pitch / 4);
@@ -177,7 +211,8 @@ static void redraw_bg() {
 			if(rand()%16 == 1) ptr[y*pitch + x] = SRGB(0x55, 0x77, 0x77);
 			else ptr[y*pitch + x] = SRGB(0x33, 0x55, 0x55);
 		}
-	}
+	}*/
+	draw_map();
 	draw_status_bar();
 }
 
@@ -477,6 +512,15 @@ static void fire_bullet(int player_no) {
 		audio_play_wave_resource(wf);
 }
 
+static void init_video() {
+	SDL_Init(SDL_INIT_VIDEO);
+	surface = SDL_SetVideoMode(VMODE_W, VMODE_H, 32, SDL_RESIZABLE | SDL_HWPALETTE);
+	video.mem = surface->pixels;
+	video.pitch = surface->pitch;
+	video.width = VMODE_W;
+	video.height = VMODE_H;
+}
+
 static void init_game_objs() {
 	sblist_init(&go_players, 1, 4);
 	sblist_init(&go_player_bullets, 1, 32);
@@ -488,6 +532,7 @@ static void init_game_objs() {
 	sblist_init(&go_enemies, 1, 32);
 	init_player(0);
 	init_crosshair();
+	init_maps();
 }
 
 static int point_in_mask(vec2f *point, int obj_id) {
@@ -754,7 +799,7 @@ static void game_tick(int force_redraw) {
 		for(i = 0, obj_visited = 0; obj_visited < obj_count && i < OBJ_MAX; i++) {
 			if(!obj_slot_used[i]) continue;
 			struct gameobj *o = &objs[i];
-			blit_sprite(o->pos.x, o->pos.y, surface->pixels, surface->pitch,
+			blit_sprite(o->pos.x, o->pos.y, &video,
 			            SCALE, spritemaps[o->spritemap_id], 
 			            o->anim_curr == ANIM_STEP_INIT ? get_next_anim_frame(o->animid, o->anim_curr) : o->anim_curr, 0);
 			obj_visited++;
@@ -934,9 +979,7 @@ static void switch_anim(int obj_id, int aid) {
 }
 
 int main() {
-
-	SDL_Init(SDL_INIT_VIDEO);
-	surface = SDL_SetVideoMode(VMODE_W, VMODE_H, 32, SDL_RESIZABLE | SDL_HWPALETTE);
+	init_video();
 	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	SDL_EnableKeyRepeat(100, 20);
 	SDL_ShowCursor(0);
