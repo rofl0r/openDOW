@@ -518,14 +518,14 @@ static void fire_bullet(int player_no) {
 			id = init_flame(dir, &from, &vel, steps);
 			break;
 		case ST_GRENADE:
-			init_grenade(&from, &vel, steps);
+			id = init_grenade(&from, &vel, steps);
 			break;
 		default:
 			abort();
 	}
 	player_ammo[player_no][pw->ammo]--;
 	const WAVE_HEADER_COMPLETE *wf = wavesounds[pw->sound];
-	if(pw->sound != WS_NONE)
+	if(id != -1 && pw->sound != WS_NONE)
 		audio_play_wave_resource(wf);
 }
 
