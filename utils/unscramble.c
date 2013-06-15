@@ -5,10 +5,11 @@
 
 #include "../vehicles_scrambled.c"
 #define sprite vehicles_scrambled
+#define scramble_factor 3
 
 int main() {
 	const struct palpic* f = & sprite .header;
-	PIX* o = pixCreate(f->width*2, palpic_getspritecount(f) * palpic_getspriteheight(f)/2, 32);
+	PIX* o = pixCreate(f->width*scramble_factor, palpic_getspritecount(f) * palpic_getspriteheight(f)/scramble_factor, 32);
 	prgb* palette = palpic_getpalette(f);
 	prgb* bufptr = (prgb*) o->data;
 	size_t i;
