@@ -461,7 +461,6 @@ static void fire_bullet(int player_no) {
 	vec2f from = get_gameobj_center(player_ids[player_no]);
 	//get_anim_from_vel(0, objs[player].
 	vec2f to = get_gameobj_center(crosshair_id);
-	srand(time(0) ^ player_ammo[player_no][pw->ammo]);
 	to.x += 4*SCALE - rand()%8*SCALE;
 	to.y += 4*SCALE - rand()%8*SCALE;
 	vec2f vel = velocity(&from, &to);
@@ -682,7 +681,6 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 						enum animation_id death_anim = bullet_subtybe == BS_FLAME ? ANIM_ENEMY_BURNT : get_die_anim(*target_id);
 						switch_anim(*target_id, death_anim);
 						const enum wavesound_id wid[] = { WS_SCREAM, WS_SCREAM2 };
-						srand(time(0));
 						audio_play_wave_resource(wavesounds[wid[rand()%2]]);
 						if(bullet_subtybe == BS_BULLET) {
 							gameobj_free(*bullet_id);
@@ -1061,7 +1059,6 @@ int main() {
 						case SDLK_ESCAPE:
 							goto dun_goofed;
 						case SDLK_e: {
-							srand(time(0));
 							const enum direction face_dir[] = { DIR_S, DIR_O, DIR_W };
 							struct enemy e;
 							e.curr_step = 0;
