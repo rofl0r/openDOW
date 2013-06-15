@@ -230,20 +230,6 @@ static void scroll_map() {
 }
 
 static void redraw_bg() {
-	unsigned lineoffset = 0, x, y;
-	(void) lineoffset;
-	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
-	unsigned pitch = surface->pitch/4;
-	/*
-	srand(1);
-	for(y = SCREEN_MIN_Y; y < SCREEN_MAX_Y; y++) {
-		//unsigned lineoffset = y * (surface->pitch / 4);
-		for(x = SCREEN_MIN_X; x < SCREEN_MAX_X; x++) {
-			//ptr[lineoffset + x] = SRGB_BLUE;
-			if(rand()%16 == 1) ptr[y*pitch + x] = SRGB(0x55, 0x77, 0x77);
-			else ptr[y*pitch + x] = SRGB(0x33, 0x55, 0x55);
-		}
-	}*/
 	draw_map();
 	draw_status_bar();
 }
