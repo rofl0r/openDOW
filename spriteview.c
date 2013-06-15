@@ -177,13 +177,13 @@ unsigned map_lower;
 
 static void init_maps() {
 	map_off = 8;
-	map_lower = 1;
+	map_lower = 0;
 }
 
 static void draw_map() {
 	int y, x, my, mx;
-	if(map_off >= 192) {
-		if(map_lower + 1 < map->screen_count) {
+	if(map_off > 192) {
+		if(map_lower + 2 < map->screen_count) {
 			map_lower++;
 			map_off -= 192;
 		} else map_off = 8;
@@ -221,8 +221,12 @@ static void draw_map() {
 }
 
 static void scroll_map() {
-	map_off += 6;
-	objs[player_ids[0]].pos.y += 6;
+	int scroll_step = 3;
+	if(map_off + scroll_step >= 192 && map_lower + 2 >= map->screen_count) {
+		scroll_step = 192 - map_off;
+	}	
+	map_off += scroll_step;
+	objs[player_ids[0]].pos.y += scroll_step*SCALE;
 }
 
 static void redraw_bg() {
