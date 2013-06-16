@@ -6,8 +6,6 @@
 //RcB: LINK "-lSDL"
 #include "../sdl_rgb.h"
 #include "../vec2f.h"
-#define VMODE_W 1200
-#define VMODE_H 800
 
 #include "../sprites/bg_urban.c"
 #include "../sprites/bg_forest.c"
@@ -17,6 +15,26 @@
 #include "../sprites/map_desert.c"
 
 #define SCALE 2
+#define BORDER_W 4
+#define BORDER_H 4
+
+#define STARTX (BORDER_W*SCALE)
+#define STARTY (BORDER_H*SCALE)
+#define ENDX (STARTX+192*SCALE)
+#define ENDY (STARTY+192*SCALE)
+
+#define BRUSH_STARTX (STARTX + 192*SCALE + BORDER_W*SCALE)
+#define BRUSH_STARTY (STARTY)
+#define BRUSH_ENDX (BRUSH_STARTX + 64*SCALE)
+#define BRUSH_ENDY (BRUSH_STARTY + 32*6*SCALE)
+
+#define BRUSHFG_STARTX (BRUSH_STARTX + 64*SCALE + BORDER_W*SCALE)
+#define BRUSHFG_STARTY (BRUSH_STARTY)
+#define BRUSHFG_ENDX (BRUSHFG_STARTX + 14*16*SCALE)
+#define BRUSHFG_ENDY (BRUSHFG_STARTY + 15*16*SCALE)
+
+#define VMODE_W (BRUSHFG_ENDX + BORDER_W*SCALE)
+#define VMODE_H (BRUSHFG_ENDY + BORDER_H*SCALE)
 
 struct map map;
 struct map_screen mapscreen;
@@ -37,11 +55,6 @@ const struct palpic *bg_sprites;
 int fullscreen_active;
 int grid_enabled;
 
-#define STARTX (16*SCALE)
-#define STARTY (16*SCALE)
-#define ENDX (STARTX+192*SCALE)
-#define ENDY (STARTY+192*SCALE)
-
 void paint_map() {
 	int bg_x, bg_y, x, y;
 	int w, h;
@@ -59,18 +72,6 @@ void paint_map() {
 			blit_sprite(STARTX + x,STARTY + y, &video, SCALE, fg_sprites, mapscreen.fg[bg_y][bg_x], 0);
 		}
 }
-
-#define BRUSH_STARTX (STARTX + 192*SCALE + 16*SCALE)
-#define BRUSH_STARTY (STARTY)
-#define BRUSH_ENDX (BRUSH_STARTX + 64*SCALE)
-#define BRUSH_ENDY (BRUSH_STARTY + 32*6*SCALE)
-
-#define BRUSHFG_STARTX (BRUSH_STARTX + 64*SCALE + 16*SCALE)
-#define BRUSHFG_STARTY (BRUSH_STARTY)
-#define BRUSHFG_ENDX (BRUSHFG_STARTX + 14*16*SCALE)
-#define BRUSHFG_ENDY (BRUSHFG_STARTY + 15*16*SCALE)
-
-
 
 void paint_brushes() {
 	int bg_x, bg_y, x, y;
