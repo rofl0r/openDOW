@@ -721,6 +721,7 @@ static int advance_animations(void) {
 }
 
 static void game_tick(int force_redraw) {
+	int need_redraw = force_redraw;
 	size_t obj_visited;
 	const int fps = 64;
 	size_t i;
@@ -750,28 +751,28 @@ static void game_tick(int force_redraw) {
 		   (objs[item_id].animid == ANIM_ENEMY_BOMBER_DIE || objs[item_id].animid == ANIM_ENEMY_GUNNER_DIE))
 	}
 	*/
-	if(advance_animations()) force_redraw = 1;
-	if(hit_bullets(&go_player_bullets, &go_enemies)) force_redraw = 1;
-	if(hit_bullets(&go_flames, &go_enemies)) force_redraw = 1;
-	if(hit_bullets(&go_explosions, &go_enemies)) force_redraw = 1;
-	if(hit_bullets(&go_explosions, &go_players)) force_redraw = 1;
-	if(hit_bullets(&go_enemy_bullets, &go_players)) force_redraw = 1;
-	if(remove_bullets(&go_player_bullets)) force_redraw = 1;
-	if(remove_bullets(&go_flames)) force_redraw = 1;
-	if(remove_bullets(&go_explosions)) force_redraw = 1;
-	if(remove_bullets(&go_enemy_bullets)) force_redraw = 1;
-	if(remove_explosives()) force_redraw = 1;
+	if(advance_animations()) need_redraw = 1;
+	if(hit_bullets(&go_player_bullets, &go_enemies)) need_redraw = 1;
+	if(hit_bullets(&go_flames, &go_enemies)) need_redraw = 1;
+	if(hit_bullets(&go_explosions, &go_enemies)) need_redraw = 1;
+	if(hit_bullets(&go_explosions, &go_players)) need_redraw = 1;
+	if(hit_bullets(&go_enemy_bullets, &go_players)) need_redraw = 1;
+	if(remove_bullets(&go_player_bullets)) need_redraw = 1;
+	if(remove_bullets(&go_flames)) need_redraw = 1;
+	if(remove_bullets(&go_explosions)) need_redraw = 1;
+	if(remove_bullets(&go_enemy_bullets)) need_redraw = 1;
+	if(remove_explosives()) need_redraw = 1;
 	
 	size_t obj_count_copy = obj_count;
 	for(i = 0, obj_visited = 0; obj_visited < obj_count_copy && i < OBJ_MAX; i++) {
 		if(obj_slot_used[i]) {
 			struct gameobj *go = &objs[i];
 			obj_visited++;
-			if(go->anim_curr == ANIM_STEP_INIT) force_redraw = 1;
+			if(go->anim_curr == ANIM_STEP_INIT) need_redraw = 1;
 			if(go->objtype == OBJ_FLASH) {
 				if(go->objspecific.bullet.step_curr >= go->objspecific.bullet.step_max) {
 					gameobj_free(i);
-					force_redraw = 1;
+					need_redraw = 1;
 					continue;
 				} else go->objspecific.bullet.step_curr++;
 			} else if (go->objtype == OBJ_ENEMY_SHOOTER || go->objtype == OBJ_ENEMY_BOMBER) {
@@ -794,11 +795,11 @@ static void game_tick(int force_redraw) {
 						dprintf(2, "removed enemy from %.2f,%.2f\n", go->pos.x, go->pos.y);
 						gameobj_free(i);
 						golist_remove(&go_enemies, i);
-						force_redraw = 1;
+						need_redraw = 1;
 						continue;
 					}
 				}
-				force_redraw = 1;
+				need_redraw = 1;
 			}
 			if((go->objtype == OBJ_ENEMY_BOMBER || go->objtype == OBJ_ENEMY_SHOOTER) &&
 			   go->anim_curr == animations[go->animid].last &&
@@ -811,7 +812,7 @@ static void game_tick(int force_redraw) {
 	long ms_used = 0;
 	struct timeval timer;
 	gettimestamp(&timer);
-	if(force_redraw) {
+	if(need_redraw) {
 		redraw_bg();
 		for(i = 0, obj_visited = 0; obj_visited < obj_count && i < OBJ_MAX; i++) {
 			if(!obj_slot_used[i]) continue;
