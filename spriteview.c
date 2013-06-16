@@ -172,14 +172,16 @@ const struct map *map = &map_pakistan.header;
 const struct map_screen* map_screens = map_pakistan.screens;
 const struct palpic *map_bg = &bg_desert.header;
 const struct palpic *map_fg = &map_desert.header;
-int mapscreen_yoff;
+int mapscreen_yoff, mapscreen_xoff;
 struct { int x,y; } mapsquare;
 enum map_scrolldir mapscrolldir;
 
 static void init_maps() {
 	mapscreen_yoff = 0;
+	mapscreen_xoff = 0;
 	mapsquare.x = 5;
-	mapsquare.y = 26;
+	//mapsquare.y = 26;
+	mapsquare.y = 21;
 	mapscrolldir = MS_UP;
 }
 
@@ -187,46 +189,67 @@ static void draw_map() {
 	int y, x, my, mx;
 	dprintf(2, "%d\n", mapscreen_yoff);
 	unsigned map_off = 192-mapscreen_yoff;
+	unsigned vis_x = 192-mapscreen_xoff;
+	int x_iter_max16 = 192/16;
+	int x_iter_max64 = 192/64;
+	unsigned x_iter_start64 = x_iter_max64 - (vis_x / 64 + !!(vis_x % 64));
+	unsigned x_iter_start16 = x_iter_max16 - (vis_x / 16 + !!(vis_x % 16));
+	
+	int x_screen_start64 = -(!!(vis_x%64)*64-(vis_x%64));
+	int x_screen_start16 = -(!!(vis_x%16)*16-(vis_x%16));
 
-	for(my = 6-map_off/32-!!(map_off%32), y = SCREEN_MIN_Y + (!!(map_off%32)*32-(map_off%32))*-SCALE; my < 6; my++, y+=32*SCALE)
-		for(mx = 0, x = SCREEN_MIN_X; mx < 3; mx++, x += 64*SCALE)
-			blit_sprite(x, y, &video,
-				SCALE, map_bg, map_screens[map->screen_map[mapsquare.y][mapsquare.x]].bg[my][mx], 0);
-	for(my = 12-map_off/16-!!(map_off%16), y = SCREEN_MIN_Y + (!!(map_off%16)*16-(map_off%16))*-SCALE; my < 12; my++, y+=16*SCALE)
-		for(mx = 0, x = SCREEN_MIN_X; mx < 12; mx++, x += 16*SCALE)
-			blit_sprite(x, y, &video,
-				SCALE, map_fg, map_screens[map->screen_map[mapsquare.y][mapsquare.x]].fg[my][mx], 0);
-	int yleft = 200-map_off;
-	if(yleft > 192) yleft = 192;
-	for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < yleft/32+!!(yleft%32); my++, y+=32*SCALE)
-		for(mx = 0, x = SCREEN_MIN_X; mx < 3; mx++, x += 64*SCALE)
-			blit_sprite(x, y, &video,
-				    SCALE, map_bg, map_screens[map->screen_map[mapsquare.y+1][mapsquare.x]].bg[my][mx], 0);
-	for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < yleft/16+!!(yleft%16); my++, y+=16*SCALE)
-		for(mx = 0, x = SCREEN_MIN_X; mx < 12; mx++, x += 16*SCALE)
-			blit_sprite(x, y, &video,
-				    SCALE, map_fg, map_screens[map->screen_map[mapsquare.y+1][mapsquare.x]].fg[my][mx], 0);
-			
-	if(mapscreen_yoff > 192 - 8) {
-		for(mx = 0, x = SCREEN_MIN_X; mx < 3; mx++, x += 64*SCALE)
-			blit_sprite(x, SCALE*(192*2-mapscreen_yoff), &video,
-				    SCALE, map_bg, map_screens[map->screen_map[mapsquare.y+2][mapsquare.x]].bg[0][mx], 0);
-		for(mx = 0, x = SCREEN_MIN_X; mx < 12; mx++, x += 16*SCALE)
-			blit_sprite(x, SCALE*(192*2-mapscreen_yoff), &video,
-				    SCALE, map_fg, map_screens[map->screen_map[mapsquare.y+2][mapsquare.x]].fg[0][mx], 0);
+	unsigned x_screen_iter;
+	for(x_screen_iter = 0; x_screen_iter <= !!mapscreen_xoff; x_screen_iter++) {
+		if(x_screen_iter) {
+			x_screen_start16 = x_screen_start16+(x_iter_max16-x_iter_start16)*16;
+			x_screen_start64 = x_screen_start64+(x_iter_max64-x_iter_start64)*64;
+			x_iter_max16 = mapscreen_xoff / 16 + !!(mapscreen_xoff % 16);
+			x_iter_max64 = mapscreen_xoff / 64 + !!(mapscreen_xoff % 64);
+			x_iter_start16 = 0;
+			x_iter_start64 = 0;
+		}
+
+		for(my = 6-map_off/32-!!(map_off%32), y = SCREEN_MIN_Y + (!!(map_off%32)*32-(map_off%32))*-SCALE; my < 6; my++, y+=32*SCALE)
+			for(mx = x_iter_start64, x = SCREEN_MIN_X + x_screen_start64*SCALE; mx < x_iter_max64; mx++, x += 64*SCALE)
+				blit_sprite(x, y, &video,
+					SCALE, map_bg, map_screens[map->screen_map[mapsquare.y][mapsquare.x]].bg[my][mx], 0);
+		for(my = 12-map_off/16-!!(map_off%16), y = SCREEN_MIN_Y + (!!(map_off%16)*16-(map_off%16))*-SCALE; my < 12; my++, y+=16*SCALE)
+			for(mx = x_iter_start16, x = SCREEN_MIN_X + x_screen_start16*SCALE; mx < x_iter_max16; mx++, x += 16*SCALE)
+				blit_sprite(x, y, &video,
+					SCALE, map_fg, map_screens[map->screen_map[mapsquare.y][mapsquare.x]].fg[my][mx], 0);
+		int yleft = 200-map_off;
+		if(yleft > 192) yleft = 192;
+		for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < yleft/32+!!(yleft%32); my++, y+=32*SCALE)
+			for(mx = x_iter_start64, x = SCREEN_MIN_X + x_screen_start64*SCALE; mx < x_iter_max64; mx++, x += 64*SCALE)
+				blit_sprite(x, y, &video,
+					SCALE, map_bg, map_screens[map->screen_map[mapsquare.y+1][mapsquare.x]].bg[my][mx], 0);
+		for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < yleft/16+!!(yleft%16); my++, y+=16*SCALE)
+			for(mx = x_iter_start16, x = SCREEN_MIN_X + x_screen_start16*SCALE; mx < x_iter_max16; mx++, x += 16*SCALE)
+				blit_sprite(x, y, &video,
+					SCALE, map_fg, map_screens[map->screen_map[mapsquare.y+1][mapsquare.x]].fg[my][mx], 0);
+				
+		/* this is never triggered when mapscreen_xoff != 0 */
+		if(mapscreen_yoff > 192 - 8) {
+			for(mx = 0, x = SCREEN_MIN_X + x_screen_start64*SCALE; mx < 3; mx++, x += 64*SCALE)
+				blit_sprite(x, SCALE*(192*2-mapscreen_yoff), &video,
+					SCALE, map_bg, map_screens[map->screen_map[mapsquare.y+2][mapsquare.x]].bg[0][mx], 0);
+			for(mx = 0, x = SCREEN_MIN_X + x_screen_start16*SCALE; mx < 12; mx++, x += 16*SCALE)
+				blit_sprite(x, SCALE*(192*2-mapscreen_yoff), &video,
+					SCALE, map_fg, map_screens[map->screen_map[mapsquare.y+2][mapsquare.x]].fg[0][mx], 0);
+		}
 	}
 	
 }
 
 #define VSCROLL_TRESHOLD (200-64)
 #define HSCROLLR_TRESHOLD 64
-#define HSCROLLL_TRESHOLD 64
+#define HSCROLLL_TRESHOLD 128
 static int scroll_needed() {
 	struct gameobj *player = &objs[player_ids[0]];
 	if(mapscrolldir == MS_UP && player->pos.y < VSCROLL_TRESHOLD*SCALE) {
 			return 1;
 	} else if((mapscrolldir == MS_RIGHT && player->pos.x < HSCROLLR_TRESHOLD*SCALE) ||
-		  (mapscrolldir == MS_LEFT  && player->pos.x < HSCROLLR_TRESHOLD*SCALE)) {
+		  (mapscrolldir == MS_LEFT  && player->pos.x - SCREEN_MIN_X < HSCROLLL_TRESHOLD*SCALE)) {
 		return 1;
 	}
 	return 0;
@@ -248,9 +271,7 @@ static int scroll_map() {
 					scroll_step = -mapscreen_yoff;
 					mapscreen_yoff = 0;
 					mapsquare.y++;
-					mapsquare.x++;
-					if(map->screen_map[mapsquare.y][mapsquare.x] == MAPSCREEN_BLOCKED) {
-						mapsquare.x -= 2;
+					if(map->screen_map[mapsquare.y][mapsquare.x+1] == MAPSCREEN_BLOCKED) {
 						mapscrolldir = MS_LEFT;
 					} else {
 						mapscrolldir = MS_RIGHT;
@@ -259,16 +280,34 @@ static int scroll_map() {
 					mapscreen_yoff += 192;
 				}
 			}
-#if 1
+			handle_objs:;
 			unsigned i, avail = obj_count;
 			for(i = 0; i < OBJ_MAX && avail; i++) {
 				if(!obj_slot_used[i]) continue;
 				avail--;
-				if(objs[i].objtype != OBJ_CROSSHAIR)
-					objs[i].pos.y += scroll_step*SCALE;
+				if(objs[i].objtype != OBJ_CROSSHAIR) {
+					if(mapscrolldir == MS_UP)
+						objs[i].pos.y += scroll_step*SCALE;
+					else if(mapscrolldir == MS_LEFT)
+						objs[i].pos.x += scroll_step*SCALE;
+				}
 			}
-#endif
 			ret = 1;
+		} else if(mapscrolldir == MS_LEFT) {
+			mapscreen_xoff -= scroll_step;
+			if(mapscreen_xoff < 0) {
+				mapsquare.x--;
+				if(map->screen_map[mapsquare.y][mapsquare.x] == MAPSCREEN_BLOCKED) {
+					scroll_step = -mapscreen_xoff;
+					mapscreen_xoff = 0;
+					mapscreen_yoff = 0;
+					mapsquare.x++;
+					mapscrolldir = MS_UP;
+				} else {
+					mapscreen_xoff += 192;
+				}
+			} 
+			goto handle_objs;
 		}
 	}
 	return ret;
