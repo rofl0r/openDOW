@@ -30,4 +30,23 @@ static inline const char* dir_name(enum direction dir) {
 	return dir_names[dir];
 }
 
+enum __attribute__ ((__packed__)) direction_bits {
+	DIRB_INVALID = 0,
+	DIRB_N = 1 << 0,
+	DIRB_S = 1 << 1,
+	DIRB_O = 1 << 2,
+	DIRB_W = 1 << 3,
+	DIRB_NW = DIRB_N | DIRB_W,
+	DIRB_SW = DIRB_S | DIRB_W,
+	DIRB_SO = DIRB_S | DIRB_O,
+	DIRB_NO = DIRB_N | DIRB_O,
+};
+
+extern const enum direction_bits direction_directionbit_lut[];
+extern const enum direction directionbit_direction_lut[];
+#define direction_to_directionbit(dir) direction_directionbit_lut[dir]
+#define directionbit_to_direction(db) direction_directionbit_lut[db]
+
+//RcB: DEP "direction.c"
+
 #endif
