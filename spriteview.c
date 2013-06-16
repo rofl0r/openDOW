@@ -1033,11 +1033,13 @@ int main() {
 		unsigned need_redraw = 0;
 		int weapon_inc = 0;
 		while (SDL_PollEvent(&sdl_event)) {
+			need_redraw = 0;
 			switch (sdl_event.type) {
 				case SDL_MOUSEMOTION:
+					if((int)mousepos->x != sdl_event.motion.x || (int)mousepos->y != sdl_event.motion.y)
+						need_redraw = 1;
 					mousepos->x = sdl_event.motion.x;
 					mousepos->y = sdl_event.motion.y;
-					need_redraw = 1;
 					break;
 				case SDL_MOUSEBUTTONDOWN:
 					mousepos->x = sdl_event.button.x;
