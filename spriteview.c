@@ -256,8 +256,21 @@ static int scroll_needed() {
 	return 0;
 }
 
-static int scroll_possible() {
-	return 1;
+static void scroll_gameobjs(int scroll_step) {
+	if(!scroll_step) return;
+	unsigned i, avail = obj_count;
+	for(i = 0; i < OBJ_MAX && avail; i++) {
+		if(!obj_slot_used[i]) continue;
+		avail--;
+		if(objs[i].objtype == OBJ_CROSSHAIR) continue;
+		
+		if(mapscrolldir == MS_UP)
+			objs[i].pos.y += scroll_step*SCALE;
+		else if(mapscrolldir == MS_LEFT)
+			objs[i].pos.x += scroll_step*SCALE;
+		else if(mapscrolldir == MS_RIGHT)
+			objs[i].pos.x -= scroll_step*SCALE;
+	}
 }
 
 static int scroll_map() {
@@ -272,30 +285,19 @@ static int scroll_map() {
 					scroll_step = -mapscreen_yoff;
 					mapscreen_yoff = 0;
 					mapsquare.y++;
+					scroll_gameobjs(scroll_step);
 					if(map->screen_map[mapsquare.y][mapsquare.x+1] == MAPSCREEN_BLOCKED) {
 						mapscrolldir = MS_LEFT;
 					} else {
 						mapscrolldir = MS_RIGHT;
 					}
+					scroll_step = 0;
 				} else {
 					mapscreen_yoff += 192;
 				}
 			}
 			handle_objs:;
-			unsigned i, avail = obj_count;
-			for(i = 0; i < OBJ_MAX && avail; i++) {
-				if(!obj_slot_used[i]) continue;
-				avail--;
-				if(objs[i].objtype != OBJ_CROSSHAIR) {
-					if(mapscrolldir == MS_UP)
-						objs[i].pos.y += scroll_step*SCALE;
-					else if(mapscrolldir == MS_LEFT)
-						objs[i].pos.x += scroll_step*SCALE;
-					else if(mapscrolldir == MS_RIGHT)
-						objs[i].pos.x -= scroll_step*SCALE;
-					
-				}
-			}
+			scroll_gameobjs(scroll_step);
 			ret = 1;
 		} else if(mapscrolldir == MS_LEFT) {
 			mapscreen_xoff -= scroll_step;
@@ -306,7 +308,9 @@ static int scroll_map() {
 					mapscreen_xoff = 0;
 					mapscreen_yoff = 0;
 					mapsquare.x++;
+					scroll_gameobjs(scroll_step);
 					mapscrolldir = MS_UP;
+					scroll_step = 0;
 				} else {
 					mapscreen_xoff += 192;
 				}
@@ -317,11 +321,13 @@ static int scroll_map() {
 			if(mapscreen_xoff > 192) {
 				mapsquare.x++;
 				if(map->screen_map[mapsquare.y][mapsquare.x] == MAPSCREEN_BLOCKED) {
-					scroll_step = -mapscreen_xoff;
+					scroll_step = mapscreen_xoff - 192;
 					mapscreen_xoff = 0;
 					mapscreen_yoff = 0;
 					mapsquare.x--;
+					scroll_gameobjs(scroll_step);
 					mapscrolldir = MS_UP;
+					scroll_step = 0;
 				} else {
 					mapscreen_xoff -= 192;
 				}
