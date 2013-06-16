@@ -707,11 +707,12 @@ static int advance_animations(void) {
 	for(i = 0, obj_visited = 0; obj_visited < obj_count && i < OBJ_MAX; i++) {
 		if(!obj_slot_used[i]) continue;
 		struct gameobj *go = &objs[i];
-		if((go->vel.x != 0 || go->vel.y != 0) || (go->objtype != OBJ_P1 && go->objtype != OBJ_P2) || is_death_anim(go->animid)) {
+		if(go->anim_curr == ANIM_STEP_INIT || (go->vel.x != 0 || go->vel.y != 0) || (go->objtype != OBJ_P1 && go->objtype != OBJ_P2) || is_death_anim(go->animid)) {
 			unsigned anim_delay = go->objtype == OBJ_BIG_EXPLOSION ? 8 : 4;
 			if(go->anim_curr == ANIM_STEP_INIT || tickcounter % anim_delay == go->anim_frame) {
+				anim_step last_anim = go->anim_curr;
 				go->anim_curr = get_next_anim_frame(go->animid, go->anim_curr);
-				res = 1;
+				if(last_anim != go->anim_curr) res = 1;
 			}
 		}
 		obj_visited++;
