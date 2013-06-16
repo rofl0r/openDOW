@@ -194,6 +194,12 @@ static void disable_sdl_cursor() {
 		SDL_ShowCursor(0);
 }
 
+static void fill() {
+	vec2f tile = get_tile(&brushbg_rect, 64*SCALE, 32*SCALE, &cursor.pos);
+	int x,y;
+	for(y = 0; y < 6; y++) for(x=0; x < 3; x++) mapscreen.bg[y][x] = tile.y;
+}
+
 static void set_bg() {
 	vec2f tile = get_tile(&brushbg_rect, 64*SCALE, 32*SCALE, &cursor.pos);
 	disable_sdl_cursor();
@@ -218,14 +224,16 @@ static void set_map_fg() {
 	mapscreen.fg[(int)tile.y][(int)tile.x] = cursor.spriteno;
 }
 
-static void process_click(void) {
+static void process_click(int isleft) {
 	if(point_in_rect(&cursor.pos, &map_rect)) {
+		if(!isleft) return;
 		if(cursor.ct == CT_BG) set_map_bg();
 		else if(cursor.ct == CT_FG) set_map_fg();
 	} else if (point_in_rect(&cursor.pos, &brushbg_rect)) {
-		set_bg();
+		if(isleft) set_bg();
+		else fill();
 	} else if (point_in_rect(&cursor.pos, &brushfg_rect)) {
-		set_fg();
+		if(isleft) set_fg();
 	}
 }
 
@@ -282,7 +290,7 @@ int main(int argc, char**argv) {
 					mousepos.x = sdl_event.button.x;
 					mousepos.y = sdl_event.button.y;
 					need_redraw = 1;
-					process_click();
+					process_click(sdl_event.button.button == SDL_BUTTON_LEFT);
 					break;
 				case SDL_MOUSEBUTTONUP:
 					mousepos.x = sdl_event.button.x;
