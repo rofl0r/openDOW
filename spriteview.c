@@ -218,28 +218,60 @@ static void draw_map() {
 	
 }
 
-static void scroll_map() {
-	int scroll_step = 2;
-	if(mapscrolldir == MS_UP) {
-		mapscreen_yoff -= scroll_step;
-		if(mapscreen_yoff < 0) {
-			mapsquare.y--;
-			if(map->screen_map[mapsquare.y][mapsquare.x] == MAPSCREEN_BLOCKED) {
-				scroll_step = -mapscreen_yoff;
-				mapscreen_yoff = 0;
-				mapsquare.y++;
-				mapsquare.x++;
+#define VSCROLL_TRESHOLD (200-64)
+#define HSCROLLR_TRESHOLD 64
+#define HSCROLLL_TRESHOLD 64
+static int scroll_needed() {
+	struct gameobj *player = &objs[player_ids[0]];
+	if(mapscrolldir == MS_UP && player->pos.y < VSCROLL_TRESHOLD*SCALE) {
+			return 1;
+	} else if((mapscrolldir == MS_RIGHT && player->pos.x < HSCROLLR_TRESHOLD*SCALE) ||
+		  (mapscrolldir == MS_LEFT  && player->pos.x < HSCROLLR_TRESHOLD*SCALE)) {
+		return 1;
+	}
+	return 0;
+}
+
+static int scroll_possible() {
+	return 1;
+}
+
+static int scroll_map() {
+	int ret = 0;
+	int scroll_step = 1;
+	if(scroll_needed()) {
+		if(mapscrolldir == MS_UP) {
+			mapscreen_yoff -= scroll_step;
+			if(mapscreen_yoff < 0) {
+				mapsquare.y--;
 				if(map->screen_map[mapsquare.y][mapsquare.x] == MAPSCREEN_BLOCKED) {
-					mapsquare.x -= 2;
-					mapscrolldir = MS_LEFT;
+					scroll_step = -mapscreen_yoff;
+					mapscreen_yoff = 0;
+					mapsquare.y++;
+					mapsquare.x++;
+					if(map->screen_map[mapsquare.y][mapsquare.x] == MAPSCREEN_BLOCKED) {
+						mapsquare.x -= 2;
+						mapscrolldir = MS_LEFT;
+					} else {
+						mapscrolldir = MS_RIGHT;
+					}
 				} else {
-					mapscrolldir = MS_RIGHT;
+					mapscreen_yoff += 192;
 				}
-			} else {
-				mapscreen_yoff += 192;
 			}
+#if 1
+			unsigned i, avail = obj_count;
+			for(i = 0; i < OBJ_MAX && avail; i++) {
+				if(!obj_slot_used[i]) continue;
+				avail--;
+				if(objs[i].objtype != OBJ_CROSSHAIR)
+					objs[i].pos.y += scroll_step*SCALE;
+			}
+#endif
+			ret = 1;
 		}
 	}
+	return ret;
 }
 
 static void redraw_bg() {
@@ -775,6 +807,7 @@ static void game_tick(int force_redraw) {
 	if(remove_bullets(&go_explosions)) need_redraw = 1;
 	if(remove_bullets(&go_enemy_bullets)) need_redraw = 1;
 	if(remove_explosives()) need_redraw = 1;
+	if(tickcounter % 2 == 0 && scroll_map()) need_redraw = 1;
 	
 	size_t obj_count_copy = obj_count;
 	for(i = 0, obj_visited = 0; obj_visited < obj_count_copy && i < OBJ_MAX; i++) {
@@ -799,25 +832,8 @@ static void game_tick(int force_redraw) {
 			int ismoving = 0;
 			if(go->vel.x != 0 || go->vel.y != 0) {
 				ismoving = 1;
-				enum direction_bits db = direction_to_directionbit(get_direction_from_vec(&go->vel));
-				if(go->objtype == OBJ_P1 || go->objtype == OBJ_P2) {
-					#define VSCROLL_TRESHOLD (200-64)
-					#define HSCROLLR_TRESHOLD 64
-					#define HSCROLLL_TRESHOLD 64
-					if(mapscrolldir == MS_UP && (db & DIRB_N) && go->pos.y + go->vel.y < VSCROLL_TRESHOLD*SCALE) {
-						scroll_map();
-						go->pos.x += go->vel.x;
-						goto skip_inc;
-					} else if((mapscrolldir == MS_RIGHT && (db & DIRB_O) && go->pos.x + go->vel.x < HSCROLLR_TRESHOLD*SCALE) ||
-						  (mapscrolldir == MS_LEFT && (db & DIRB_W) && go->pos.x + go->vel.x < HSCROLLR_TRESHOLD*SCALE)) {
-						scroll_map();
-						go->pos.y += go->vel.y;
-						goto skip_inc;
-					}
-				}
 				go->pos.x += go->vel.x;
 				go->pos.y += go->vel.y;
-				skip_inc:
 				if(go->objtype == OBJ_ENEMY_BOMBER || go->objtype == OBJ_ENEMY_SHOOTER) {
 					if(go->pos.x < SCREEN_MIN_X || go->pos.x > SCREEN_MAX_X ||
 					   go->pos.y < SCREEN_MIN_Y || go->pos.y > SCREEN_MAX_Y) {
@@ -876,6 +892,7 @@ static void game_tick(int force_redraw) {
 	if(mousebutton_down[MB_LEFT]) mousebutton_down[MB_LEFT]++;
 	
 	tickcounter++;
+
 	char buf [4];
 	snprintf(buf, 4, "%d", (int) obj_count);
 	SDL_WM_SetCaption(buf, 0);
