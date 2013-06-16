@@ -188,7 +188,6 @@ static void init_maps() {
 
 static void draw_map() {
 	int y, x, my, mx;
-	dprintf(2, "%d\n", mapscreen_yoff);
 	unsigned map_off = 192-mapscreen_yoff;
 	unsigned vis_x = 192-mapscreen_xoff;
 	int x_iter_max16 = 192/16;
