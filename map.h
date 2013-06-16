@@ -31,7 +31,9 @@ struct map {
 	const struct palpic *client_face;
 	const struct palpic *mini_pic;
 	vec2f worldmap_coords;
-	mapscreen_index screen_map[28][7]; 
+	mapscreen_index screen_map[28][7];
+	uint8_t bonuslayer[12][12];
+	mapscreen_index bonuslayer_index;
 };
 
 #endif
