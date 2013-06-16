@@ -15,6 +15,7 @@ while(<>) {
 		print "\t\t\t},\n\t\t\t.fg = {\n";
 		next;
 	}
+	next if(/^</ || /^>/);
 	chomp;
 	print "\t\t\t\t{$_},\n";
 }
