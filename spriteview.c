@@ -179,9 +179,10 @@ enum map_scrolldir mapscrolldir;
 static void init_maps() {
 	mapscreen_yoff = 0;
 	mapscreen_xoff = 0;
-	mapsquare.x = 5;
+	//mapsquare.x = 5;
 	//mapsquare.y = 26;
-	mapsquare.y = 21;
+	mapsquare.y = 15;
+	mapsquare.x = 1;
 	mapscrolldir = MS_UP;
 }
 
@@ -248,7 +249,7 @@ static int scroll_needed() {
 	struct gameobj *player = &objs[player_ids[0]];
 	if(mapscrolldir == MS_UP && player->pos.y < VSCROLL_TRESHOLD*SCALE) {
 			return 1;
-	} else if((mapscrolldir == MS_RIGHT && player->pos.x < HSCROLLR_TRESHOLD*SCALE) ||
+	} else if((mapscrolldir == MS_RIGHT && player->pos.x - SCREEN_MIN_X > HSCROLLR_TRESHOLD*SCALE) ||
 		  (mapscrolldir == MS_LEFT  && player->pos.x - SCREEN_MIN_X < HSCROLLL_TRESHOLD*SCALE)) {
 		return 1;
 	}
@@ -290,6 +291,9 @@ static int scroll_map() {
 						objs[i].pos.y += scroll_step*SCALE;
 					else if(mapscrolldir == MS_LEFT)
 						objs[i].pos.x += scroll_step*SCALE;
+					else if(mapscrolldir == MS_RIGHT)
+						objs[i].pos.x -= scroll_step*SCALE;
+					
 				}
 			}
 			ret = 1;
@@ -305,6 +309,21 @@ static int scroll_map() {
 					mapscrolldir = MS_UP;
 				} else {
 					mapscreen_xoff += 192;
+				}
+			} 
+			goto handle_objs;
+		} else if(mapscrolldir == MS_RIGHT) {
+			mapscreen_xoff += scroll_step;
+			if(mapscreen_xoff > 192) {
+				mapsquare.x++;
+				if(map->screen_map[mapsquare.y][mapsquare.x] == MAPSCREEN_BLOCKED) {
+					scroll_step = -mapscreen_xoff;
+					mapscreen_xoff = 0;
+					mapscreen_yoff = 0;
+					mapsquare.x--;
+					mapscrolldir = MS_UP;
+				} else {
+					mapscreen_xoff -= 192;
 				}
 			} 
 			goto handle_objs;
