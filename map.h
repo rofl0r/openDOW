@@ -5,14 +5,13 @@
 #include "palpic.h"
 #include "vec2f.h"
 
-enum mapscreen_scrolldir {
+enum map_scrolldir {
 	MS_UP,
 	MS_LEFT,
 	MS_RIGHT,
 };
 
 struct map_screen {
-	enum mapscreen_scrolldir scrolldir;
 	uint8_t bg[6][3];
 	uint8_t fg[12][12];
 };
@@ -23,13 +22,16 @@ enum map_type {
 	MT_DESERT,
 };
 
+typedef uint8_t mapscreen_index;
+#define MAPSCREEN_BLOCKED ((mapscreen_index) -1)
+
 struct map {
 	enum map_type maptype;
-	uint8_t screen_count;
 	const char *mission_text;
 	const struct palpic *client_face;
 	const struct palpic *mini_pic;
-	vec2f map_coords;
+	vec2f worldmap_coords;
+	mapscreen_index screen_map[28][7]; 
 };
 
 #endif
