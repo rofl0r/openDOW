@@ -54,7 +54,7 @@ void blit_sprite(int x_pos, int y_pos, struct vo_desc *video,
 			const uint8_t *p = &bitmap[pixel_start];
 			for (x = x_tl_off; x < sprite_width - x_br_off; x++) {
 				prgb col = palette[*p++];
-				uint32_t mask = mask_colors[(col.val == palette[0].val)].asInt;
+				uint32_t mask = mask_colors[(col.val == 0)].asInt;
 				for(scale_x = 0; scale_x < scale; scale_x++) {
 					ptr[0].asInt &= mask;
 					ptr[0].asInt |= convert_prgb(col).asInt;
