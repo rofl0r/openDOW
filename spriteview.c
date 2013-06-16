@@ -1158,10 +1158,14 @@ int main() {
 						case SDLK_RETURN:
 							if((sdl_event.key.keysym.mod & KMOD_LALT) ||
 							   (sdl_event.key.keysym.mod & KMOD_RALT)) {
+								fullscreen_active = !fullscreen_active;
 								SDL_WM_ToggleFullScreen(surface);
+								SDL_Delay(1);
 								clear_screen();
 								SDL_UpdateRect(surface,0,0,VMODE_W,VMODE_H);
-								fullscreen_active = !fullscreen_active;
+								SDL_Delay(1);
+								game_tick(1);
+								need_redraw = 1;
 							}
 							break;
 						case SDLK_KP_PLUS:
