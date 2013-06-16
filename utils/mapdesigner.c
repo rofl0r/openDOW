@@ -101,12 +101,20 @@ static void draw_grid(int x_pos, int y_pos, int w, int h, int x_count, int y_cou
 	int x,y;
 	sdl_rgb_t *pix = (sdl_rgb_t*) surface->pixels;
 	unsigned pitch = surface->pitch / 4;
+	unsigned max_off = VMODE_H*VMODE_W;
+	unsigned off;
 	/* horizontal */
-	for(y = 0; y <= y_count * h * SCALE; y += h*SCALE) for(x = 0; x <= w * x_count * SCALE; x++) 
-		pix[(y_pos + y) * pitch + x + x_pos] = hcol;
+	for(y = 0; y <= y_count * h * SCALE; y += h*SCALE) for(x = 0; x <= w * x_count * SCALE; x++) {
+		off = (y_pos + y) * pitch + x + x_pos;
+		if(off >= max_off) break;
+		pix[off] = hcol;
+	}
 	/*vertical*/
-	for(y = 0; y <= y_count * h * SCALE; y++) for(x = 0; x <= w * x_count * SCALE; x += w*SCALE) 
-		pix[(y_pos + y) * pitch + x + x_pos] = vcol;
+	for(y = 0; y <= y_count * h * SCALE; y++) for(x = 0; x <= w * x_count * SCALE; x += w*SCALE) {
+		off = (y_pos + y) * pitch + x + x_pos;
+		if(off >= max_off) break;
+		pix[off] = vcol;
+	}
 }
 
 static void paint_grids() {
@@ -131,9 +139,6 @@ struct cursor {
 static void paint_cursor() {
 	if(cursor.ct == CT_NONE) return;
 	const struct palpic *p = cursor.ct == CT_BG ? bg_sprites : fg_sprites;
-	
-	if(cursor.pos.x + palpic_getspritewidth(p)*SCALE >= VMODE_W ||
-	   cursor.pos.y + palpic_getspriteheight(p)*SCALE >= VMODE_H) return;
 	
 	blit_sprite(cursor.pos.x, cursor.pos.y, 
 		    &video, SCALE,
