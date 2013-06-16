@@ -219,7 +219,7 @@ static void draw_map() {
 }
 
 static void scroll_map() {
-	int scroll_step = 3;
+	int scroll_step = 2;
 	if(mapscrolldir == MS_UP) {
 		mapscreen_yoff -= scroll_step;
 		if(mapscreen_yoff < 0) {
@@ -239,7 +239,6 @@ static void scroll_map() {
 				mapscreen_yoff += 192;
 			}
 		}
-		objs[player_ids[0]].pos.y += scroll_step*SCALE;
 	}
 }
 
@@ -800,8 +799,25 @@ static void game_tick(int force_redraw) {
 			int ismoving = 0;
 			if(go->vel.x != 0 || go->vel.y != 0) {
 				ismoving = 1;
+				enum direction_bits db = direction_to_directionbit(get_direction_from_vec(&go->vel));
+				if(go->objtype == OBJ_P1 || go->objtype == OBJ_P2) {
+					#define VSCROLL_TRESHOLD (200-64)
+					#define HSCROLLR_TRESHOLD 64
+					#define HSCROLLL_TRESHOLD 64
+					if(mapscrolldir == MS_UP && (db & DIRB_N) && go->pos.y + go->vel.y < VSCROLL_TRESHOLD*SCALE) {
+						scroll_map();
+						go->pos.x += go->vel.x;
+						goto skip_inc;
+					} else if((mapscrolldir == MS_RIGHT && (db & DIRB_O) && go->pos.x + go->vel.x < HSCROLLR_TRESHOLD*SCALE) ||
+						  (mapscrolldir == MS_LEFT && (db & DIRB_W) && go->pos.x + go->vel.x < HSCROLLR_TRESHOLD*SCALE)) {
+						scroll_map();
+						go->pos.y += go->vel.y;
+						goto skip_inc;
+					}
+				}
 				go->pos.x += go->vel.x;
 				go->pos.y += go->vel.y;
+				skip_inc:
 				if(go->objtype == OBJ_ENEMY_BOMBER || go->objtype == OBJ_ENEMY_SHOOTER) {
 					if(go->pos.x < SCREEN_MIN_X || go->pos.x > SCREEN_MAX_X ||
 					   go->pos.y < SCREEN_MIN_Y || go->pos.y > SCREEN_MAX_Y) {
@@ -813,6 +829,15 @@ static void game_tick(int force_redraw) {
 						continue;
 					}
 				}
+				if(go->pos.y < SCREEN_MIN_Y) {
+					if(go->objtype == OBJ_P1 || go->objtype == OBJ_P2)
+						go->pos.y = SCREEN_MIN_Y;
+				}
+				if(go->pos.x < SCREEN_MIN_X) {
+					if(go->objtype == OBJ_P1 || go->objtype == OBJ_P2)
+						go->pos.x = SCREEN_MIN_X;
+				}
+				
 				need_redraw = 1;
 			}
 			if((go->objtype == OBJ_ENEMY_BOMBER || go->objtype == OBJ_ENEMY_SHOOTER) &&
@@ -1108,7 +1133,6 @@ int main() {
 										if(aid != ANIM_INVALID) switch_anim(player_id, aid);
 									}
 									objs[player_id].vel = get_vel_from_direction(dir, player_speed);
-									if(dir == DIR_N) scroll_map();
 								} else {
 									objs[player_id].vel = VEC(0,0);
 								}
