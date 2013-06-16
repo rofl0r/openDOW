@@ -179,10 +179,8 @@ enum map_scrolldir mapscrolldir;
 static void init_maps() {
 	mapscreen_yoff = 0;
 	mapscreen_xoff = 0;
-	//mapsquare.x = 5;
-	//mapsquare.y = 26;
-	mapsquare.y = 15;
-	mapsquare.x = 1;
+	mapsquare.x = 5;
+	mapsquare.y = 26;
 	mapscrolldir = MS_UP;
 }
 
