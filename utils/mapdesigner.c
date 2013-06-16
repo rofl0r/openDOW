@@ -54,6 +54,8 @@ const struct palpic *fg_sprites;
 const struct palpic *bg_sprites;
 int fullscreen_active;
 int grid_enabled;
+int bonus_layer_activated;
+uint8_t bonuslayer[12][12];
 
 void paint_map() {
 	int bg_x, bg_y, x, y;
@@ -71,6 +73,12 @@ void paint_map() {
 		for(x = 0, bg_x = 0; bg_x < 192/w; bg_x++, x+=w*SCALE) {
 			blit_sprite(STARTX + x,STARTY + y, &video, SCALE, fg_sprites, mapscreen.fg[bg_y][bg_x], 0);
 		}
+	if(bonus_layer_activated) {
+		for(y= 0, bg_y = 0; bg_y < 192/h; bg_y++, y+=h*SCALE)
+			for(x = 0, bg_x = 0; bg_x < 192/w; bg_x++, x+=w*SCALE) {
+				blit_sprite(STARTX + x,STARTY + y, &video, SCALE, fg_sprites, bonuslayer[bg_y][bg_x], 0);
+			}
+	}
 }
 
 void paint_brushes() {
@@ -227,7 +235,10 @@ static void set_map_bg() {
 
 static void set_map_fg() {
 	vec2f tile = get_tile(&map_rect, 16*SCALE, 16*SCALE, &cursor.pos);
-	mapscreen.fg[(int)tile.y][(int)tile.x] = cursor.spriteno;
+	if(bonus_layer_activated)
+		bonuslayer[(int)tile.y][(int)tile.x] = cursor.spriteno;
+	else
+		mapscreen.fg[(int)tile.y][(int)tile.x] = cursor.spriteno;
 }
 
 static void process_click(int isleft) {
@@ -252,6 +263,18 @@ void print_map() {
 	printf("B\n");
 	for(i = 0; i < sizeof(mapscreen.fg); i++)
 		printf(i % 12 == 11 ? "%3d,\n" : "%3d,", (int)((unsigned char*)(mapscreen.fg))[i]);
+	int dobonus = 0;
+	for(i = 0; i < sizeof(bonuslayer); i++) {
+		if(((char*)bonuslayer)[i] != 0) {
+			dobonus = 1;
+			break;
+		}
+	}
+	if(dobonus) {
+		printf("C\n");
+		for(i = 0; i < sizeof(bonuslayer); i++)
+			printf(i % 12 == 11 ? "%3d,\n" : "%3d,", (int)((unsigned char*)(bonuslayer))[i]);
+	}
 	printf("\n");
 }
 
@@ -314,6 +337,11 @@ int main(int argc, char**argv) {
 						case SDLK_g:
 							grid_enabled = !grid_enabled;
 							need_redraw = 1;
+							break;
+						case SDLK_b:
+							bonus_layer_activated = !bonus_layer_activated;
+							if(bonus_layer_activated) SDL_WM_SetCaption("bonus layer activated",0);
+							else SDL_WM_SetCaption("bonus layer deactivated",0);
 							break;
 						case SDLK_ESCAPE:
 							goto dun_goofed;
