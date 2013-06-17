@@ -647,3 +647,6 @@ struct {
 		}},
 	},
 };
+
+#undef SCREEN_COUNT
+#undef BONUS_COUNT
