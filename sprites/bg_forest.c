@@ -13,7 +13,7 @@ static const struct {
 } STRUCT_NAME = { 
 	{ {'p', 'P', 'i', 'C', }, 1, PAL_COUNT, SPRITE_COUNT, WIDTH, HEIGHT, 0, 0 },
 	{
-		PRGB(  0,   0,   0), 
+		PRGB( 85, 125, 125), 
 		PRGB(190, 190, 190), 
 		PRGB(149, 149, 125), 
 		PRGB( 60,  85,  85), 
