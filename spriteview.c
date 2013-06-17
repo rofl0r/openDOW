@@ -19,7 +19,8 @@
 #include "spritemaps.h"
 #include "enemy.h"
 #include "font.h"
-#include "maps/map_pakistan.c"
+#include "maps.h"
+#include "mapsprites.h"
 
 #include <SDL/SDL.h>
 
@@ -166,17 +167,21 @@ static void clear_screen(void) {
 	for(y = 0; y < VMODE_H; y++) for (x = 0; x < VMODE_W; x++)
 		ptr[y*pitch + x] = SRGB_BLACK;
 }
-#include "sprites/bg_desert.c"
-#include "sprites/map_desert.c"
-const struct map *map = &map_pakistan.header;
-const struct map_screen* map_screens = map_pakistan.screens;
-const struct palpic *map_bg = &bg_desert.header;
-const struct palpic *map_fg = &map_desert.header;
+
+enum map_index current_map = MI_ITALY;
+const struct map *map;
+const struct map_screen* map_scr;
+const struct palpic *map_bg;
+const struct palpic *map_fg;
 int mapscreen_yoff, mapscreen_xoff;
 struct { int x,y; } mapsquare;
 enum map_scrolldir mapscrolldir;
 
-static void init_maps() {
+static void init_map(enum map_index mapindex) {
+	map = maps[mapindex];
+	map_scr = map_screens[mapindex];
+	map_bg = map_bg_sprites[map->maptype];
+	map_fg = map_fg_sprites[map->maptype];
 	mapscreen_yoff = 0;
 	mapscreen_xoff = 0;
 	mapsquare.x = 5;
@@ -210,30 +215,30 @@ static void draw_map() {
 		for(my = 6-map_off/32-!!(map_off%32), y = SCREEN_MIN_Y + (!!(map_off%32)*32-(map_off%32))*-SCALE; my < 6; my++, y+=32*SCALE)
 			for(mx = x_iter_start64, x = SCREEN_MIN_X + x_screen_start64*SCALE; mx < x_iter_max64; mx++, x += 64*SCALE)
 				blit_sprite(x, y, &video,
-					SCALE, map_bg, map_screens[map->screen_map[mapsquare.y][mapsquare.x]].bg[my][mx], 0);
+					SCALE, map_bg, map_scr[map->screen_map[mapsquare.y][mapsquare.x]].bg[my][mx], 0);
 		for(my = 12-map_off/16-!!(map_off%16), y = SCREEN_MIN_Y + (!!(map_off%16)*16-(map_off%16))*-SCALE; my < 12; my++, y+=16*SCALE)
 			for(mx = x_iter_start16, x = SCREEN_MIN_X + x_screen_start16*SCALE; mx < x_iter_max16; mx++, x += 16*SCALE)
 				blit_sprite(x, y, &video,
-					SCALE, map_fg, map_screens[map->screen_map[mapsquare.y][mapsquare.x]].fg[my][mx], 0);
+					SCALE, map_fg, map_scr[map->screen_map[mapsquare.y][mapsquare.x]].fg[my][mx], 0);
 		int yleft = 200-map_off;
 		if(yleft > 192) yleft = 192;
 		for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < yleft/32+!!(yleft%32); my++, y+=32*SCALE)
 			for(mx = x_iter_start64, x = SCREEN_MIN_X + x_screen_start64*SCALE; mx < x_iter_max64; mx++, x += 64*SCALE)
 				blit_sprite(x, y, &video,
-					SCALE, map_bg, map_screens[map->screen_map[mapsquare.y+1][mapsquare.x]].bg[my][mx], 0);
+					SCALE, map_bg, map_scr[map->screen_map[mapsquare.y+1][mapsquare.x]].bg[my][mx], 0);
 		for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < yleft/16+!!(yleft%16); my++, y+=16*SCALE)
 			for(mx = x_iter_start16, x = SCREEN_MIN_X + x_screen_start16*SCALE; mx < x_iter_max16; mx++, x += 16*SCALE)
 				blit_sprite(x, y, &video,
-					SCALE, map_fg, map_screens[map->screen_map[mapsquare.y+1][mapsquare.x]].fg[my][mx], 0);
+					SCALE, map_fg, map_scr[map->screen_map[mapsquare.y+1][mapsquare.x]].fg[my][mx], 0);
 				
 		/* this is never triggered when mapscreen_xoff != 0 */
 		if(mapscreen_yoff > 192 - 8) {
 			for(mx = 0, x = SCREEN_MIN_X + x_screen_start64*SCALE; mx < 3; mx++, x += 64*SCALE)
 				blit_sprite(x, SCALE*(192*2-mapscreen_yoff), &video,
-					SCALE, map_bg, map_screens[map->screen_map[mapsquare.y+2][mapsquare.x]].bg[0][mx], 0);
+					SCALE, map_bg, map_scr[map->screen_map[mapsquare.y+2][mapsquare.x]].bg[0][mx], 0);
 			for(mx = 0, x = SCREEN_MIN_X + x_screen_start16*SCALE; mx < 12; mx++, x += 16*SCALE)
 				blit_sprite(x, SCALE*(192*2-mapscreen_yoff), &video,
-					SCALE, map_fg, map_screens[map->screen_map[mapsquare.y+2][mapsquare.x]].fg[0][mx], 0);
+					SCALE, map_fg, map_scr[map->screen_map[mapsquare.y+2][mapsquare.x]].fg[0][mx], 0);
 		}
 	}
 	
@@ -655,7 +660,7 @@ static void init_game_objs() {
 	sblist_init(&go_enemies, 1, 32);
 	init_player(0);
 	init_crosshair();
-	init_maps();
+	init_map(current_map);
 }
 
 static int point_in_mask(vec2f *point, int obj_id) {
