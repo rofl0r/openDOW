@@ -5,13 +5,13 @@ use warnings;
 print "\t.screens = {\n";
 my $i = 0;
 my $bonus_active = 0;
-my @bonus = ();
+my %bonus;
 my $bonus_num = 0;
 while(<>) {
 	if(/^A/) {
 		$bonus_active = 0;
 		print "\t\t\t},\n\t\t},\n" if($i);
-		print "\t\t[$i] = {\n\t\t\t.scrolldir = MS_UP,\n\t\t\t.bg = {\n";
+		print "\t\t[$i] = {\n\t\t\t.bg = {\n";
 		$i++;
 		next;
 	}
@@ -25,16 +25,17 @@ while(<>) {
 		$bonus_num = $i - 1;
 		next;
 	}
-	next if(/^</ || /^>/);
-	chomp;
+	$bonus_active = 0, next if(/^</ || /^>/);
 	if($bonus_active) {
-		push @bonus, $_;
+		$bonus{$i - 1} = defined($bonus{$i - 1}) ? $bonus{$i - 1} . $_ : $_;
 		next;
 	}
+	chomp;
 	print "\t\t\t\t{$_},\n";
 }
 print "\t\t\t},\n\t\t},\n\t},\n";
-if(scalar(@bonus)) {
-	print("bonus for $bonus_num\n");
-	print "{$_},\n" for(@bonus);
+for(keys(%bonus)) {
+	print("bonus for $_\n");
+	my @lines = split /\n/, $bonus{$_};
+	print "{$_},\n" for(@lines);
 }
