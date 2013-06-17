@@ -55,7 +55,7 @@ const struct palpic *bg_sprites;
 int fullscreen_active;
 int grid_enabled;
 int bonus_layer_activated;
-uint8_t bonuslayer[12][12];
+struct map_fglayer bonuslayer;
 
 void paint_map() {
 	int bg_x, bg_y, x, y;
@@ -64,19 +64,19 @@ void paint_map() {
 	h = palpic_getspriteheight(bg_sprites);
 	for(y= 0, bg_y = 0; bg_y < 192/h; bg_y++, y+=h*SCALE)
 		for(x = 0, bg_x = 0; bg_x < 192/w; bg_x++, x+=w*SCALE) {
-			blit_sprite(STARTX + x, STARTY + y, &video, SCALE, bg_sprites, mapscreen.bg[bg_y][bg_x], 0);
+			blit_sprite(STARTX + x, STARTY + y, &video, SCALE, bg_sprites, mapscreen.bg.bg[bg_y][bg_x], 0);
 		}
 		
 	w = palpic_getspritewidth(fg_sprites);
 	h = palpic_getspriteheight(fg_sprites);
 	for(y= 0, bg_y = 0; bg_y < 192/h; bg_y++, y+=h*SCALE)
 		for(x = 0, bg_x = 0; bg_x < 192/w; bg_x++, x+=w*SCALE) {
-			blit_sprite(STARTX + x,STARTY + y, &video, SCALE, fg_sprites, mapscreen.fg[bg_y][bg_x], 0);
+			blit_sprite(STARTX + x,STARTY + y, &video, SCALE, fg_sprites, mapscreen.fg.fg[bg_y][bg_x], 0);
 		}
 	if(bonus_layer_activated) {
 		for(y= 0, bg_y = 0; bg_y < 192/h; bg_y++, y+=h*SCALE)
 			for(x = 0, bg_x = 0; bg_x < 192/w; bg_x++, x+=w*SCALE) {
-				blit_sprite(STARTX + x,STARTY + y, &video, SCALE, fg_sprites, bonuslayer[bg_y][bg_x], 0);
+				blit_sprite(STARTX + x,STARTY + y, &video, SCALE, fg_sprites, bonuslayer.fg[bg_y][bg_x], 0);
 			}
 	}
 }
@@ -211,7 +211,7 @@ static void disable_sdl_cursor() {
 static void fill() {
 	vec2f tile = get_tile(&brushbg_rect, 64*SCALE, 32*SCALE, &cursor.pos);
 	int x,y;
-	for(y = 0; y < 6; y++) for(x=0; x < 3; x++) mapscreen.bg[y][x] = tile.y;
+	for(y = 0; y < 6; y++) for(x=0; x < 3; x++) mapscreen.bg.bg[y][x] = tile.y;
 }
 
 static void set_bg() {
@@ -230,15 +230,15 @@ static void set_fg() {
 
 static void set_map_bg() {
 	vec2f tile = get_tile(&map_rect, 64*SCALE, 32*SCALE, &cursor.pos);
-	mapscreen.bg[(int)tile.y][(int)tile.x] = cursor.spriteno;
+	mapscreen.bg.bg[(int)tile.y][(int)tile.x] = cursor.spriteno;
 }
 
 static void set_map_fg() {
 	vec2f tile = get_tile(&map_rect, 16*SCALE, 16*SCALE, &cursor.pos);
 	if(bonus_layer_activated)
-		bonuslayer[(int)tile.y][(int)tile.x] = cursor.spriteno;
+		bonuslayer.fg[(int)tile.y][(int)tile.x] = cursor.spriteno;
 	else
-		mapscreen.fg[(int)tile.y][(int)tile.x] = cursor.spriteno;
+		mapscreen.fg.fg[(int)tile.y][(int)tile.x] = cursor.spriteno;
 }
 
 static void process_click(int isleft) {
@@ -258,22 +258,22 @@ static void process_click(int isleft) {
 void print_map() {
 	int i;
 	printf("A\n");
-	for(i = 0; i < sizeof(mapscreen.bg); i++)
-		printf(i % 3 == 2 ? "%d,\n" : "%d,", (int)((unsigned char*)(mapscreen.bg))[i]);
+	for(i = 0; i < sizeof(mapscreen.bg.bg); i++)
+		printf(i % 3 == 2 ? "%d,\n" : "%d,", (int)((unsigned char*)(mapscreen.bg.bg))[i]);
 	printf("B\n");
-	for(i = 0; i < sizeof(mapscreen.fg); i++)
-		printf(i % 12 == 11 ? "%3d,\n" : "%3d,", (int)((unsigned char*)(mapscreen.fg))[i]);
+	for(i = 0; i < sizeof(mapscreen.fg.fg); i++)
+		printf(i % 12 == 11 ? "%3d,\n" : "%3d,", (int)((unsigned char*)(mapscreen.fg.fg))[i]);
 	int dobonus = 0;
-	for(i = 0; i < sizeof(bonuslayer); i++) {
-		if(((char*)bonuslayer)[i] != 0) {
+	for(i = 0; i < sizeof(bonuslayer.fg); i++) {
+		if(((char*)bonuslayer.fg)[i] != 0) {
 			dobonus = 1;
 			break;
 		}
 	}
 	if(dobonus) {
 		printf("C\n");
-		for(i = 0; i < sizeof(bonuslayer); i++)
-			printf(i % 12 == 11 ? "%3d,\n" : "%3d,", (int)((unsigned char*)(bonuslayer))[i]);
+		for(i = 0; i < sizeof(bonuslayer.fg); i++)
+			printf(i % 12 == 11 ? "%3d,\n" : "%3d,", (int)((unsigned char*)(bonuslayer.fg))[i]);
 	}
 	printf("\n");
 }

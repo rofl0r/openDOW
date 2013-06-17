@@ -10,14 +10,14 @@ my $bonus_num = 0;
 while(<>) {
 	if(/^A/) {
 		$bonus_active = 0;
-		print "\t\t\t},\n\t\t},\n" if($i);
-		print "\t\t[$i] = {\n\t\t\t.bg = {\n";
+		print "\t\t\t}},\n\t\t}},\n" if($i);
+		print "\t\t[$i] = {\n\t\t\t.bg = {{\n";
 		$i++;
 		next;
 	}
 	if(/^B/) {
 		$bonus_active = 0;
-		print "\t\t\t},\n\t\t\t.fg = {\n";
+		print "\t\t\t}},\n\t\t\t.fg = {{\n";
 		next;
 	}
 	if(/^C/) {
@@ -33,7 +33,7 @@ while(<>) {
 	chomp;
 	print "\t\t\t\t{$_},\n";
 }
-print "\t\t\t},\n\t\t},\n\t},\n";
+print "\t\t\t}},\n\t\t},\n\t},\n";
 for(keys(%bonus)) {
 	print("bonus for $_\n");
 	my @lines = split /\n/, $bonus{$_};

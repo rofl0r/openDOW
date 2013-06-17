@@ -168,11 +168,14 @@ static void clear_screen(void) {
 		ptr[y*pitch + x] = SRGB_BLACK;
 }
 
-enum map_index current_map = MI_ITALY;
+enum map_index current_map = MI_PAKISTAN;
 const struct map *map;
 const struct map_screen* map_scr;
 const struct palpic *map_bg;
 const struct palpic *map_fg;
+const mapscreen_index *map_bonus_indices;
+const struct map_fglayer *map_bonus_scr;
+
 int mapscreen_yoff, mapscreen_xoff;
 struct { int x,y; } mapsquare;
 enum map_scrolldir mapscrolldir;
@@ -182,6 +185,8 @@ static void init_map(enum map_index mapindex) {
 	map_scr = map_screens[mapindex];
 	map_bg = map_bg_sprites[map->maptype];
 	map_fg = map_fg_sprites[map->maptype];
+	map_bonus_scr = map_bonus_screens[mapindex];
+	map_bonus_indices = map_bonus_layer_indices[mapindex];
 	mapscreen_yoff = 0;
 	mapscreen_xoff = 0;
 	mapsquare.x = 5;
@@ -189,6 +194,12 @@ static void init_map(enum map_index mapindex) {
 	mapscrolldir = MS_UP;
 }
 
+static mapscreen_index get_bonus_layer_index(mapscreen_index screen) {
+	unsigned i;
+	for (i = 0; i < map->bonuslayer_count; i++) 
+		if(map_bonus_indices[i] == screen) return i;
+	return MAPSCREEN_BLOCKED;
+}
 static void draw_map() {
 	int y, x, my, mx;
 	unsigned map_off = 192-mapscreen_yoff;
@@ -203,6 +214,7 @@ static void draw_map() {
 
 	unsigned x_screen_iter;
 	for(x_screen_iter = 0; x_screen_iter <= !!mapscreen_xoff; x_screen_iter++) {
+		mapscreen_index bonus_layer;
 		if(x_screen_iter) {
 			x_screen_start16 = x_screen_start16+(x_iter_max16-x_iter_start16)*16;
 			x_screen_start64 = x_screen_start64+(x_iter_max64-x_iter_start64)*64;
@@ -215,33 +227,55 @@ static void draw_map() {
 		for(my = 6-map_off/32-!!(map_off%32), y = SCREEN_MIN_Y + (!!(map_off%32)*32-(map_off%32))*-SCALE; my < 6; my++, y+=32*SCALE)
 			for(mx = x_iter_start64, x = SCREEN_MIN_X + x_screen_start64*SCALE; mx < x_iter_max64; mx++, x += 64*SCALE)
 				blit_sprite(x, y, &video,
-					SCALE, map_bg, map_scr[map->screen_map[mapsquare.y][mapsquare.x]].bg[my][mx], 0);
+					SCALE, map_bg, map_scr[map->screen_map[mapsquare.y][mapsquare.x]].bg.bg[my][mx], 0);
 		for(my = 12-map_off/16-!!(map_off%16), y = SCREEN_MIN_Y + (!!(map_off%16)*16-(map_off%16))*-SCALE; my < 12; my++, y+=16*SCALE)
 			for(mx = x_iter_start16, x = SCREEN_MIN_X + x_screen_start16*SCALE; mx < x_iter_max16; mx++, x += 16*SCALE)
 				blit_sprite(x, y, &video,
-					SCALE, map_fg, map_scr[map->screen_map[mapsquare.y][mapsquare.x]].fg[my][mx], 0);
+					SCALE, map_fg, map_scr[map->screen_map[mapsquare.y][mapsquare.x]].fg.fg[my][mx], 0);
+		bonus_layer = get_bonus_layer_index(map->screen_map[mapsquare.y][mapsquare.x]);
+		if(bonus_layer != MAPSCREEN_BLOCKED) {
+			for(my = 12-map_off/16-!!(map_off%16), y = SCREEN_MIN_Y + (!!(map_off%16)*16-(map_off%16))*-SCALE; my < 12; my++, y+=16*SCALE)
+				for(mx = x_iter_start16, x = SCREEN_MIN_X + x_screen_start16*SCALE; mx < x_iter_max16; mx++, x += 16*SCALE)
+					blit_sprite(x, y, &video,
+						SCALE, map_fg, map_bonus_scr[bonus_layer].fg[my][mx], 0);
+		}
+		
+		
 		int yleft = 200-map_off;
 		if(yleft > 192) yleft = 192;
 		for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < yleft/32+!!(yleft%32); my++, y+=32*SCALE)
 			for(mx = x_iter_start64, x = SCREEN_MIN_X + x_screen_start64*SCALE; mx < x_iter_max64; mx++, x += 64*SCALE)
 				blit_sprite(x, y, &video,
-					SCALE, map_bg, map_scr[map->screen_map[mapsquare.y+1][mapsquare.x]].bg[my][mx], 0);
+					SCALE, map_bg, map_scr[map->screen_map[mapsquare.y+1][mapsquare.x]].bg.bg[my][mx], 0);
 		for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < yleft/16+!!(yleft%16); my++, y+=16*SCALE)
 			for(mx = x_iter_start16, x = SCREEN_MIN_X + x_screen_start16*SCALE; mx < x_iter_max16; mx++, x += 16*SCALE)
 				blit_sprite(x, y, &video,
-					SCALE, map_fg, map_scr[map->screen_map[mapsquare.y+1][mapsquare.x]].fg[my][mx], 0);
+					SCALE, map_fg, map_scr[map->screen_map[mapsquare.y+1][mapsquare.x]].fg.fg[my][mx], 0);
+		
+		bonus_layer = get_bonus_layer_index(map->screen_map[mapsquare.y+1][mapsquare.x]);
+		if(bonus_layer != MAPSCREEN_BLOCKED) {
+			for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < yleft/16+!!(yleft%16); my++, y+=16*SCALE)
+				for(mx = x_iter_start16, x = SCREEN_MIN_X + x_screen_start16*SCALE; mx < x_iter_max16; mx++, x += 16*SCALE)
+					blit_sprite(x, y, &video,
+						SCALE, map_fg, map_bonus_scr[bonus_layer].fg[my][mx], 0);
+		}
 				
 		/* this is never triggered when mapscreen_xoff != 0 */
 		if(mapscreen_yoff > 192 - 8) {
 			for(mx = 0, x = SCREEN_MIN_X + x_screen_start64*SCALE; mx < 3; mx++, x += 64*SCALE)
 				blit_sprite(x, SCALE*(192*2-mapscreen_yoff), &video,
-					SCALE, map_bg, map_scr[map->screen_map[mapsquare.y+2][mapsquare.x]].bg[0][mx], 0);
+					SCALE, map_bg, map_scr[map->screen_map[mapsquare.y+2][mapsquare.x]].bg.bg[0][mx], 0);
 			for(mx = 0, x = SCREEN_MIN_X + x_screen_start16*SCALE; mx < 12; mx++, x += 16*SCALE)
 				blit_sprite(x, SCALE*(192*2-mapscreen_yoff), &video,
-					SCALE, map_fg, map_scr[map->screen_map[mapsquare.y+2][mapsquare.x]].fg[0][mx], 0);
+					SCALE, map_fg, map_scr[map->screen_map[mapsquare.y+2][mapsquare.x]].fg.fg[0][mx], 0);
+			bonus_layer = get_bonus_layer_index(map->screen_map[mapsquare.y+2][mapsquare.x]);
+			if(bonus_layer != MAPSCREEN_BLOCKED) {
+				for(mx = 0, x = SCREEN_MIN_X + x_screen_start16*SCALE; mx < 12; mx++, x += 16*SCALE)
+					blit_sprite(x, SCALE*(192*2-mapscreen_yoff), &video,
+						SCALE, map_fg, map_bonus_scr[bonus_layer].fg[0][mx], 0);
+			}
 		}
 	}
-	
 }
 
 #define VSCROLL_TRESHOLD (200-64)
@@ -959,8 +993,9 @@ static void game_tick(int force_redraw) {
 	
 	tickcounter++;
 
-	char buf [4];
-	snprintf(buf, 4, "%d", (int) obj_count);
+	char buf [64];
+	snprintf(buf, 64, "objs: %d, map x,y %d/%d, index %d", (int) obj_count, 
+		 (int)mapsquare.x, (int)mapsquare.y, (int)map->screen_map[mapsquare.y][mapsquare.x]);
 	SDL_WM_SetCaption(buf, 0);
 }
 
