@@ -8,6 +8,7 @@ enum map_index {
 	MI_PAKISTAN,
 	MI_ENGLAND,
 	MI_PERU,
+	MI_FLORIDA,
 };
 
 extern const struct map *maps[];
