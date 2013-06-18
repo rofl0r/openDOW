@@ -10,7 +10,7 @@ my $bonus_num = 0;
 while(<>) {
 	if(/^A/) {
 		$bonus_active = 0;
-		print "\t\t\t}},\n\t\t}},\n" if($i);
+		print "\t\t\t}},\n\t\t},\n" if($i);
 		print "\t\t[$i] = {\n\t\t\t.bg = {{\n";
 		$i++;
 		next;
