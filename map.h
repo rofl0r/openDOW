@@ -25,9 +25,10 @@ struct map_screen {
 };
 
 enum map_type {
-	MT_FOREST,
+	MT_FOREST = 0,
 	MT_URBAN,
 	MT_DESERT,
+	MT_MAX,
 };
 
 typedef uint8_t mapscreen_index;
