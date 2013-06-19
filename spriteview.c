@@ -364,13 +364,12 @@ static int scroll_map() {
 			goto handle_objs;
 		} else if(mapscrolldir == MS_RIGHT) {
 			mapscreen_xoff += scroll_step;
-			if(mapscreen_xoff > 192) {
+			if(mapscreen_xoff >= 192) {
 				mapsquare.x++;
-				if(map->screen_map[mapsquare.y][mapsquare.x] == MAPSCREEN_BLOCKED) {
+				if(map->screen_map[mapsquare.y][mapsquare.x+1] == MAPSCREEN_BLOCKED) {
 					scroll_step = mapscreen_xoff - 192;
 					mapscreen_xoff = 0;
 					mapscreen_yoff = 0;
-					mapsquare.x--;
 					scroll_gameobjs(scroll_step);
 					mapscrolldir = MS_UP;
 					scroll_step = 0;
