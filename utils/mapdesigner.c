@@ -1,6 +1,7 @@
 #include "../map.h"
 #include "../palpic.h"
 #include <assert.h>
+#include <stdio.h>
 
 #include <SDL/SDL.h>
 //RcB: LINK "-lSDL"
@@ -56,6 +57,7 @@ int fullscreen_active;
 int grid_enabled;
 int bonus_layer_activated;
 struct map_fglayer bonuslayer;
+int walltag_mode;
 
 void paint_map() {
 	int bg_x, bg_y, x, y;
@@ -228,6 +230,12 @@ static void set_fg() {
 	cursor.spriteno = (int)tile.y * 14 + (int)tile.x;
 }
 
+static void print_wall() {
+	vec2f tile = get_tile(&brushfg_rect, 16*SCALE, 16*SCALE, &cursor.pos);
+	int spriteno = (int)tile.y * 14 + (int)tile.x;
+	printf("[%d] = 1,\n", spriteno);
+}
+
 static void set_map_bg() {
 	vec2f tile = get_tile(&map_rect, 64*SCALE, 32*SCALE, &cursor.pos);
 	mapscreen.bg.bg[(int)tile.y][(int)tile.x] = cursor.spriteno;
@@ -250,11 +258,11 @@ static void process_click(int isleft) {
 		if(isleft) set_bg();
 		else fill();
 	} else if (point_in_rect(&cursor.pos, &brushfg_rect)) {
-		if(isleft) set_fg();
+		if(walltag_mode) print_wall();
+		else if(isleft) set_fg();
 	}
 }
 
-#include <stdio.h>
 void print_map() {
 	int i;
 	printf("A\n");
@@ -281,13 +289,14 @@ void print_map() {
 int main(int argc, char**argv) {
 	memset(&map, 0, sizeof(struct map));
 	memset(&mapscreen, 0, sizeof(struct map_screen));
-	assert(argc == 2);
+	assert(argc == 2 || argc == 3);
 	if(!strcmp(argv[1], "urban"))
 		map.maptype = MT_URBAN;
 	else if(!strcmp(argv[1], "desert"))
 		map.maptype = MT_DESERT;
 	else if(!strcmp(argv[1], "forest"))
 		map.maptype = MT_FOREST;
+	if(argc == 3 && !strcmp(argv[2], "--wall")) walltag_mode = 1;
 	else assert(0);
 	const struct palpic* map_fg_lut[] = {
 		[MT_URBAN] = &map_urban.header,
@@ -330,7 +339,7 @@ int main(int argc, char**argv) {
 					// restore desktop video mode correctly...
 					if(fullscreen_active)
 						SDL_WM_ToggleFullScreen(surface);
-					print_map();
+					if(!walltag_mode) print_map();
 					return 0;
 				case SDL_KEYDOWN:
 					switch(sdl_event.key.keysym.sym) {
