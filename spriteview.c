@@ -21,6 +21,7 @@
 #include "font.h"
 #include "maps.h"
 #include "mapsprites.h"
+#include "walls.h"
 
 #include <SDL/SDL.h>
 
@@ -200,6 +201,31 @@ static mapscreen_index get_bonus_layer_index(mapscreen_index screen) {
 		if(map_bonus_indices[i] == screen) return i;
 	return MAPSCREEN_BLOCKED;
 }
+
+static mapscreen_index screen_to_mapscreen(int *x, int *y) {
+	*x = ((int) *x - SCREEN_MIN_X) / SCALE;
+	*y = ((int) *y - SCREEN_MIN_Y) / SCALE;
+	int yscr = (*y + mapscreen_yoff) / 192;
+	*y = (*y + mapscreen_yoff) - yscr*192;
+	int xscr = (*x + mapscreen_xoff) / 192;
+	*x = (*x + mapscreen_xoff) - xscr*192;
+	return map->screen_map[mapsquare.y + yscr][mapsquare.x + xscr];
+}
+
+static int is_wall(vec2f *pos) {
+	int x = pos->x;
+	int y = pos->y;
+	mapscreen_index scr_idx = screen_to_mapscreen(&x, &y);
+	assert(scr_idx != MAPSCREEN_BLOCKED);
+	uint8_t spriteno = map_scr[scr_idx].fg.fg[y/16][x/16];
+	if(spriteno && walls[map->maptype][spriteno]) return 1;
+	scr_idx = get_bonus_layer_index(scr_idx);
+	if(scr_idx == MAPSCREEN_BLOCKED) return 0;
+	spriteno = map_bonus_scr[scr_idx].fg[y/16][x/16];
+	if(spriteno && walls[map->maptype][spriteno]) return 1;
+	return 0;
+}
+
 static void draw_map() {
 	int y, x, my, mx;
 	unsigned map_off = 192-mapscreen_yoff;
@@ -942,6 +968,7 @@ static void game_tick(int force_redraw) {
 			int ismoving = 0;
 			if(go->vel.x != 0 || go->vel.y != 0) {
 				ismoving = 1;
+				vec2f oldpos = go->pos;
 				go->pos.x += go->vel.x;
 				go->pos.y += go->vel.y;
 				if(go->objtype == OBJ_ENEMY_BOMBER || go->objtype == OBJ_ENEMY_SHOOTER) {
@@ -955,13 +982,17 @@ static void game_tick(int force_redraw) {
 						continue;
 					}
 				}
-				if(go->pos.y < SCREEN_MIN_Y) {
-					if(go->objtype == OBJ_P1 || go->objtype == OBJ_P2)
-						go->pos.y = SCREEN_MIN_Y;
-				}
-				if(go->pos.x < SCREEN_MIN_X) {
-					if(go->objtype == OBJ_P1 || go->objtype == OBJ_P2)
-						go->pos.x = SCREEN_MIN_X;
+				if(go->objtype == OBJ_P1 || go->objtype == OBJ_P2) {
+					if(go->pos.y < SCREEN_MIN_Y) go->pos.y = SCREEN_MIN_Y;
+					else if(go->pos.y+25*SCALE > SCREEN_MAX_Y) go->pos.y = SCREEN_MAX_Y-25*SCALE;
+					if(go->pos.x < SCREEN_MIN_X) go->pos.x = SCREEN_MIN_X;
+					else if(go->pos.x+32*SCALE > SCREEN_MAX_X) go->pos.x = SCREEN_MAX_X-32*SCALE;
+					vec2f center = get_sprite_center(spritemaps[go->spritemap_id]);
+					center = vecadd(&center, &go->pos);
+					if(is_wall(&center)) {
+						go->pos = oldpos;
+						go->vel = VEC(0,0);
+					}
 				}
 				
 				need_redraw = 1;
