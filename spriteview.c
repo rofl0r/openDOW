@@ -222,21 +222,22 @@ static void draw_map() {
 			x_iter_max64 = mapscreen_xoff / 64 + !!(mapscreen_xoff % 64);
 			x_iter_start16 = 0;
 			x_iter_start64 = 0;
+			assert(map->screen_map[mapsquare.y][mapsquare.x+x_screen_iter] != MAPSCREEN_BLOCKED);
 		}
 		uint8_t spriteno;
 
 		for(my = 6-map_off/32-!!(map_off%32), y = SCREEN_MIN_Y + (!!(map_off%32)*32-(map_off%32))*-SCALE; my < 6; my++, y+=32*SCALE)
 			for(mx = x_iter_start64, x = SCREEN_MIN_X + x_screen_start64*SCALE; mx < x_iter_max64; mx++, x += 64*SCALE) {
-				spriteno = map_scr[map->screen_map[mapsquare.y][mapsquare.x]].bg.bg[my][mx];
+				spriteno = map_scr[map->screen_map[mapsquare.y][mapsquare.x+x_screen_iter]].bg.bg[my][mx];
 				blit_sprite(x, y, &video,
 					SCALE, map_bg, spriteno, 0);
 			}
 		for(my = 12-map_off/16-!!(map_off%16), y = SCREEN_MIN_Y + (!!(map_off%16)*16-(map_off%16))*-SCALE; my < 12; my++, y+=16*SCALE)
 			for(mx = x_iter_start16, x = SCREEN_MIN_X + x_screen_start16*SCALE; mx < x_iter_max16; mx++, x += 16*SCALE) {
-				spriteno = map_scr[map->screen_map[mapsquare.y][mapsquare.x]].fg.fg[my][mx];
+				spriteno = map_scr[map->screen_map[mapsquare.y][mapsquare.x+x_screen_iter]].fg.fg[my][mx];
 				if(spriteno) blit_sprite(x, y, &video, SCALE, map_fg, spriteno, 0);
 			}
-		bonus_layer = get_bonus_layer_index(map->screen_map[mapsquare.y][mapsquare.x]);
+		bonus_layer = get_bonus_layer_index(map->screen_map[mapsquare.y][mapsquare.x+x_screen_iter]);
 		if(bonus_layer != MAPSCREEN_BLOCKED) {
 			for(my = 12-map_off/16-!!(map_off%16), y = SCREEN_MIN_Y + (!!(map_off%16)*16-(map_off%16))*-SCALE; my < 12; my++, y+=16*SCALE)
 				for(mx = x_iter_start16, x = SCREEN_MIN_X + x_screen_start16*SCALE; mx < x_iter_max16; mx++, x += 16*SCALE) {
@@ -250,16 +251,16 @@ static void draw_map() {
 		if(yleft > 192) yleft = 192;
 		for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < yleft/32+!!(yleft%32); my++, y+=32*SCALE)
 			for(mx = x_iter_start64, x = SCREEN_MIN_X + x_screen_start64*SCALE; mx < x_iter_max64; mx++, x += 64*SCALE) {
-				spriteno = map_scr[map->screen_map[mapsquare.y+1][mapsquare.x]].bg.bg[my][mx];
+				spriteno = map_scr[map->screen_map[mapsquare.y+1][mapsquare.x+x_screen_iter]].bg.bg[my][mx];
 				blit_sprite(x, y, &video, SCALE, map_bg, spriteno, 0);
 			}
 		for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < yleft/16+!!(yleft%16); my++, y+=16*SCALE)
 			for(mx = x_iter_start16, x = SCREEN_MIN_X + x_screen_start16*SCALE; mx < x_iter_max16; mx++, x += 16*SCALE) {
-				spriteno = map_scr[map->screen_map[mapsquare.y+1][mapsquare.x]].fg.fg[my][mx];
+				spriteno = map_scr[map->screen_map[mapsquare.y+1][mapsquare.x+x_screen_iter]].fg.fg[my][mx];
 				if(spriteno) blit_sprite(x, y, &video, SCALE, map_fg, spriteno, 0);
 			}
 		
-		bonus_layer = get_bonus_layer_index(map->screen_map[mapsquare.y+1][mapsquare.x]);
+		bonus_layer = get_bonus_layer_index(map->screen_map[mapsquare.y+1][mapsquare.x+x_screen_iter]);
 		if(bonus_layer != MAPSCREEN_BLOCKED) {
 			for(my = 0, y = SCREEN_MIN_Y + (map_off * SCALE); my < yleft/16+!!(yleft%16); my++, y+=16*SCALE)
 				for(mx = x_iter_start16, x = SCREEN_MIN_X + x_screen_start16*SCALE; mx < x_iter_max16; mx++, x += 16*SCALE) {
