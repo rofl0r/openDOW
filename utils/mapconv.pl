@@ -34,7 +34,7 @@ while(<>) {
 	print "\t\t\t\t{$_},\n";
 }
 print "\t\t\t}},\n\t\t},\n\t},\n";
-for(keys(%bonus)) {
+for(sort {$a<=>$b} keys(%bonus)) {
 	print("bonus for $_\n");
 	my @lines = split /\n/, $bonus{$_};
 	print "{$_},\n" for(@lines);
