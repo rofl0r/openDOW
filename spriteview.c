@@ -216,7 +216,8 @@ static int is_wall(vec2f *pos) {
 	int x = pos->x;
 	int y = pos->y;
 	mapscreen_index scr_idx = screen_to_mapscreen(&x, &y);
-	assert(scr_idx != MAPSCREEN_BLOCKED);
+	/* can happen when a bullet goes partially off-screen */
+	if(scr_idx == MAPSCREEN_BLOCKED) return 0;
 	uint8_t spriteno = map_scr[scr_idx].fg.fg[y/16][x/16];
 	if(spriteno && walls[map->maptype][spriteno]) return 1;
 	scr_idx = get_bonus_layer_index(scr_idx);
