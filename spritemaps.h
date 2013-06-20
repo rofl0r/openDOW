@@ -11,8 +11,11 @@ enum __attribute__ ((__packed__)) sprite_index {
 	SI_GRENADE_EXPLOSION,
 	SI_ROCKET,
 	SI_BIG_EXPLOSION,
-	SI_ENEMIES,
+	SI_ENEMY_WESTERN,
+	SI_ENEMY_ASIAN,
 };
+
+#define SI_ENEMIES SI_ENEMY_WESTERN
 
 #include "palpic.h"
 
