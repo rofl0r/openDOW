@@ -832,7 +832,12 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 		} else if(bullet->objtype == OBJ_BIG_EXPLOSION) {
 			bullet_subtybe = BS_BIG_EXPL;
 		}
+		
 		vec2f bullet_center = get_gameobj_center(*bullet_id);
+		if(bullet_list == &go_player_bullets || bullet_list == &go_flames) {
+			if(is_wall(&bullet_center)) goto remove_bullet;
+		}
+		
 		const float bullet_radius[] = { [BS_BULLET] = 1.f, [BS_FLAME] = 6.f, 
 		                                [BS_GRENADE_EXPL] = 16.f, [BS_BIG_EXPL] = 19.f };
 
@@ -866,6 +871,7 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 						const enum wavesound_id wid[] = { WS_SCREAM, WS_SCREAM2 };
 						audio_play_wave_resource(wavesounds[wid[rand()%2]]);
 						if(bullet_subtybe == BS_BULLET) {
+							remove_bullet:
 							gameobj_free(*bullet_id);
 							sblist_delete(bullet_list, li);
 							li--;
