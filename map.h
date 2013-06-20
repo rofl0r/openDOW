@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "palpic.h"
 #include "vec2f.h"
+#include "enemy.h"
 
 enum map_scrolldir {
 	MS_UP,
@@ -36,12 +37,14 @@ typedef uint8_t mapscreen_index;
 
 struct map {
 	enum map_type maptype;
+	enum enemy_type enemy_type;
 	const char *mission_text;
 	const struct palpic *client_face;
 	const struct palpic *mini_pic;
 	vec2f worldmap_coords;
 	mapscreen_index screen_map[28][7];
 	uint8_t bonuslayer_count;
+	prgb enemy_palette[8];
 };
 
 #endif
