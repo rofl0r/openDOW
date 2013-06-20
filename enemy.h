@@ -4,6 +4,11 @@
 #include "direction.h"
 #include <stdint.h>
 
+enum enemy_type {
+	ET_WESTERN = 0,
+	ET_ASIAN,
+};
+
 struct enemy_route {
 	enum direction dir;
 	uint8_t start_step;
