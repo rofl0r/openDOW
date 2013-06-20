@@ -296,8 +296,9 @@ int main(int argc, char**argv) {
 		map.maptype = MT_DESERT;
 	else if(!strcmp(argv[1], "forest"))
 		map.maptype = MT_FOREST;
-	if(argc == 3 && !strcmp(argv[2], "--wall")) walltag_mode = 1;
 	else assert(0);
+	if(argc == 3 && !strcmp(argv[2], "--wall")) walltag_mode = 1;
+	
 	const struct palpic* map_fg_lut[] = {
 		[MT_URBAN] = &map_urban.header,
 		[MT_DESERT] = &map_desert.header,
