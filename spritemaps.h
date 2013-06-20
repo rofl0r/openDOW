@@ -15,8 +15,6 @@ enum __attribute__ ((__packed__)) sprite_index {
 	SI_ENEMY_ASIAN,
 };
 
-#define SI_ENEMIES SI_ENEMY_WESTERN
-
 #include "palpic.h"
 
 extern const struct palpic *spritemaps[];

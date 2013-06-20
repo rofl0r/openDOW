@@ -579,7 +579,8 @@ static int init_enemy(enum direction face_dir, vec2f *pos, struct enemy* enemy, 
 		},
 	};
 	vec2f vel = get_enemy_vel(enemy);
-	gameobj_init(id, pos, &vel, SI_ENEMIES, enemy_animation_lut[is_bomber][face_dir], enemy_objtype_lut[is_bomber]);
+	enum sprite_index enemy_sprite_lut[] = {[ET_ASIAN] = SI_ENEMY_ASIAN, [ET_WESTERN] = SI_ENEMY_WESTERN, };
+	gameobj_init(id, pos, &vel, enemy_sprite_lut[map->enemy_type], enemy_animation_lut[is_bomber][face_dir], enemy_objtype_lut[is_bomber]);
 	objs[id].objspecific.enemy = *enemy;
 	add_enemy(id);
 	return id;
@@ -1013,9 +1014,10 @@ static void game_tick(int force_redraw) {
 		for(i = 0, obj_visited = 0; obj_visited < obj_count && i < OBJ_MAX; i++) {
 			if(!obj_slot_used[i]) continue;
 			struct gameobj *o = &objs[i];
+			const prgb *palette = (o->objtype == OBJ_ENEMY_BOMBER || o->objtype == OBJ_ENEMY_SHOOTER) ? map->enemy_palette : 0;
 			blit_sprite(o->pos.x, o->pos.y, &video,
 			            SCALE, spritemaps[o->spritemap_id], 
-			            o->anim_curr == ANIM_STEP_INIT ? get_next_anim_frame(o->animid, o->anim_curr) : o->anim_curr, 0);
+			            o->anim_curr == ANIM_STEP_INIT ? get_next_anim_frame(o->animid, o->anim_curr) : o->anim_curr, palette);
 			obj_visited++;
 		}
 		SDL_UpdateRect(surface, SCREEN_MIN_X ,SCREEN_MIN_Y , SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
