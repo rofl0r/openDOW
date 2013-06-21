@@ -18,9 +18,9 @@ struct {
 			"we will pay you $6000 to ensure.",
 			"his safe return.",
 		},
-		.client_face = 0,
+		.client_face = 4,
 		.mini_pic = 0,
-		.worldmap_coords = VEC(0,0),
+		.worldmap_coords = VEC(136,31),
 		.bonuslayer_count = BONUS_COUNT,
 		.enemy_type = ET_WESTERN,
 		.enemy_palette = {

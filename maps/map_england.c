@@ -18,9 +18,9 @@ struct {
 			"safeguard his return.",
 			"",
 		},
-		.client_face = 0,
+		.client_face = 1,
 		.mini_pic = 0,
-		.worldmap_coords = VEC(0,0),
+		.worldmap_coords = VEC(125,18),
 		.bonuslayer_count = BONUS_COUNT,
 		.screen_map = {
 			#define X MAPSCREEN_BLOCKED

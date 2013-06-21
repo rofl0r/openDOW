@@ -18,9 +18,9 @@ struct {
 			"to me i would be most grateful",
 			"and will pay you $5000.",
 		},
-		.client_face = 0,
+		.client_face = 9,
 		.mini_pic = 0,
-		.worldmap_coords = VEC(0,0),
+		.worldmap_coords = VEC(70,81),
 		.bonuslayer_count = BONUS_COUNT,
 		.enemy_type = ET_WESTERN,
 		.enemy_palette = {

@@ -18,9 +18,9 @@ struct {
 			"you $6000 to kill their leader.",
 			"",
 		},
-		.client_face = 0,
+		.client_face = 7,
 		.mini_pic = 0,
-		.worldmap_coords = VEC(0,0),
+		.worldmap_coords = VEC(170,45),
 		.bonuslayer_count = BONUS_COUNT,
 		.enemy_type = ET_ASIAN,
 		.enemy_palette = {

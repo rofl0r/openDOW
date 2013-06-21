@@ -18,9 +18,9 @@ struct {
 			"will pay you $14000 if you can",
 			"help him escape.",
 		},
-		.client_face = 0,
+		.client_face = 8,
 		.mini_pic = 0,
-		.worldmap_coords = VEC(0,0),
+		.worldmap_coords = VEC(209,59),
 		.bonuslayer_count = BONUS_COUNT,
 		.enemy_type = ET_ASIAN,
 		.enemy_palette = {
