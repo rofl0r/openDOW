@@ -27,6 +27,12 @@ static int chartofontindex(int c) {
 			return c - 'A' + 33;
 		case STRSWITCH_LETTERS_LC:
 			return c - 'a' + 33;
+		case '!' : return 1;
+		case '$' : return 4;
+		case '\'': return 7;
+		case ',' : return 12;
+		case '.' : return 14;
+		case '\?': return 31;
 		default:
 			return 0;
 	}
