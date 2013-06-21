@@ -1,9 +1,22 @@
 #include "palpic.h"
+
+
+#ifdef PALPIC_SDL
 #include "sdl_rgb.h"
+typedef sdl_rgb_t output_rgb_t;
+#define output_rgb_as_int asInt
+#define RGB_WHITE SRGB(0xFF,0xFF,0xFF)
+#define RGB_BLACK SRGB(0x00,0x00,0x00)
+#else
+typedef prgb output_rgb_t;
+#define output_rgb_as_int val
+#define RGB_WHITE PRGB(0xFF,0xFF,0xFF)
+#define RGB_BLACK PRGB(0x00,0x00,0x00)
+#endif
 
 #if 0
-static sdl_rgb_t convert_prgb(prgb col) {
-	sdl_rgb_t ret;
+static output_rgb_t convert_prgb(prgb col) {
+	output_rgb_t ret;
 	ret.colors.r = col.colors.r;
 	ret.colors.g = col.colors.g;
 	ret.colors.b = col.colors.b;
@@ -11,9 +24,15 @@ static sdl_rgb_t convert_prgb(prgb col) {
 	return ret;
 }
 #else
+
+#ifdef PALPIC_SDL
 /* warning: this macro is to get reasonable performance in -O0 mode
  * it only work as long as the sdl ARGB and the prgb RGBA type remain unchanged */
-#define convert_prgb(x) ((sdl_rgb_t){ .asInt  = x .val >> 8 } )
+#define convert_prgb(x) ((output_rgb_t){ .output_rgb_as_int  = x .val >> 8 } )
+#else
+#define convert_prgb(x) ((output_rgb_t){ .output_rgb_as_int  = x .val } )
+#endif
+
 #endif
 void blit_sprite(int x_pos, int y_pos, struct vo_desc *video, 
 	         unsigned scale, const struct palpic* pic, uint16_t spritenum, const prgb *palette) {
@@ -39,25 +58,25 @@ void blit_sprite(int x_pos, int y_pos, struct vo_desc *video,
 	
 	unsigned lineoffset = (y_pos + y_tl_off*scale) * (video->pitch / 4);
 	unsigned pixel_start = y_tl_off * sprite_width + x_tl_off;
-	static const sdl_rgb_t mask_colors_transp[2] = {
-		[0] = (SRGB_BLACK),
-		[1] = (SRGB_WHITE),
+	static const output_rgb_t mask_colors_transp[2] = {
+		[0] = (RGB_BLACK),
+		[1] = (RGB_WHITE),
 	};
-	static const sdl_rgb_t mask_colors_non_transp[2] = {
-		[0] = (SRGB_BLACK),
-		[1] = (SRGB_BLACK),
+	static const output_rgb_t mask_colors_non_transp[2] = {
+		[0] = (RGB_BLACK),
+		[1] = (RGB_BLACK),
 	};
-	const sdl_rgb_t *mask_colors = (pic->flags & PPF_TRANSPARENT ? mask_colors_transp : mask_colors_non_transp);
+	const output_rgb_t *mask_colors = (pic->flags & PPF_TRANSPARENT ? mask_colors_transp : mask_colors_non_transp);
 	for (y = y_tl_off; y < sprite_height - y_br_off; y++) {
 		for(scale_y = 0; scale_y < scale; scale_y++) {
-			sdl_rgb_t *ptr = &((sdl_rgb_t *) video->mem)[lineoffset + x_pos + x_tl_off];
+			output_rgb_t *ptr = &((output_rgb_t *) video->mem)[lineoffset + x_pos + x_tl_off];
 			const uint8_t *p = &bitmap[pixel_start];
 			for (x = x_tl_off; x < sprite_width - x_br_off; x++) {
 				prgb col = palette[*p++];
-				uint32_t mask = mask_colors[(col.val == 0)].asInt;
+				uint32_t mask = mask_colors[(col.val == 0)].output_rgb_as_int;
 				for(scale_x = 0; scale_x < scale; scale_x++) {
-					ptr[0].asInt &= mask;
-					ptr[0].asInt |= convert_prgb(col).asInt;
+					ptr[0].output_rgb_as_int &= mask;
+					ptr[0].output_rgb_as_int |= convert_prgb(col).output_rgb_as_int;
 					ptr++;
 				}
 			}
