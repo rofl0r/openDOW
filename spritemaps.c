@@ -12,6 +12,7 @@
 #include "sprites/enemies_b.c"
 #include "sprites/bigexpl.c"
 #include "sprites/worldmap.c"
+#include "sprites/clients.c"
 
 #define spritemap_entry(x, y) [ x ] = &(y .header)
 const struct palpic *spritemaps[] = { 
@@ -27,4 +28,5 @@ const struct palpic *spritemaps[] = {
 	spritemap_entry(SI_ROCKET, rocket),
 	spritemap_entry(SI_BIG_EXPLOSION, bigexpl),
 	spritemap_entry(SI_WORLDMAP, worldmap),
+	spritemap_entry(SI_CLIENTS, clients),
 };
