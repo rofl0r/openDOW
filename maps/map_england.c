@@ -22,6 +22,17 @@ struct {
 		.mini_pic = 0,
 		.worldmap_coords = VEC(125,18),
 		.bonuslayer_count = BONUS_COUNT,
+		.enemy_type = ET_WESTERN,
+		.enemy_palette = {
+			PRGB(  0,   0,   0), 
+			PRGB( 51,  85,  85), 
+			PRGB( 51, 119,  51), 
+			PRGB(119,  85,  17), 
+			PRGB(187, 153,  85), 
+			PRGB(187, 119,  85), 
+			PRGB(0x55,0x77,0x77), 
+			PRGB( 17,  51,  51), 
+		},
 		.screen_map = {
 			#define X MAPSCREEN_BLOCKED
 			[ 0] = { X, X, X, X, X, X, X },
