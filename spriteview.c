@@ -28,9 +28,7 @@
 #ifndef IN_KDEVELOP_PARSER
 #include "../lib/include/bitarray.h"
 #include "weapon_sprites.c"
-#include "music/dogsofwar.c"
-extern const unsigned char dogsofwar_dw[];
-extern const unsigned long dogsofwar_dw_size;
+#include "music.h"
 
 #endif
 
@@ -75,8 +73,6 @@ static vec2f get_sprite_center(const struct palpic *p) {
 	return res;
 }
 
-SDL_Surface *surface;
-static bool fullscreen_active = false;
 static int player_ids[2];
 static int crosshair_id;
 static enum weapon_id player_weapons[2][WP_MAX];
@@ -142,13 +138,11 @@ static int get_next_anim_frame(enum animation_id aid, anim_step curr) {
 #define SCREEN_MIN_Y 0
 #define SCREEN_MAX_Y 200*SCALE
 
-struct vo_desc video;
-
 static void draw_status_bar(void) {
 	enum weapon_id wid = get_active_weapon_id(0);
 	int x, y;
-	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
-	unsigned pitch = surface->pitch/4;
+	sdl_rgb_t *ptr = (sdl_rgb_t *) video.mem;
+	unsigned pitch = video.pitch/4;
 	for(y = SCREEN_MAX_Y; y < VMODE_H; y++)
 		for (x = SCREEN_MIN_X; x < SCREEN_MAX_X; x++)
 			ptr[y*pitch + x] = SRGB_BLACK;
@@ -161,15 +155,7 @@ static void draw_status_bar(void) {
 	font_print(SCREEN_MIN_X + 8, SCREEN_MAX_Y + 8, buf, 6, 1 * SCALE, PRGB(255,255,255));
 }
 
-static void clear_screen(void) {
-	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
-	unsigned pitch = surface->pitch/4;
-	unsigned x, y;
-	for(y = 0; y < VMODE_H; y++) for (x = 0; x < VMODE_W; x++)
-		ptr[y*pitch + x] = SRGB_BLACK;
-}
-
-enum map_index current_map = MI_PAKISTAN;
+enum map_index current_map = MI_VIETNAM;
 const struct map *map;
 const struct map_screen* map_scr;
 const struct palpic *map_bg;
@@ -712,15 +698,6 @@ static void fire_bullet(int player_no) {
 		audio_play_wave_resource(wf);
 }
 
-static void init_video() {
-	SDL_Init(SDL_INIT_VIDEO);
-	surface = SDL_SetVideoMode(VMODE_W, VMODE_H, 32, SDL_RESIZABLE | SDL_HWPALETTE);
-	video.mem = surface->pixels;
-	video.pitch = surface->pitch;
-	video.width = VMODE_W;
-	video.height = VMODE_H;
-}
-
 static void init_game_objs() {
 	sblist_init(&go_players, 1, 4);
 	sblist_init(&go_player_bullets, 1, 32);
@@ -1027,13 +1004,13 @@ static void game_tick(int force_redraw) {
 			            o->anim_curr == ANIM_STEP_INIT ? get_next_anim_frame(o->animid, o->anim_curr) : o->anim_curr, palette);
 			obj_visited++;
 		}
-		SDL_UpdateRect(surface, SCREEN_MIN_X ,SCREEN_MIN_Y , SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
+		video_update_region(SCREEN_MIN_X ,SCREEN_MIN_Y , SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
 	}
 
 	ms_used = mspassed(&timer);
 	//if(ms_used) printf("repaint took: ms_used %ld\n", ms_used);
 	int res = audio_process();
-	if(res == -1) audio_open_music_resource(dogsofwar_dw, dogsofwar_dw_size, 1);
+	if(res == -1) audio_open_music_resource(dogsofwar_dw, dogsofwar_dw_size, TUNE_FIGHTING);
 	ms_used = mspassed(&timer);
 	//if(ms_used) printf("audio processed: %d, ms_used %ld\n", res, ms_used);
 	
@@ -1043,9 +1020,9 @@ static void game_tick(int force_redraw) {
 	
 	tickcounter++;
 
-	char buf [64];
-	snprintf(buf, 64, "objs: %d, map x,y %d/%d, index %d", (int) obj_count, 
-		 (int)mapsquare.x, (int)mapsquare.y, (int)map->screen_map[mapsquare.y][mapsquare.x]);
+	char buf [128];
+	snprintf(buf, 128, "objs: %d, map x,y %d/%d, index %d, xoff %d, yoff %d", (int) obj_count, 
+		 (int)mapsquare.x, (int)mapsquare.y, (int)map->screen_map[mapsquare.y][mapsquare.x], (int)mapscreen_xoff, (int)mapscreen_yoff);
 	SDL_WM_SetCaption(buf, 0);
 }
 
@@ -1203,15 +1180,23 @@ static void switch_anim(int obj_id, int aid) {
 	gameobj_start_anim(obj_id, aid);
 }
 
+enum map_index choose_mission(void);
+//RcB: DEP "mission_select.c"
+
 int main() {
-	init_video();
+	video_init();
+	clear_screen();
 	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	SDL_EnableKeyRepeat(100, 20);
-	SDL_ShowCursor(0);
 	
 	audio_init();
-	audio_open_music_resource(dogsofwar_dw, dogsofwar_dw_size, 1);
 	
+	if((current_map = choose_mission()) == MI_INVALID) goto dun_goofed;
+	
+	audio_open_music_resource(dogsofwar_dw, dogsofwar_dw_size, TUNE_FIGHTING);
+
+	SDL_ShowCursor(0);
+
 	
 	int startx = 10;
 	int starty = 10;
@@ -1225,9 +1210,6 @@ int main() {
 		[c_left] = {&startx, SCALE * -1, VMODE_W - (palpic_getspritewidth(spritemap) * SCALE)},
 		[c_right] = {&startx, SCALE, VMODE_W - (palpic_getspritewidth(spritemap) * SCALE)},
 	};
-	
-	//SDL_Delay(1);
-	clear_screen();
 	
 	init_game_objs();
 	int player_no = 0;
@@ -1261,9 +1243,7 @@ int main() {
 					break;
 				case SDL_QUIT:
 					dun_goofed:
-					// restore desktop video mode correctly...
-					if(fullscreen_active)
-						SDL_WM_ToggleFullScreen(surface);
+					video_cleanup();
 					return 0;
 				case SDL_KEYDOWN:
 					switch(sdl_event.key.keysym.sym) {
@@ -1309,11 +1289,7 @@ int main() {
 						case SDLK_RETURN:
 							if((sdl_event.key.keysym.mod & KMOD_LALT) ||
 							   (sdl_event.key.keysym.mod & KMOD_RALT)) {
-								fullscreen_active = !fullscreen_active;
-								SDL_WM_ToggleFullScreen(surface);
-								SDL_Delay(1);
-								clear_screen();
-								SDL_UpdateRect(surface,0,0,VMODE_W,VMODE_H);
+								toggle_fullscreen();
 								SDL_Delay(1);
 								game_tick(1);
 								need_redraw = 1;
