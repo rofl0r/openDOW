@@ -39,10 +39,10 @@ struct map {
 	enum map_type maptype;
 	enum enemy_type enemy_type;
 	const char mission_text[5][34];
-	const struct palpic *client_face;
-	const struct palpic *mini_pic;
 	vec2f worldmap_coords;
 	mapscreen_index screen_map[28][7];
+	uint8_t client_face;
+	uint8_t mini_pic;
 	uint8_t bonuslayer_count;
 	prgb enemy_palette[8];
 };
