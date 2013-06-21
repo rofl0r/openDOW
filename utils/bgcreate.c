@@ -1,6 +1,6 @@
 /* when using gfxrip and an uncompressed amiga save state,
  * we find at offset 401408 the map background tiles, followed
- * by other map sprites in 16x16, ST mode, 4bitplane reversed.
+ * by other map sprites in 16x16, ST mode, 4bitplanes.
  * the first 16 tiles are background data.
  * to recreate the 64x64 bg tile, 4 lines of each bg sprite
  * are put horizontally into the output tile. */
@@ -9,9 +9,8 @@
 #include <string.h>
 //RcB: LINK "-llept"
 
-#include "../sprites/florida.c"
-#define sprite florida
-#define start_sprite 24
+#include "../temp.c"
+#define sprite temp
 #define sprites_per_pic 8
 #define bgs 6
 

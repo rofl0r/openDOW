@@ -3,8 +3,8 @@
 #include <string.h>
 //RcB: LINK "-llept"
 
-#include "../sprites/grenade_explosion.c"
-#define sprite grenade_explosion
+#include "../temp.c"
+#define sprite temp
 
 int main() {
 	const struct palpic* f = & sprite .header;
