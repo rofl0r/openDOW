@@ -16,6 +16,8 @@ enum __attribute__ ((__packed__)) sprite_index {
 	SI_WORLDMAP,
 	SI_CLIENTS,
 	SI_MAPBLINK,
+	SI_PICFRAME_HORIZ,
+	SI_PICFRAME_VERT,
 };
 
 #include "palpic.h"
