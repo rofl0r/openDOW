@@ -18,6 +18,7 @@ struct {
 			"you kill this evil man and allow",
 			"justice? i will pay you $15000.",
 		},
+		.rewardk = 15,
 		.client_face = 6,
 		.mini_pic = 0,
 		.worldmap_coords = VEC(66,43),

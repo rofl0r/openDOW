@@ -18,6 +18,7 @@ struct {
 			"we will pay you $6000 to ensure.",
 			"his safe return.",
 		},
+		.rewardk = 6,
 		.client_face = 4,
 		.mini_pic = 0,
 		.worldmap_coords = VEC(136,31),

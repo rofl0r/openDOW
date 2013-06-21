@@ -18,6 +18,7 @@ struct {
 			"will pay you $14000 if you can",
 			"help him escape.",
 		},
+		.rewardk = 14,
 		.client_face = 8,
 		.mini_pic = 0,
 		.worldmap_coords = VEC(209,59),

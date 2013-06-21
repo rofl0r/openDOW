@@ -44,6 +44,7 @@ struct map {
 	uint8_t client_face;
 	uint8_t mini_pic;
 	uint8_t bonuslayer_count;
+	uint8_t rewardk; /* reward in 1000$ */
 	prgb enemy_palette[8];
 };
 

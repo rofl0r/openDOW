@@ -18,6 +18,7 @@ struct {
 			"you $6000 to kill their leader.",
 			"",
 		},
+		.rewardk = 6,
 		.client_face = 7,
 		.mini_pic = 0,
 		.worldmap_coords = VEC(170,45),

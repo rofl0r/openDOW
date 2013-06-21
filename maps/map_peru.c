@@ -18,6 +18,7 @@ struct {
 			"to me i would be most grateful",
 			"and will pay you $5000.",
 		},
+		.rewardk = 5,
 		.client_face = 9,
 		.mini_pic = 0,
 		.worldmap_coords = VEC(70,81),

@@ -18,6 +18,7 @@ struct {
 			"safeguard his return.",
 			"",
 		},
+		.rewardk = 10,
 		.client_face = 1,
 		.mini_pic = 0,
 		.worldmap_coords = VEC(125,18),
