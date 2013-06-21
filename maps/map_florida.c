@@ -11,7 +11,13 @@ struct {
 } map_florida = {
 	.header = {
 		.maptype = MT_FOREST,
-		.mission_text = "bla",
+		.mission_text = {
+			" a drug baron has recently caused",
+			"the death of my dear son,and the",
+			"police can't touch him. will",
+			"you kill this evil man and allow",
+			"justice? i will pay you $15000.",
+		},
 		.client_face = 0,
 		.mini_pic = 0,
 		.worldmap_coords = VEC(0,0),

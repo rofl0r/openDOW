@@ -11,7 +11,13 @@ struct {
 } map_italy = {
 	.header = {
 		.maptype = MT_URBAN,
-		.mission_text = "bla",
+		.mission_text = {
+			" the senior member of our family",
+			"has gone missing. we believe he",
+			"is being held by a rival family.",
+			"we will pay you $6000 to ensure.",
+			"his safe return.",
+		},
 		.client_face = 0,
 		.mini_pic = 0,
 		.worldmap_coords = VEC(0,0),

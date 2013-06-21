@@ -38,7 +38,7 @@ typedef uint8_t mapscreen_index;
 struct map {
 	enum map_type maptype;
 	enum enemy_type enemy_type;
-	const char *mission_text;
+	const char mission_text[5][34];
 	const struct palpic *client_face;
 	const struct palpic *mini_pic;
 	vec2f worldmap_coords;

@@ -11,7 +11,13 @@ struct {
 } map_vietnam = {
 	.header = {
 		.maptype = MT_DESERT,
-		.mission_text = "bla",
+		.mission_text = {
+			" can you help me? my son is a",
+			"P.O.W. in vietnam! you will be",
+			"his only chance of freedom. i",
+			"will pay you $14000 if you can",
+			"help him escape.",
+		},
 		.client_face = 0,
 		.mini_pic = 0,
 		.worldmap_coords = VEC(0,0),

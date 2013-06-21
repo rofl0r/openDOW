@@ -11,7 +11,13 @@ struct {
 } map_peru = {
 	.header = {
 		.maptype = MT_FOREST,
-		.mission_text = "bla",
+		.mission_text = {
+			" an invaluable inca statue has",
+			"been stolen from me by some local",
+			"criminals. if you can return it",
+			"to me i would be most grateful",
+			"and will pay you $5000.",
+		},
 		.client_face = 0,
 		.mini_pic = 0,
 		.worldmap_coords = VEC(0,0),

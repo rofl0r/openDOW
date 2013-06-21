@@ -11,7 +11,13 @@ struct {
 } map_pakistan = {
 	.header = {
 		.maptype = MT_DESERT,
-		.mission_text = "bla",
+		.mission_text = {
+			" a group of terrorists threatens",
+			"to overthrow our government in a",
+			"violent revolution. we will pay",
+			"you $6000 to kill their leader.",
+			"",
+		},
 		.client_face = 0,
 		.mini_pic = 0,
 		.worldmap_coords = VEC(0,0),

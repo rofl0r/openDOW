@@ -11,7 +11,13 @@ struct {
 } map_england = {
 	.header = {
 		.maptype = MT_FOREST,
-		.mission_text = "bla",
+		.mission_text = {
+			" my young son has been kidnapped",
+			"by a band of ruthless terrorists!",
+			"i will pay you $10000 if you can",
+			"safeguard his return.",
+			"",
+		},
 		.client_face = 0,
 		.mini_pic = 0,
 		.worldmap_coords = VEC(0,0),
