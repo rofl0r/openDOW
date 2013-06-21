@@ -209,9 +209,9 @@ int audio_open_music_resource(const unsigned char* data, size_t data_size, int t
 	ByteArray_open_mem(&playa.music_stream, (void*) data, data_size);
 	CorePlayer_load(&playa.player.core, &playa.music_stream);
 	assert(playa.player.core.version);
-	playa.player.core.initialize(&playa.player.core);
 	if(track > playa.player.core.lastSong) return -1;
 	playa.player.core.playSong = track;
+	playa.player.core.initialize(&playa.player.core);
 	return 0;
 }
 
