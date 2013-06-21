@@ -10,6 +10,8 @@ enum map_index {
 	MI_PERU,
 	MI_FLORIDA,
 	MI_VIETNAM,
+	MI_INVALID,
+	MI_MAX = MI_INVALID,
 };
 
 extern const struct map *maps[];
