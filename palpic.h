@@ -42,9 +42,9 @@ enum palpic_flags {
 #define palpic_empty { {'p', 'P', 'i', 'C', }, 1, 0, 0, 0, 0, 0, 0 }
 
 #ifdef IS_LITTLE_ENDIAN
-#define RGB(x,y,z) ((rgb_t) {{0, z, y, x}})
+#define RGB(x,y,z) ((prgb) {{0, z, y, x}})
 #else
-#define RGB(x,y,z) ((rgb_t) {{x, y, z, 0}})
+#define RGB(x,y,z) ((prgb) {{x, y, z, 0}})
 #endif
 
 #define PRGB(R,G,B) ((prgb) {.colors.r = R, .colors.g = G, .colors.b = B, .colors.a = 0})
