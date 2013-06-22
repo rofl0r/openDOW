@@ -31,6 +31,7 @@ while(<>) {
 		next;
 	}
 	chomp;
+	next if($_ eq "");
 	print "\t\t\t\t{$_},\n";
 }
 print "\t\t\t}},\n\t\t},\n\t},\n";
