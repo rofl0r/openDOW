@@ -7,6 +7,7 @@
 #include "maps/map_vietnam.c"
 #include "maps/map_texas.c"
 #include "maps/map_canada.c"
+#include "maps/map_safrica.c"
 
 const struct map *maps[] = {
 	[MI_ITALY] = &map_italy.header,
@@ -17,6 +18,7 @@ const struct map *maps[] = {
 	[MI_VIETNAM] = &map_vietnam.header,
 	[MI_TEXAS] = &map_texas.header,
 	[MI_CANADA] = &map_canada.header,
+	[MI_SAFRICA] = &map_safrica.header,
 };
 
 const struct map_screen *map_screens[] = {
@@ -28,6 +30,7 @@ const struct map_screen *map_screens[] = {
 	[MI_VIETNAM] = map_vietnam.screens,
 	[MI_TEXAS] = map_texas.screens,
 	[MI_CANADA] = map_canada.screens,
+	[MI_SAFRICA] = map_safrica.screens,
 };
 
 const mapscreen_index *map_bonus_layer_indices[] = {
@@ -39,6 +42,7 @@ const mapscreen_index *map_bonus_layer_indices[] = {
 	[MI_VIETNAM] = map_vietnam.bonus_index,
 	[MI_TEXAS] = map_texas.bonus_index,
 	[MI_CANADA] = map_canada.bonus_index,
+	[MI_SAFRICA] = map_safrica.bonus_index,
 };
 	
 const struct map_fglayer *map_bonus_screens[] = {
@@ -50,4 +54,5 @@ const struct map_fglayer *map_bonus_screens[] = {
 	[MI_VIETNAM] = map_vietnam.bonus_screens,
 	[MI_TEXAS] = map_texas.bonus_screens,
 	[MI_CANADA] = map_canada.bonus_screens,
+	[MI_SAFRICA] = map_safrica.bonus_screens,
 };
