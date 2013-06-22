@@ -20,7 +20,7 @@ static enum map_index cursor_on_map(int x, int y) {
 	vec2f p;
 	for(i = 0; i < MI_MAX; i++) {
 		p = maps[i]->worldmap_coords;
-		if(vecdist(&c, &p) <= 5) return i;
+		if(vecdist(&c, &p) <= 3) return i;
 	}
 	return MI_INVALID;
 }
