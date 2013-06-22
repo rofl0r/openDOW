@@ -21,7 +21,7 @@ struct {
 		.rewardk = 6,
 		.client_face = 4,
 		.mini_pic = 0,
-		.worldmap_coords = VEC(136,31),
+		.worldmap_coords = VEC(134,33),
 		.bonuslayer_count = BONUS_COUNT,
 		.enemy_type = ET_WESTERN,
 		.enemy_palette = {
