@@ -3,9 +3,9 @@
 #include <string.h>
 //RcB: LINK "-llept"
 
-#include "../vehicles_scrambled.c"
-#define sprite vehicles_scrambled
-#define scramble_factor 3
+#include "../temp.c"
+#define sprite temp
+#define scramble_factor 2
 
 int main() {
 	const struct palpic* f = & sprite .header;
