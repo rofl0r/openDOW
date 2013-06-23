@@ -3,7 +3,7 @@
 #define SCREEN_COUNT 25
 #define BONUS_COUNT 9
 
-struct {
+const struct {
 	struct map header;
 	struct map_screen screens[SCREEN_COUNT];
 	mapscreen_index bonus_index[BONUS_COUNT];
