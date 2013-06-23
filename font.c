@@ -38,7 +38,7 @@ static int chartofontindex(int c) {
 	}
 }
 
-void font_print(int x, int y, char *str, size_t len, unsigned scale, prgb color) {
+void font_print(int x, int y, const char *str, size_t len, unsigned scale, prgb color) {
 	size_t i;
 	prgb col[2] = {PRGB(0,0,0), color };
 	for(i = 0; i < len; i++, x+=8*scale)
