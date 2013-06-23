@@ -10,6 +10,7 @@
 #include "maps/map_safrica.c"
 #include "maps/map_france.c"
 #include "maps/map_australia.c"
+#include "maps/map_russia.c"
 
 const struct map *maps[] = {
 	[MI_ITALY] = &map_italy.header,
@@ -23,6 +24,7 @@ const struct map *maps[] = {
 	[MI_SAFRICA] = &map_safrica.header,
 	[MI_FRANCE] = &map_france.header,
 	[MI_AUSTRALIA] = &map_australia.header,
+	[MI_RUSSIA] = &map_russia.header,
 };
 
 const struct map_screen *map_screens[] = {
@@ -37,6 +39,7 @@ const struct map_screen *map_screens[] = {
 	[MI_SAFRICA] = map_safrica.screens,
 	[MI_FRANCE] = map_france.screens,
 	[MI_AUSTRALIA] = map_australia.screens,
+	[MI_RUSSIA] = map_russia.screens,
 };
 
 const mapscreen_index *map_bonus_layer_indices[] = {
@@ -51,6 +54,7 @@ const mapscreen_index *map_bonus_layer_indices[] = {
 	[MI_SAFRICA] = map_safrica.bonus_index,
 	[MI_FRANCE] = map_france.bonus_index,
 	[MI_AUSTRALIA] = map_australia.bonus_index,
+	[MI_RUSSIA] = map_russia.bonus_index,
 };
 	
 const struct map_fglayer *map_bonus_screens[] = {
@@ -65,4 +69,5 @@ const struct map_fglayer *map_bonus_screens[] = {
 	[MI_SAFRICA] = map_safrica.bonus_screens,
 	[MI_FRANCE] = map_france.bonus_screens,
 	[MI_AUSTRALIA] = map_australia.bonus_screens,
+	[MI_RUSSIA] = map_russia.bonus_screens,
 };

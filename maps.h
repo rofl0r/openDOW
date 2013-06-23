@@ -15,6 +15,7 @@ enum map_index {
 	MI_SAFRICA,
 	MI_FRANCE,
 	MI_AUSTRALIA,
+	MI_RUSSIA,
 	MI_INVALID,
 	MI_MAX = MI_INVALID,
 };
