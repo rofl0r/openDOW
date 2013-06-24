@@ -37,24 +37,6 @@ static void draw_blinky(const struct palpic *b, int x, int y) {
 	}
 }
 
-static void draw_dot(int x, int y) {
-	static const struct {
-		struct palpic header;
-		prgb palette[1];
-		uint8_t data[1];
-	} dot = { 
-		{ {'p', 'P', 'i', 'C', }, 1, 1, 1, 1, 1, 0, 0 },
-		{ PRGB(254, 0, 0) },
-		{ 1 },
-	};
-	enum map_index i;
-	vec2f p;
-	for(i = 0; i < MI_MAX; i++) {
-		p = maps[i]->worldmap_coords;
-		blit_sprite((x+p.x+2)*SCALE, (y+p.y+2)*SCALE, &video, SCALE, &dot.header, map_ticks%7, 0);
-	}
-}
-
 static void draw_face(const struct map *map) {
 #define FACE_X 10
 #define FACE_Y 10
@@ -86,7 +68,6 @@ static void draw_stuff(const struct palpic *world, int x, int y) {
 	draw_world(world, x, y);
 	const struct palpic *blinky = spritemaps[SI_MAPBLINK];
 	draw_blinky(blinky, x, y);
-	draw_dot(x,y);
 	enum map_index m = cursor_on_map(x, y);
 	if(m != MI_INVALID) {
 		const struct map *map = maps[m];
