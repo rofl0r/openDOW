@@ -13,16 +13,19 @@ static void draw_world(const struct palpic *w, int x, int y) {
 
 static unsigned map_ticks;
 static struct { int x, y; } cursor;
-
 static enum map_index cursor_on_map(int x, int y) {
-	enum map_index i;
-	vec2f c = { .x = cursor.x - x, .y = cursor.y - y};
+	enum map_index i, ret = MI_INVALID;
+	vec2f c = { .x = cursor.x - x*SCALE, .y = cursor.y - y*SCALE};
 	vec2f p;
 	for(i = 0; i < MI_MAX; i++) {
-		p = maps[i]->worldmap_coords;
-		if(vecdist(&c, &p) <= 3) return i;
+		p = vecadd(&maps[i]->worldmap_coords, &VEC(2,2));
+		p.x *= SCALE;
+		p.y *= SCALE;
+		p = vecadd(&p, &VEC(SCALE/2,SCALE/2));
+		if(vecdist(&p, &c) <= 3*SCALE) { ret = i; goto done; }
 	}
-	return MI_INVALID;
+	done:
+	return ret;
 }
 
 static void draw_blinky(const struct palpic *b, int x, int y) {
@@ -99,11 +102,11 @@ enum map_index choose_mission() {
 			ret = MI_INVALID;
 			switch (sdl_event.type) {
 				case SDL_MOUSEMOTION:
-					cursor.x = sdl_event.motion.x/SCALE;
-					cursor.y = sdl_event.motion.y/SCALE;
+					cursor.x = sdl_event.motion.x;
+					cursor.y = sdl_event.motion.y;
 					break;
 				case SDL_MOUSEBUTTONDOWN:
-					dprintf(2, "click on %d,%d\n", cursor.x-x, cursor.y-y);
+					dprintf(2, "click on %d,%d\n", cursor.x/SCALE-x, cursor.y/SCALE-y);
 					if((ret = cursor_on_map(x, y)) != MI_INVALID) goto dun_goofed;
 					break;
 				case SDL_QUIT:
