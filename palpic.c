@@ -73,7 +73,7 @@ void blit_sprite(int x_pos, int y_pos, struct vo_desc *video,
 			const uint8_t *p = &bitmap[pixel_start];
 			for (x = x_tl_off; x < sprite_width - x_br_off; x++) {
 				prgb col = palette[*p++];
-				uint32_t mask = mask_colors[(col.val == 0)].output_rgb_as_int;
+				uint32_t mask = mask_colors[(col.val == RGB_BLACK.output_rgb_as_int)].output_rgb_as_int;
 				for(scale_x = 0; scale_x < scale; scale_x++) {
 					ptr[0].output_rgb_as_int &= mask;
 					ptr[0].output_rgb_as_int |= convert_prgb(col).output_rgb_as_int;
