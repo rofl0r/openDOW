@@ -83,14 +83,11 @@ static void map_tick(const struct palpic *world, int x, int y) {
 	draw_stuff(world, x, y);
 	if(tc%6==0) map_ticks++;
 	tc++;
-	if (audio_process() == -1) audio_open_music_resource(dogsofwar_dw, dogsofwar_dw_size, TUNE_MAP);
+	if (audio_process() == -1) music_restart();
 	SDL_Delay(20);
 }
 #include <stdio.h>
 enum map_index choose_mission() {
-	/* background music for mission selection screen */
-	audio_open_music_resource(dogsofwar_dw, dogsofwar_dw_size, TUNE_MAP);
-
 	const struct palpic *world = spritemaps[SI_WORLDMAP];
 	int x = (320 - palpic_getspritewidth(world))/2;
 	int y = ((240 - palpic_getspriteheight(world))/2)+16;

@@ -22,13 +22,13 @@
 #include "maps.h"
 #include "mapsprites.h"
 #include "walls.h"
+#include "music.h"
 
 #include <SDL/SDL.h>
 
 #ifndef IN_KDEVELOP_PARSER
 #include "../lib/include/bitarray.h"
 #include "weapon_sprites.c"
-#include "music.h"
 
 #endif
 
@@ -1010,7 +1010,7 @@ static void game_tick(int force_redraw) {
 	ms_used = mspassed(&timer);
 	//if(ms_used) printf("repaint took: ms_used %ld\n", ms_used);
 	int res = audio_process();
-	if(res == -1) audio_open_music_resource(dogsofwar_dw, dogsofwar_dw_size, TUNE_FIGHTING);
+	if(res == -1) music_restart();
 	ms_used = mspassed(&timer);
 	//if(ms_used) printf("audio processed: %d, ms_used %ld\n", res, ms_used);
 	
@@ -1191,9 +1191,12 @@ int main() {
 	
 	audio_init();
 	
+	/* background music for mission selection screen */
+	music_play(TUNE_MAP);
+
 	if((current_map = choose_mission()) == MI_INVALID) goto dun_goofed;
 	
-	audio_open_music_resource(dogsofwar_dw, dogsofwar_dw_size, TUNE_FIGHTING);
+	music_play(TUNE_FIGHTING);
 
 	SDL_ShowCursor(0);
 
