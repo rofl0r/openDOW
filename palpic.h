@@ -7,16 +7,10 @@
 
 typedef union {
 	struct colors {
-#ifdef IS_LITTLE_ENDIAN
-		uint8_t a;
-		uint8_t b;
-		uint8_t g;
-		uint8_t r;
+#if defined(IS_LITTLE_ENDIAN) && !defined(PALPIC_OPENGL)
+		uint8_t a,b,g,r;
 #else
-		uint8_t r;
-		uint8_t g;
-		uint8_t b;
-		uint8_t a;
+		uint8_t r,g,b,a;
 #endif
 	} colors;
 	uint32_t val;
