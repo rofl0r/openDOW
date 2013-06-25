@@ -1,7 +1,7 @@
 #ifndef MUSIC_H
 #define MUSIC_H
 
-//RcB: DEP "music/dogsofwar.c"
+//RcB: DEP "music.c"
 extern const unsigned char dogsofwar_dw[];
 extern const unsigned long dogsofwar_dw_size;
 
@@ -17,5 +17,8 @@ enum tune_index {
 	TUNE_INVALID,
 	TUNE_MAX = TUNE_INVALID
 };
+
+int music_play(enum tune_index track);
+int music_restart(void);
 
 #endif
