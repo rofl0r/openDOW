@@ -1,7 +1,7 @@
 #include "palpic.h"
 
 
-#ifdef PALPIC_SDL
+#if defined(PALPIC_SDL) && !defined(PALPIC_OPENGL)
 #include "sdl_rgb.h"
 typedef sdl_rgb_t output_rgb_t;
 #define output_rgb_as_int asInt
@@ -20,14 +20,15 @@ static output_rgb_t convert_prgb(prgb col) {
 	ret.colors.r = col.colors.r;
 	ret.colors.g = col.colors.g;
 	ret.colors.b = col.colors.b;
-	ret.colors.a = 0;
+	ret.colors.a = col.colors.a;
 	return ret;
 }
 #else
 
-#ifdef PALPIC_SDL
+#if defined(PALPIC_SDL) && !defined(PALPIC_OPENGL)
 /* warning: this macro is to get reasonable performance in -O0 mode
- * it only work as long as the sdl ARGB and the prgb RGBA type remain unchanged */
+ * it only work as long as the sdl ARGB and the prgb RGBA type remain unchanged
+ * since the alpha value is unused in SDL 2D, we can safely zero it. */
 #define convert_prgb(x) ((output_rgb_t){ .output_rgb_as_int  = x .val >> 8 } )
 #else
 #define convert_prgb(x) ((output_rgb_t){ .output_rgb_as_int  = x .val } )
