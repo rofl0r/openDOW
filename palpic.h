@@ -37,6 +37,9 @@ enum palpic_flags {
 
 #define PRGB(R,G,B) ((prgb) {.colors.r = R, .colors.g = G, .colors.b = B, .colors.a = 0xff,})
 
+#if __GNUC__ + 0 > 3
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
 
 static inline void palpic_hostformat(struct palpic *p) {
 	p->width = ntohs(p->width);
