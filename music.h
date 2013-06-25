@@ -2,9 +2,6 @@
 #define MUSIC_H
 
 //RcB: DEP "music.c"
-extern const unsigned char dogsofwar_dw[];
-extern const unsigned long dogsofwar_dw_size;
-
 enum tune_index {
 	TUNE_FIGHTING = 0,
 	TUNE_MAP,
