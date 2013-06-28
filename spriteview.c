@@ -978,7 +978,7 @@ static void game_tick(int force_redraw) {
 					continue;
 				} else go->objspecific.bullet.step_curr++;
 			} else if (go->objtype == OBJ_ENEMY_SHOOTER || go->objtype == OBJ_ENEMY_BOMBER) {
-				go->objspecific.enemy.curr_step++;
+				if (tickcounter % 4 == go->anim_frame) go->objspecific.enemy.curr_step++;
 				if(!is_death_anim(go->animid)) go->vel = get_enemy_vel(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
 				else go->vel = VEC(0, 0);
 				if(enemy_fires(&go->objspecific.enemy)) {
