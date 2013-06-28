@@ -8,4 +8,7 @@
 *.wav
 *.bmp
 *.xcf
-
+.swp.*
+perf.data*
+config.mak
+temp.c
