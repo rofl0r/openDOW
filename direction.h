@@ -47,6 +47,27 @@ extern const enum direction directionbit_direction_lut[];
 #define direction_to_directionbit(dir) direction_directionbit_lut[dir]
 #define directionbit_to_direction(db) direction_directionbit_lut[db]
 
+enum __attribute__ ((__packed__)) direction16 {
+	DIR16_N = 0,
+	DIR16_NNW,
+	DIR16_NW,
+	DIR16_WNW,
+	DIR16_W,
+	DIR16_WSW,
+	DIR16_SW,
+	DIR16_SSW,
+	DIR16_S,
+	DIR16_SSO,
+	DIR16_SO,
+	DIR16_OSO,
+	DIR16_O,
+	DIR16_ONO,
+	DIR16_NO,
+	DIR16_NNO,
+	DIR16_MAX,
+	DIR16_INVALID = DIR16_MAX
+};
+
 //RcB: DEP "direction.c"
 
 #endif
