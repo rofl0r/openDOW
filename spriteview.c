@@ -82,6 +82,7 @@ static int player_ammo[2][AMMO_MAX];
 static enum weapon_id get_active_weapon_id(int player_no);
 static void switch_anim(int obj_id, int aid);
 static vec2f get_vel_from_direction(enum direction dir, float speed);
+static vec2f get_vel_from_direction16(enum direction16 dir, float speed);
 // used by game_tick
 static sblist go_player_bullets;
 static sblist go_enemy_bullets;
@@ -1069,6 +1070,38 @@ static vec2f get_vel_from_direction(enum direction dir, float speed) {
 	v.y *= speed * SCALE;
 	return v;
 }
+
+static vec2f get_vel_from_direction16(enum direction16 dir, float speed) {
+#define VELLUT(a, b, c) [a] = VEC(b, c)
+#define ANK90 0.7071067769704655
+#define GK90 ANK90
+#define ANK45 0.9238795042037964
+#define GK45 0.3826834261417389
+	static const vec2f vel_lut[] = {
+		VELLUT(DIR16_O, 1, 0),
+		VELLUT(DIR16_ONO, ANK45, -GK45),
+		VELLUT(DIR16_NO, ANK90, -ANK90),
+		VELLUT(DIR16_NNO, GK45, -ANK45),
+		VELLUT(DIR16_N, 0, -1),
+		VELLUT(DIR16_NNW, -GK45, -ANK45),
+		VELLUT(DIR16_NW, -ANK90, -ANK90),
+		VELLUT(DIR16_WNW, -ANK45, -GK45),
+		VELLUT(DIR16_W, -1, 0),
+		VELLUT(DIR16_WSW, -ANK45, GK45),
+		VELLUT(DIR16_SW, -ANK90, ANK90),
+		VELLUT(DIR16_SSW, -GK45, ANK45),
+		VELLUT(DIR16_S, 0, 1),
+		VELLUT(DIR16_SSO, GK45, ANK45),
+		VELLUT(DIR16_SO, ANK90, ANK90),
+		VELLUT(DIR16_OSO, ANK45, GK45),
+	};
+#undef VELLUT
+	vec2f v = vel_lut[dir];
+	v.x *= speed * SCALE;
+	v.y *= speed * SCALE;
+	return v;
+}
+
 
 static enum direction get_direction_from_vec(vec2f *vel) {
 	float deg_org, deg = atan2(vel->y, vel->x);
