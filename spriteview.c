@@ -583,25 +583,90 @@ static vec2f get_enemy_vel(int curr_step, const struct enemy_spawn *spawn) {
 }
 
 static int init_enemy(const struct enemy_spawn *spawn) {
-	vec2f spawnpos = VEC(SCREEN_MIN_X + spawn->x*SCALE, SCREEN_MIN_Y + spawn->y*SCALE);
-	int id = gameobj_alloc();
-	if(id == -1) return -1;
-	const enum objtype enemy_objtype_lut[] = { [0] = OBJ_ENEMY_SHOOTER, [1] = OBJ_ENEMY_BOMBER };
+	const enum objtype enemy_soldier_objtype_lut[] = {
+		[0] = OBJ_ENEMY_SHOOTER,
+		[1] = OBJ_ENEMY_BOMBER
+	};
+	const enum objtype enemy_objtype_lut[] = {
+		[ES_JEEP] = OBJ_JEEP,
+		[ES_TANK_SMALL] = OBJ_TANK_SMALL,
+		[ES_TANK_BIG] = OBJ_TANK_BIG,
+		[ES_TRANSPORTER] = OBJ_TRANSPORTER,
+		[ES_GUNTURRET_MOVABLE_MACHINE] = OBJ_GUNTURRET_MOVABLE_MACHINE,
+		[ES_GUNTURRET_MOVABLE_MAN] = OBJ_GUNTURRET_MOVABLE_MAN,
+		[ES_MINE_FLAT] = OBJ_MINE_FLAT,
+		[ES_MINE_CROSS] = OBJ_MINE_CROSSED,
+		[ES_FLAMETURRET] = OBJ_FLAMETURRET,
+		[ES_GUNTURRET_FIXED_SOUTH] = OBJ_GUNTURRET_FIXED_SOUTH,
+		[ES_GUNTURRET_FIXED_NORTH] = OBJ_GUNTURRET_FIXED_NORTH,
+		[ES_BUNKER_1] = OBJ_BUNKER1,
+		[ES_BUNKER_2] = OBJ_BUNKER2,
+		[ES_BUNKER_3] = OBJ_BUNKER3,
+		[ES_BUNKER_4] = OBJ_BUNKER4,
+		[ES_BUNKER_5] = OBJ_BUNKER5,
+	};
 	const enum animation_id enemy_animation_lut[] = { 
 		[ES_SOLDIER1_DOWN] = ANIM_ENEMY_GUNNER_DOWN,
 		[ES_SOLDIER1_RIGHT] = ANIM_ENEMY_GUNNER_RIGHT,
 		[ES_SOLDIER1_LEFT] = ANIM_ENEMY_GUNNER_LEFT,
 		[ES_SOLDIER2_DOWN] = ANIM_ENEMY_BOMBER_DOWN,
 		[ES_SOLDIER2_RIGHT] = ANIM_ENEMY_BOMBER_RIGHT,
-		[ES_SOLDIER2_LEFT] = ANIM_ENEMY_BOMBER_LEFT
+		[ES_SOLDIER2_LEFT] = ANIM_ENEMY_BOMBER_LEFT,
+		[ES_JEEP] = ANIM_JEEP,
+		[ES_TANK_SMALL] = ANIM_TANK_SMALL,
+		[ES_TANK_BIG] = ANIM_TANK_BIG,
+		[ES_TRANSPORTER] = ANIM_TRANSPORTER,
+		[ES_GUNTURRET_MOVABLE_MACHINE] = ANIM_GUNTURRET_MOVABLE_MACHINE_S,
+		[ES_GUNTURRET_MOVABLE_MAN] = ANIM_GUNTURRET_MOVABLE_MAN_S,
+		[ES_MINE_FLAT] = ANIM_MINE_FLAT,
+		[ES_MINE_CROSS] = ANIM_MINE_CROSSED,
+		[ES_FLAMETURRET] = ANIM_FLAMETURRET,
+		[ES_GUNTURRET_FIXED_SOUTH] = ANIM_GUNTURRET_FIXED_SOUTH,
+		[ES_GUNTURRET_FIXED_NORTH] = ANIM_GUNTURRET_FIXED_NORTH,
+		[ES_BUNKER_1] = ANIM_BUNKER1,
+		[ES_BUNKER_2] = ANIM_BUNKER2,
+		[ES_BUNKER_3] = ANIM_BUNKER3,
+		[ES_BUNKER_4] = ANIM_BUNKER4,
+		[ES_BUNKER_5] = ANIM_BUNKER5,
 	};
+	const enum sprite_index enemy_soldier_sprite_lut[] = {
+		[ET_ASIAN] = SI_ENEMY_ASIAN,
+		[ET_WESTERN] = SI_ENEMY_WESTERN,
+	};
+	const enum sprite_index enemy_sprite_lut[] = { 
+		[ES_JEEP] = SI_VEHICLES_SMALL,
+		[ES_TANK_SMALL] = SI_VEHICLES_MEDIUM,
+		[ES_TANK_BIG] = SI_VEHICLES_BIG,
+		[ES_TRANSPORTER] = SI_VEHICLES_BIG,
+		[ES_BUNKER_1] = SI_BUNKERS,
+		[ES_BUNKER_2] = SI_BUNKERS,
+		[ES_BUNKER_3] = SI_BUNKERS,
+		[ES_BUNKER_4] = SI_BUNKERS,
+		[ES_BUNKER_5] = SI_BUNKERS,
+		[ES_GUNTURRET_MOVABLE_MACHINE] = SI_GUNTURRET,
+		[ES_GUNTURRET_MOVABLE_MAN] = SI_GUNTURRET,
+		[ES_MINE_FLAT] = SI_MINES,
+		[ES_MINE_CROSS] = SI_MINES,
+		[ES_FLAMETURRET] = SI_MINES,
+		[ES_GUNTURRET_FIXED_SOUTH] = SI_MINES,
+		[ES_GUNTURRET_FIXED_NORTH] = SI_MINES,
+	};
+	
+	vec2f spawnpos = VEC(SCREEN_MIN_X + spawn->x*SCALE, SCREEN_MIN_Y + spawn->y*SCALE);
+	int id = gameobj_alloc();
+	if(id == -1) return -1;
 	const struct enemy_route* route_curr = get_enemy_current_route(0, spawn);
 	vec2f vel = get_enemy_vel(0, spawn);
-	enum sprite_index enemy_sprite_lut[] = {[ET_ASIAN] = SI_ENEMY_ASIAN, [ET_WESTERN] = SI_ENEMY_WESTERN, };
-	gameobj_init(id, &spawnpos, &vel, 
-		     enemy_sprite_lut[map->enemy_type],
-	             enemy_animation_lut[route_curr->shape], 
-	             enemy_objtype_lut[spawn->weapon]);
+	
+	int is_soldier = route_curr->shape <= ES_SOLDIER2_RIGHT;
+	enum sprite_index spriteid = is_soldier
+	                             ? enemy_soldier_sprite_lut[map->enemy_type]
+	                             : enemy_sprite_lut[route_curr->shape];
+	enum objtype objid = is_soldier
+	                     ? enemy_soldier_objtype_lut[spawn->weapon]
+	                     : enemy_objtype_lut[route_curr->shape];
+
+	gameobj_init(id, &spawnpos, &vel, spriteid, enemy_animation_lut[route_curr->shape], objid);
 	objs[id].objspecific.enemy.curr_step = 0;
 	objs[id].objspecific.enemy.spawn = spawn;
 	add_enemy(id);
