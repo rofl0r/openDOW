@@ -167,6 +167,11 @@ const struct map_fglayer *map_bonus_scr;
 int mapscreen_yoff, mapscreen_xoff;
 struct { int x,y; } mapsquare;
 enum map_scrolldir mapscrolldir;
+unsigned map_spawn_screen_index;
+unsigned map_spawn_line;
+unsigned map_spawn_current;
+#include "maps/spawn_australia.c"
+const struct enemy_spawn **spawn_map = spawn_australia;
 
 static void init_map(enum map_index mapindex) {
 	map = maps[mapindex];
@@ -180,6 +185,9 @@ static void init_map(enum map_index mapindex) {
 	mapsquare.x = 5;
 	mapsquare.y = 26;
 	mapscrolldir = MS_UP;
+	map_spawn_screen_index = 0;
+	map_spawn_line = 0;
+	map_spawn_current = 0;
 }
 
 static mapscreen_index get_bonus_layer_index(mapscreen_index screen) {
@@ -334,6 +342,25 @@ static void scroll_gameobjs(int scroll_step) {
 	}
 }
 
+static void next_screen() {
+	map_spawn_screen_index++;
+	map_spawn_line = 0;
+	map_spawn_current = 0;
+}
+
+static int init_enemy(const struct enemy_spawn *spawn);
+static void handle_spawns(int scrollstep) {
+	unsigned i;
+	if(!spawn_map[map_spawn_screen_index]) return;
+	for(i = 0; i < scrollstep; i++) {
+		if(map_spawn_line+i == spawn_map[map_spawn_screen_index][map_spawn_current].scroll_line) {
+			init_enemy(&spawn_map[map_spawn_screen_index][map_spawn_current]);
+			map_spawn_current++;
+		}
+	}
+	map_spawn_line += scrollstep;
+}
+
 static int scroll_map() {
 	int ret = 0;
 	int scroll_step = 1;
@@ -341,6 +368,7 @@ static int scroll_map() {
 		if(mapscrolldir == MS_UP) {
 			mapscreen_yoff -= scroll_step;
 			if(mapscreen_yoff < 0) {
+				next_screen();
 				mapsquare.y--;
 				if(map->screen_map[mapsquare.y][mapsquare.x] == MAPSCREEN_BLOCKED) {
 					scroll_step = -mapscreen_yoff;
@@ -358,6 +386,7 @@ static int scroll_map() {
 				}
 			}
 			handle_objs:;
+			handle_spawns(scroll_step);
 			scroll_gameobjs(scroll_step);
 			ret = 1;
 		} else if(mapscrolldir == MS_LEFT) {
@@ -542,34 +571,39 @@ static int init_rocket(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
 }
 
 
-#define ENEMY_SPEED 1
-static vec2f get_enemy_vel(struct enemy *e) {
+static const struct enemy_route* get_enemy_current_route(int curr_step, const struct enemy_spawn *spawn) {
 	int i = ENEMY_MAX_ROUTE -1;
-	enum direction dir;
-	for(; i >= 0; i--)
-		if(e->curr_step >= e->route[i].start_step) {
-			dir = e->route[i].dir;
-			break;
-		}
-	return get_vel_from_direction(dir, ENEMY_SPEED);
+	for(; i >= 0; i--) if(curr_step >= spawn->route[i].start_step) return &spawn->route[i];
+	return 0;
 }
 
-static int init_enemy(enum direction face_dir, vec2f *pos, struct enemy* enemy, int is_bomber) {
+static vec2f get_enemy_vel(int curr_step, const struct enemy_spawn *spawn) {
+	const struct enemy_route *route = get_enemy_current_route(curr_step, spawn);
+	return get_vel_from_direction16(route->dir, (float)route->vel/4.f);
+}
+
+static int init_enemy(const struct enemy_spawn *spawn) {
+	vec2f spawnpos = VEC(SCREEN_MIN_X + spawn->x*SCALE, SCREEN_MIN_Y + spawn->y*SCALE);
 	int id = gameobj_alloc();
 	if(id == -1) return -1;
 	const enum objtype enemy_objtype_lut[] = { [0] = OBJ_ENEMY_SHOOTER, [1] = OBJ_ENEMY_BOMBER };
-	const enum animation_id enemy_animation_lut[2][DIR_MAX] = { 
-		[0] = {
-			[DIR_S] = ANIM_ENEMY_GUNNER_DOWN, [DIR_O] = ANIM_ENEMY_GUNNER_RIGHT, [DIR_W] = ANIM_ENEMY_GUNNER_LEFT
-		},
-		[1] = {
-			[DIR_S] = ANIM_ENEMY_BOMBER_DOWN, [DIR_O] = ANIM_ENEMY_BOMBER_RIGHT, [DIR_W] = ANIM_ENEMY_BOMBER_LEFT
-		},
+	const enum animation_id enemy_animation_lut[] = { 
+		[ES_SOLDIER1_DOWN] = ANIM_ENEMY_GUNNER_DOWN,
+		[ES_SOLDIER1_RIGHT] = ANIM_ENEMY_GUNNER_RIGHT,
+		[ES_SOLDIER1_LEFT] = ANIM_ENEMY_GUNNER_LEFT,
+		[ES_SOLDIER2_DOWN] = ANIM_ENEMY_BOMBER_DOWN,
+		[ES_SOLDIER2_RIGHT] = ANIM_ENEMY_BOMBER_RIGHT,
+		[ES_SOLDIER2_LEFT] = ANIM_ENEMY_BOMBER_LEFT
 	};
-	vec2f vel = get_enemy_vel(enemy);
+	const struct enemy_route* route_curr = get_enemy_current_route(0, spawn);
+	vec2f vel = get_enemy_vel(0, spawn);
 	enum sprite_index enemy_sprite_lut[] = {[ET_ASIAN] = SI_ENEMY_ASIAN, [ET_WESTERN] = SI_ENEMY_WESTERN, };
-	gameobj_init(id, pos, &vel, enemy_sprite_lut[map->enemy_type], enemy_animation_lut[is_bomber][face_dir], enemy_objtype_lut[is_bomber]);
-	objs[id].objspecific.enemy = *enemy;
+	gameobj_init(id, &spawnpos, &vel, 
+		     enemy_sprite_lut[map->enemy_type],
+	             enemy_animation_lut[route_curr->shape], 
+	             enemy_objtype_lut[spawn->weapon]);
+	objs[id].objspecific.enemy.curr_step = 0;
+	objs[id].objspecific.enemy.spawn = spawn;
 	add_enemy(id);
 	return id;
 }
@@ -577,7 +611,7 @@ static int init_enemy(enum direction face_dir, vec2f *pos, struct enemy* enemy, 
 static int enemy_fires(struct enemy *e) {
 	int i;
 	for(i = 0; i < ENEMY_MAX_SHOT; i++)
-		if(e->curr_step == e->shots[i]) return 1;
+		if(e->curr_step == e->spawn->shots[i]) return 1;
 	return 0;
 }
 
@@ -945,7 +979,7 @@ static void game_tick(int force_redraw) {
 				} else go->objspecific.bullet.step_curr++;
 			} else if (go->objtype == OBJ_ENEMY_SHOOTER || go->objtype == OBJ_ENEMY_BOMBER) {
 				go->objspecific.enemy.curr_step++;
-				if(!is_death_anim(go->animid)) go->vel = get_enemy_vel(&go->objspecific.enemy);
+				if(!is_death_anim(go->animid)) go->vel = get_enemy_vel(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
 				else go->vel = VEC(0, 0);
 				if(enemy_fires(&go->objspecific.enemy)) {
 					//fire_bullet();
@@ -959,7 +993,7 @@ static void game_tick(int force_redraw) {
 				go->pos.y += go->vel.y;
 				if(go->objtype == OBJ_ENEMY_BOMBER || go->objtype == OBJ_ENEMY_SHOOTER) {
 					if(go->pos.x < SCREEN_MIN_X || go->pos.x > SCREEN_MAX_X ||
-					   go->pos.y < SCREEN_MIN_Y || go->pos.y > SCREEN_MAX_Y) {
+					   go->pos.y < SCREEN_MIN_Y-22*SCALE || go->pos.y > SCREEN_MAX_Y) {
 						remove_enemy:
 						dprintf(2, "removed enemy from %.2f,%.2f\n", go->pos.x, go->pos.y);
 						gameobj_free(i);
@@ -1285,22 +1319,6 @@ int main() {
 					switch(sdl_event.key.keysym.sym) {
 						case SDLK_ESCAPE:
 							goto dun_goofed;
-						case SDLK_e: {
-							const enum direction face_dir[] = { DIR_S, DIR_O, DIR_W };
-							struct enemy e;
-							e.curr_step = 0;
-							e.route[0].start_step = 0;
-							e.route[1].start_step = 0;
-							e.route[2].start_step = 0;
-							e.route[2].dir = DIR_SO;
-							e.route[3].start_step = 64;
-							e.route[3].dir = DIR_O;
-							e.shots[0] = 0;
-							e.shots[1] = 0;
-							e.shots[2] = 0;
-							e.shots[3] = 0;
-							init_enemy(face_dir[rand()%3], &VEC(SCREEN_MIN_X, SCREEN_MIN_Y), &e, rand()%2);
-						} break;
 						case SDLK_w: case SDLK_a: case SDLK_s: case SDLK_d:
 						case SDLK_UP:
 						case SDLK_DOWN:
