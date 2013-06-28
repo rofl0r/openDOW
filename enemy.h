@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 enum __attribute__ ((__packed__)) enemy_shape {
-	ES_SOLDIER1_DOWN,
+	ES_SOLDIER1_DOWN = 0,
 	ES_SOLDIER1_LEFT,
 	ES_SOLDIER1_RIGHT,
 	ES_SOLDIER2_DOWN,
