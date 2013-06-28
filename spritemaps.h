@@ -18,6 +18,12 @@ enum __attribute__ ((__packed__)) sprite_index {
 	SI_MAPBLINK,
 	SI_PICFRAME_HORIZ,
 	SI_PICFRAME_VERT,
+	SI_VEHICLES_SMALL,
+	SI_VEHICLES_MEDIUM,
+	SI_VEHICLES_BIG,
+	SI_MINES,
+	SI_BUNKERS,
+	SI_GUNTURRET,
 };
 
 #include "palpic.h"
