@@ -992,7 +992,7 @@ static void game_tick(int force_redraw) {
 				go->pos.x += go->vel.x;
 				go->pos.y += go->vel.y;
 				if(go->objtype == OBJ_ENEMY_BOMBER || go->objtype == OBJ_ENEMY_SHOOTER) {
-					if(go->pos.x < SCREEN_MIN_X || go->pos.x > SCREEN_MAX_X ||
+					if(go->pos.x < SCREEN_MIN_X-16*SCALE || go->pos.x > SCREEN_MAX_X ||
 					   go->pos.y < SCREEN_MIN_Y-22*SCALE || go->pos.y > SCREEN_MAX_Y) {
 						remove_enemy:
 						dprintf(2, "removed enemy from %.2f,%.2f\n", go->pos.x, go->pos.y);
