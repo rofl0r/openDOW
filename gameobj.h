@@ -36,6 +36,7 @@ enum objtype {
 	OBJ_BUNKER3,
 	OBJ_BUNKER4,
 	OBJ_BUNKER5,
+	OBJ_BOSS,
 };
 
 typedef uint8_t anim_step;
