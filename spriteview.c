@@ -604,6 +604,7 @@ static int init_enemy(const struct enemy_spawn *spawn) {
 		[ES_BUNKER_3] = OBJ_BUNKER3,
 		[ES_BUNKER_4] = OBJ_BUNKER4,
 		[ES_BUNKER_5] = OBJ_BUNKER5,
+		[ES_BOSS] = OBJ_BOSS,
 	};
 	const enum animation_id enemy_animation_lut[] = { 
 		[ES_SOLDIER1_DOWN] = ANIM_ENEMY_GUNNER_DOWN,
@@ -629,6 +630,20 @@ static int init_enemy(const struct enemy_spawn *spawn) {
 		[ES_BUNKER_4] = ANIM_BUNKER4,
 		[ES_BUNKER_5] = ANIM_BUNKER5,
 	};
+	const enum animation_id boss_animation_lut[] = {
+		[0] = ANIM_BOSS1,
+		[1] = ANIM_BOSS2,
+		[2] = ANIM_BOSS3,
+		[3] = ANIM_BOSS4,
+		[4] = ANIM_BOSS5,
+		[5] = ANIM_BOSS6,
+		[6] = ANIM_BOSS7,
+		[7] = ANIM_BOSS8,
+		[8] = ANIM_BOSS9,
+		[9] = ANIM_BOSS10,
+		[10] = ANIM_BOSS11,
+		[11] = ANIM_BOSS12,
+	};
 	const enum sprite_index enemy_soldier_sprite_lut[] = {
 		[ET_ASIAN] = SI_ENEMY_ASIAN,
 		[ET_WESTERN] = SI_ENEMY_WESTERN,
@@ -650,6 +665,7 @@ static int init_enemy(const struct enemy_spawn *spawn) {
 		[ES_FLAMETURRET] = SI_MINES,
 		[ES_GUNTURRET_FIXED_SOUTH] = SI_MINES,
 		[ES_GUNTURRET_FIXED_NORTH] = SI_MINES,
+		[ES_BOSS] = SI_BOSSES,
 	};
 	
 	vec2f spawnpos = VEC(SCREEN_MIN_X + spawn->x*SCALE, SCREEN_MIN_Y + spawn->y*SCALE);
@@ -659,14 +675,21 @@ static int init_enemy(const struct enemy_spawn *spawn) {
 	vec2f vel = get_enemy_vel(0, spawn);
 	
 	int is_soldier = route_curr->shape <= ES_SOLDIER2_RIGHT;
-	enum sprite_index spriteid = is_soldier
-	                             ? enemy_soldier_sprite_lut[map->enemy_type]
-	                             : enemy_sprite_lut[route_curr->shape];
-	enum objtype objid = is_soldier
-	                     ? enemy_soldier_objtype_lut[spawn->weapon]
-	                     : enemy_objtype_lut[route_curr->shape];
-
-	gameobj_init(id, &spawnpos, &vel, spriteid, enemy_animation_lut[route_curr->shape], objid);
+	int is_boss = route_curr->shape == ES_BOSS;
+	enum sprite_index spriteid;
+	enum objtype objid;
+	enum animation_id animid;
+	if(is_soldier) {
+		spriteid = enemy_soldier_sprite_lut[map->enemy_type];
+		objid = enemy_soldier_objtype_lut[spawn->weapon];
+	} else {
+		spriteid = enemy_sprite_lut[route_curr->shape];
+		objid = enemy_objtype_lut[route_curr->shape];
+	}
+	if(is_boss) animid = boss_animation_lut[map->boss_id];
+	else animid = enemy_animation_lut[route_curr->shape];
+	
+	gameobj_init(id, &spawnpos, &vel, spriteid, animid, objid);
 	objs[id].objspecific.enemy.curr_step = 0;
 	objs[id].objspecific.enemy.spawn = spawn;
 	add_enemy(id);
