@@ -45,6 +45,7 @@ struct map {
 	uint8_t mini_pic;
 	uint8_t bonuslayer_count;
 	uint8_t rewardk; /* reward in 1000$ */
+	uint8_t boss_id;
 	prgb enemy_palette[8];
 };
 
