@@ -24,6 +24,7 @@ enum __attribute__ ((__packed__)) sprite_index {
 	SI_MINES,
 	SI_BUNKERS,
 	SI_GUNTURRET,
+	SI_BOSSES,
 };
 
 #include "palpic.h"
