@@ -27,6 +27,7 @@ enum __attribute__ ((__packed__)) enemy_shape {
 	ES_FLAMETURRET,
 	ES_GUNTURRET_FIXED_SOUTH,
 	ES_GUNTURRET_FIXED_NORTH,
+	ES_BOSS,
 };
 
 // shotdirection is derived from the shape
