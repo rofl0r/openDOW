@@ -21,6 +21,7 @@ const struct {
 		.rewardk = 12,
 		.client_face = 5,
 		.mini_pic = 0,
+		.boss_id = 5,
 		.worldmap_coords = VEC(56,43),
 		.bonuslayer_count = BONUS_COUNT,
 		.enemy_type = ET_WESTERN,
