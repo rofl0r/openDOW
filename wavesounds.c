@@ -6,6 +6,7 @@
 #include "sounds/grenade_sound.c"
 #include "sounds/scream.c"
 #include "sounds/scream2.c"
+#include "sounds/dropshot.c"
 
 #define WAVSOUND(x, y) [x] = &(y .header)
 const WAVE_HEADER_COMPLETE* wavesounds[] = {
@@ -17,5 +18,6 @@ const WAVE_HEADER_COMPLETE* wavesounds[] = {
 	WAVSOUND(WS_GRENADE_EXPLOSION, grenade_sound),
 	WAVSOUND(WS_SCREAM, scream),
 	WAVSOUND(WS_SCREAM2, scream2),
+	WAVSOUND(WS_DROPSHOT, dropshot),
 };
 
