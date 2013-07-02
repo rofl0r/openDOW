@@ -435,11 +435,6 @@ static int scroll_map() {
 	return ret;
 }
 
-static void redraw_bg() {
-	draw_map();
-	draw_status_bar();
-}
-
 static int init_player(int player_no) {
 	assert(player_no == 0 || player_no == 1);
 	int pid = gameobj_alloc();
@@ -1180,7 +1175,7 @@ static void game_tick(int force_redraw) {
 	struct timeval timer;
 	gettimestamp(&timer);
 	if(need_redraw) {
-		redraw_bg();
+		draw_map();
 		for(i = 0, obj_visited = 0; obj_visited < obj_count && i < OBJ_MAX; i++) {
 			if(!obj_slot_used[i]) continue;
 			struct gameobj *o = &objs[i];
@@ -1190,6 +1185,7 @@ static void game_tick(int force_redraw) {
 			            o->anim_curr == ANIM_STEP_INIT ? get_next_anim_frame(o->animid, o->anim_curr) : o->anim_curr, palette);
 			obj_visited++;
 		}
+		draw_status_bar();
 		video_update_region(SCREEN_MIN_X ,SCREEN_MIN_Y , SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
 	}
 
