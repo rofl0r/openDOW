@@ -61,6 +61,11 @@ struct enemy_spawn {
 	uint8_t shots[ENEMY_MAX_SHOT];
 };
 
+struct enemy_spawn_screen {
+	uint16_t num_spawns;
+	const struct enemy_spawn *spawns;
+};
+
 struct enemy {
 	int curr_step;
 	const struct enemy_spawn* spawn;

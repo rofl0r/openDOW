@@ -179,7 +179,7 @@ unsigned map_spawn_screen_index;
 unsigned map_spawn_line;
 unsigned map_spawn_current;
 #include "maps/spawn_australia.c"
-const struct enemy_spawn **spawn_map = spawn_australia;
+const struct enemy_spawn_screen *spawn_map = spawn_screens_australia;
 
 static void init_map(enum map_index mapindex) {
 	map = maps[mapindex];
@@ -357,12 +357,14 @@ static void next_screen() {
 }
 
 static int init_enemy(const struct enemy_spawn *spawn);
-static void handle_spawns(int scrollstep) {
+static void handle_spawns(unsigned scrollstep) {
+	assert(scrollstep <= 192);
 	unsigned i;
-	if(!spawn_map[map_spawn_screen_index]) return;
+	if(!spawn_map[map_spawn_screen_index].spawns) return;
 	for(i = 0; i < scrollstep; i++) {
-		if(map_spawn_line+i == spawn_map[map_spawn_screen_index][map_spawn_current].scroll_line) {
-			init_enemy(&spawn_map[map_spawn_screen_index][map_spawn_current]);
+		if(map_spawn_current >= spawn_map[map_spawn_screen_index].num_spawns) return;
+		if(map_spawn_line+i == spawn_map[map_spawn_screen_index].spawns[map_spawn_current].scroll_line) {
+			init_enemy(&spawn_map[map_spawn_screen_index].spawns[map_spawn_current]);
 			map_spawn_current++;
 		}
 	}
