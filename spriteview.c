@@ -932,6 +932,26 @@ static int remove_explosives(sblist *list) {
 	return res;
 }
 
+static int remove_offscreen_objects(sblist *list) {
+	int res = 0;
+	uint8_t *item_id;
+	ssize_t li;
+	sblist_iter_counter2s(list, li, item_id) {
+		struct gameobj *go = &objs[*item_id];
+		const struct palpic *p = spritemaps[go->spritemap_id];
+		int h = palpic_getspriteheight(p), w = palpic_getspritewidth(p);
+		if(go->pos.x < SCREEN_MIN_X-w*SCALE || go->pos.x > SCREEN_MAX_X ||
+		   go->pos.y < SCREEN_MIN_Y-h*SCALE || go->pos.y > SCREEN_MAX_Y) {
+			res = 1;
+			dprintf(2, "offscreen: removed gameobj %d\n", (int) *item_id);
+			gameobj_free(*item_id);
+			sblist_delete(list, li);
+			li--;
+		}
+	}
+	return res;
+}
+
 static int is_death_anim(enum animation_id anim) {
 	return anim == ANIM_ENEMY_BOMBER_DIE || anim == ANIM_ENEMY_GUNNER_DIE || 
 	       anim == ANIM_ENEMY_BURNT || anim == ANIM_P1_DIE || anim == ANIM_P2_DIE;
@@ -1124,17 +1144,7 @@ static void game_tick(int force_redraw) {
 				vec2f oldpos = go->pos;
 				go->pos.x += go->vel.x;
 				go->pos.y += go->vel.y;
-				if(go->objtype == OBJ_ENEMY_BOMBER || go->objtype == OBJ_ENEMY_SHOOTER) {
-					if(go->pos.x < SCREEN_MIN_X-16*SCALE || go->pos.x > SCREEN_MAX_X ||
-					   go->pos.y < SCREEN_MIN_Y-22*SCALE || go->pos.y > SCREEN_MAX_Y) {
-						remove_enemy:
-						dprintf(2, "removed enemy from %.2f,%.2f\n", go->pos.x, go->pos.y);
-						gameobj_free(i);
-						golist_remove(&go_enemies, i);
-						need_redraw = 1;
-						continue;
-					}
-				}
+				
 				if(go->objtype == OBJ_P1 || go->objtype == OBJ_P2) {
 					if(go->pos.y < SCREEN_MIN_Y) go->pos.y = SCREEN_MIN_Y;
 					else if(go->pos.y+25*SCALE > SCREEN_MAX_Y) go->pos.y = SCREEN_MAX_Y-25*SCALE;
@@ -1154,10 +1164,18 @@ static void game_tick(int force_redraw) {
 			   go->anim_curr == animations[go->animid].last &&
 					  (go->animid == ANIM_ENEMY_BOMBER_DIE || 
 					   go->animid == ANIM_ENEMY_GUNNER_DIE || 
-					   go->animid == ANIM_ENEMY_BURNT))
-				goto remove_enemy;
+					   go->animid == ANIM_ENEMY_BURNT)) {
+						dprintf(2, "removed enemy from %.2f,%.2f\n", go->pos.x, go->pos.y);
+						gameobj_free(i);
+						golist_remove(&go_enemies, i);
+						need_redraw = 1;
+						continue;
+				
+			}
 		}
 	}
+	if(remove_offscreen_objects(&go_enemies)) need_redraw = 1;
+	if(remove_offscreen_objects(&go_vehicles)) need_redraw = 1;
 	long ms_used = 0;
 	struct timeval timer;
 	gettimestamp(&timer);
