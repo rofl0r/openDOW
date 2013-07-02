@@ -92,6 +92,7 @@ static sblist go_enemies;
 static sblist go_players;
 static sblist go_flames;
 static sblist go_explosives;
+static sblist go_vehicles;
 static void add_pbullet(uint8_t bullet_id) {
 	sblist_add(&go_player_bullets, &bullet_id);
 }
@@ -115,6 +116,9 @@ static void add_flame(uint8_t id) {
 }
 static void add_explosive(uint8_t id) {
 	sblist_add(&go_explosives, &id);
+}
+static void add_vehicle(uint8_t id) {
+	sblist_add(&go_vehicles, &id);
 }
 static void golist_remove(sblist *l, uint8_t objid) {
 	size_t i;
@@ -692,7 +696,14 @@ static int init_enemy(const struct enemy_spawn *spawn) {
 	gameobj_init(id, &spawnpos, &vel, spriteid, animid, objid);
 	objs[id].objspecific.enemy.curr_step = 0;
 	objs[id].objspecific.enemy.spawn = spawn;
-	add_enemy(id);
+	switch(objid) {
+		case OBJ_JEEP: case OBJ_TRANSPORTER:
+		case OBJ_TANK_BIG: case OBJ_TANK_SMALL:
+			add_vehicle(id);
+			break;
+		default:
+			add_enemy(id);
+	}
 	return id;
 }
 
@@ -830,6 +841,7 @@ static void init_game_objs() {
 	sblist_init(&go_explosives, 1, 16);
 	sblist_init(&go_walls, 1, 32);
 	sblist_init(&go_enemies, 1, 32);
+	sblist_init(&go_vehicles, 1, 4);
 	init_player(0);
 	init_crosshair();
 	init_map(current_map);
@@ -964,6 +976,10 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 						hit:
 						;
 						if(bullet_list == &go_player_bullets) {
+							if(target_list == &go_vehicles) {
+								audio_play_wave_resource(wavesounds[WS_DROPSHOT]);
+								goto remove_bullet;
+							}
 							objs[player_ids[0]].objspecific.playerdata.score += 50;
 						}
 						enum animation_id death_anim = bullet_subtybe == BS_FLAME ? ANIM_ENEMY_BURNT : get_die_anim(*target_id);
@@ -1042,6 +1058,7 @@ static void game_tick(int force_redraw) {
 	*/
 	if(advance_animations()) need_redraw = 1;
 	if(hit_bullets(&go_player_bullets, &go_enemies)) need_redraw = 1;
+	if(hit_bullets(&go_player_bullets, &go_vehicles)) need_redraw = 1;
 	if(hit_bullets(&go_flames, &go_enemies)) need_redraw = 1;
 	if(hit_bullets(&go_explosions, &go_enemies)) need_redraw = 1;
 	if(hit_bullets(&go_explosions, &go_players)) need_redraw = 1;
