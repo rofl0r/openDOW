@@ -1005,6 +1005,7 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 						}
 						enum animation_id death_anim = bullet_subtybe == BS_FLAME ? ANIM_ENEMY_BURNT : get_die_anim(*target_id);
 						switch_anim(*target_id, death_anim);
+						target->vel = VEC(0,0);
 						if(target->objtype == OBJ_ENEMY_BOMBER || target->objtype == OBJ_ENEMY_SHOOTER) {
 							const enum wavesound_id wid[] = { WS_SCREAM, WS_SCREAM2 };
 							audio_play_wave_resource(wavesounds[wid[rand()%2]]);
