@@ -1205,8 +1205,9 @@ static void game_tick(int force_redraw) {
 	tickcounter++;
 
 	char buf [128];
-	snprintf(buf, 128, "objs: %d, map x,y %d/%d, index %d, xoff %d, yoff %d", (int) obj_count, 
-		 (int)mapsquare.x, (int)mapsquare.y, (int)map->screen_map[mapsquare.y][mapsquare.x], (int)mapscreen_xoff, (int)mapscreen_yoff);
+	snprintf(buf, 128, "objs: %d, map x,y %d/%d, index %d, xoff %d, yoff %d, spawnscreen %d", (int) obj_count, 
+		 (int)mapsquare.x, (int)mapsquare.y, (int)map->screen_map[mapsquare.y][mapsquare.x], 
+		 (int)mapscreen_xoff, (int)mapscreen_yoff, (int)map_spawn_screen_index);
 	SDL_WM_SetCaption(buf, 0);
 }
 
