@@ -91,7 +91,8 @@ static sblist go_walls;
 static sblist go_enemies;
 static sblist go_players;
 static sblist go_flames;
-static sblist go_explosives;
+static sblist go_rockets;
+static sblist go_grenades;
 static sblist go_vehicles;
 static void add_pbullet(uint8_t bullet_id) {
 	sblist_add(&go_player_bullets, &bullet_id);
@@ -114,8 +115,11 @@ static void add_wall(uint8_t wall_id) {
 static void add_flame(uint8_t id) {
 	sblist_add(&go_flames, &id);
 }
-static void add_explosive(uint8_t id) {
-	sblist_add(&go_explosives, &id);
+static void add_grenade(uint8_t id) {
+	sblist_add(&go_grenades, &id);
+}
+static void add_rocket(uint8_t id) {
+	sblist_add(&go_rockets, &id);
 }
 static void add_vehicle(uint8_t id) {
 	sblist_add(&go_vehicles, &id);
@@ -475,7 +479,7 @@ static int init_grenade(vec2f *pos, vec2f *vel, int steps) {
 	int id = gameobj_alloc();
 	gameobj_init(id, pos, vel, SI_GRENADE, ANIM_GRENADE_SMALL, OBJ_GRENADE);
 	gameobj_init_bulletdata(id, steps);
-	add_explosive(id);
+	add_grenade(id);
 	return id;
 }
 
@@ -570,7 +574,7 @@ static int init_rocket(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
 	if(id == -1) return -1;
 	gameobj_init(id, &mypos, vel, SI_ROCKET, rocket_anim[dir], OBJ_ROCKET);
 	gameobj_init_bulletdata(id, steps);
-	add_explosive(id);
+	add_rocket(id);
 	return id;
 }
 
@@ -838,7 +842,8 @@ static void init_game_objs() {
 	sblist_init(&go_flames, 1, 32);
 	sblist_init(&go_enemy_bullets, 1, 32);
 	sblist_init(&go_explosions, 1, 16);
-	sblist_init(&go_explosives, 1, 16);
+	sblist_init(&go_grenades, 1, 16);
+	sblist_init(&go_rockets, 1, 8);
 	sblist_init(&go_walls, 1, 32);
 	sblist_init(&go_enemies, 1, 32);
 	sblist_init(&go_vehicles, 1, 4);
@@ -862,15 +867,26 @@ static int point_in_mask(vec2f *point, int obj_id) {
 }
 
 static enum animation_id get_die_anim(unsigned id) {
-	if(objs[id].objtype == OBJ_P1)
-		return ANIM_P1_DIE;
-	else if(objs[id].objtype == OBJ_P1)
-		return ANIM_P2_DIE;
-	else if(objs[id].animid == ANIM_ENEMY_BOMBER_DOWN ||
-	        objs[id].animid == ANIM_ENEMY_BOMBER_LEFT || 
-	        objs[id].animid == ANIM_ENEMY_BOMBER_RIGHT)
-		return ANIM_ENEMY_BOMBER_DIE;
-	return ANIM_ENEMY_GUNNER_DIE;
+	switch(objs[id].objtype) {
+		case OBJ_P1:
+			return ANIM_P1_DIE;
+		case OBJ_P2:
+			return ANIM_P2_DIE;
+		case OBJ_JEEP:
+			return ANIM_JEEP_DESTROYED;
+		case OBJ_TANK_SMALL:
+			return ANIM_TANK_SMALL_DESTROYED;
+		case OBJ_TANK_BIG:
+			return ANIM_TANK_BIG_DESTROYED;
+		case OBJ_TRANSPORTER:
+			return ANIM_TRANSPORTER_DESTROYED;
+		case OBJ_ENEMY_BOMBER:
+			return ANIM_ENEMY_BOMBER_DIE;
+		case OBJ_ENEMY_SHOOTER:
+			return ANIM_ENEMY_GUNNER_DIE;
+		default:
+			abort();
+	}
 }
 
 /* remove bullets that have reached their maximum number of steps */
@@ -892,8 +908,7 @@ static int remove_bullets(sblist *list) {
 	return res;
 }
 
-static int remove_explosives(void) {
-	sblist *list = &go_explosives;
+static int remove_explosives(sblist *list) {
 	int res = 0;
 	uint8_t *item_id;
 	ssize_t li;
@@ -981,11 +996,19 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 								goto remove_bullet;
 							}
 							objs[player_ids[0]].objspecific.playerdata.score += 50;
+						} else if (bullet_list == &go_rockets) {
+							init_rocket_explosion(&target->pos);
+							goto remove_bullet;
+						} else if(bullet->objtype == OBJ_GRENADE_EXPLOSION) {
+							// grenade explosion has no effect on vehicles.
+							if(target_list == &go_vehicles) goto next_bullet;
 						}
 						enum animation_id death_anim = bullet_subtybe == BS_FLAME ? ANIM_ENEMY_BURNT : get_die_anim(*target_id);
 						switch_anim(*target_id, death_anim);
-						const enum wavesound_id wid[] = { WS_SCREAM, WS_SCREAM2 };
-						audio_play_wave_resource(wavesounds[wid[rand()%2]]);
+						if(target->objtype == OBJ_ENEMY_BOMBER || target->objtype == OBJ_ENEMY_SHOOTER) {
+							const enum wavesound_id wid[] = { WS_SCREAM, WS_SCREAM2 };
+							audio_play_wave_resource(wavesounds[wid[rand()%2]]);
+						}
 						if(bullet_subtybe == BS_BULLET) {
 							remove_bullet:
 							gameobj_free(*bullet_id);
@@ -1060,14 +1083,18 @@ static void game_tick(int force_redraw) {
 	if(hit_bullets(&go_player_bullets, &go_enemies)) need_redraw = 1;
 	if(hit_bullets(&go_player_bullets, &go_vehicles)) need_redraw = 1;
 	if(hit_bullets(&go_flames, &go_enemies)) need_redraw = 1;
+	if(hit_bullets(&go_rockets, &go_enemies)) need_redraw = 1;
+	if(hit_bullets(&go_rockets, &go_vehicles)) need_redraw = 1;
 	if(hit_bullets(&go_explosions, &go_enemies)) need_redraw = 1;
+	if(hit_bullets(&go_explosions, &go_vehicles)) need_redraw = 1;
 	if(hit_bullets(&go_explosions, &go_players)) need_redraw = 1;
 	if(hit_bullets(&go_enemy_bullets, &go_players)) need_redraw = 1;
 	if(remove_bullets(&go_player_bullets)) need_redraw = 1;
 	if(remove_bullets(&go_flames)) need_redraw = 1;
 	if(remove_bullets(&go_explosions)) need_redraw = 1;
 	if(remove_bullets(&go_enemy_bullets)) need_redraw = 1;
-	if(remove_explosives()) need_redraw = 1;
+	if(remove_explosives(&go_grenades)) need_redraw = 1;
+	if(remove_explosives(&go_rockets)) need_redraw = 1;
 	if(tickcounter % 2 == 0 && scroll_map()) need_redraw = 1;
 	
 	size_t obj_count_copy = obj_count;
