@@ -378,7 +378,6 @@ static int scroll_map() {
 		if(mapscrolldir == MS_UP) {
 			mapscreen_yoff -= scroll_step;
 			if(mapscreen_yoff < 0) {
-				next_screen();
 				mapsquare.y--;
 				if(map->screen_map[mapsquare.y][mapsquare.x] == MAPSCREEN_BLOCKED) {
 					scroll_step = -mapscreen_yoff;
@@ -392,6 +391,7 @@ static int scroll_map() {
 					}
 					scroll_step = 0;
 				} else {
+					next_screen();
 					mapscreen_yoff += 192;
 				}
 			}
@@ -413,6 +413,7 @@ static int scroll_map() {
 					scroll_step = 0;
 				} else {
 					mapscreen_xoff += 192;
+					next_screen();					
 				}
 			} 
 			goto handle_objs;
@@ -428,6 +429,7 @@ static int scroll_map() {
 					mapscrolldir = MS_UP;
 					scroll_step = 0;
 				} else {
+					next_screen();
 					mapscreen_xoff -= 192;
 				}
 			} 
