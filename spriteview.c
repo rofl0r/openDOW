@@ -710,6 +710,19 @@ static int init_enemy(const struct enemy_spawn *spawn) {
 	return id;
 }
 
+static void remove_enemy(int id) {
+	enum objtype objid = objs[id].objtype;
+	switch(objid) {
+		case OBJ_JEEP: case OBJ_TRANSPORTER:
+		case OBJ_TANK_BIG: case OBJ_TANK_SMALL:
+			golist_remove(&go_vehicles, id);
+			break;
+		default:
+			golist_remove(&go_enemies, id);
+	}
+	gameobj_free(id);
+}
+
 static int enemy_fires(struct enemy *e) {
 	int i;
 	for(i = 0; i < ENEMY_MAX_SHOT; i++)
@@ -1068,6 +1081,15 @@ static int advance_animations(void) {
 	return res;
 }
 
+static void game_update_caption(void) {
+	char buf [128];
+	snprintf(buf, 128, "objs: %d, map x,y %d/%d, index %d, xoff %d, yoff %d, spawnscreen %d", (int) obj_count, 
+		 (int)mapsquare.x, (int)mapsquare.y, (int)map->screen_map[mapsquare.y][mapsquare.x], 
+		 (int)mapscreen_xoff, (int)mapscreen_yoff, (int)map_spawn_screen_index);
+	SDL_WM_SetCaption(buf, 0);	
+}
+static void(*update_caption)(void) = game_update_caption;
+
 static void game_tick(int force_redraw) {
 	int need_redraw = force_redraw;
 	size_t obj_visited;
@@ -1130,7 +1152,10 @@ static void game_tick(int force_redraw) {
 					continue;
 				} else go->objspecific.bullet.step_curr++;
 			} else if (go->objtype == OBJ_ENEMY_SHOOTER || go->objtype == OBJ_ENEMY_BOMBER) {
-				if (tickcounter % 4 == go->anim_frame) go->objspecific.enemy.curr_step++;
+				if (tickcounter % 4 == go->anim_frame) {
+					if(get_enemy_current_route(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn)->vel)
+						go->objspecific.enemy.curr_step++;
+				}
 				if(!is_death_anim(go->animid)) go->vel = get_enemy_vel(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
 				else go->vel = VEC(0, 0);
 				if(enemy_fires(&go->objspecific.enemy)) {
@@ -1205,12 +1230,7 @@ static void game_tick(int force_redraw) {
 	if(mousebutton_down[MB_LEFT]) mousebutton_down[MB_LEFT]++;
 	
 	tickcounter++;
-
-	char buf [128];
-	snprintf(buf, 128, "objs: %d, map x,y %d/%d, index %d, xoff %d, yoff %d, spawnscreen %d", (int) obj_count, 
-		 (int)mapsquare.x, (int)mapsquare.y, (int)map->screen_map[mapsquare.y][mapsquare.x], 
-		 (int)mapscreen_xoff, (int)mapscreen_yoff, (int)map_spawn_screen_index);
-	SDL_WM_SetCaption(buf, 0);
+	update_caption();
 }
 
 enum cursor {
@@ -1401,7 +1421,7 @@ static void switch_anim(int obj_id, int aid) {
 
 enum map_index choose_mission(void);
 //RcB: DEP "mission_select.c"
-
+#include "enemytag.c"
 int main() {
 	video_init();
 	clear_screen();
@@ -1469,8 +1489,6 @@ int main() {
 					return 0;
 				case SDL_KEYDOWN:
 					switch(sdl_event.key.keysym.sym) {
-						case SDLK_ESCAPE:
-							goto dun_goofed;
 						case SDLK_w: case SDLK_a: case SDLK_s: case SDLK_d:
 						case SDLK_UP:
 						case SDLK_DOWN:
@@ -1521,6 +1539,10 @@ int main() {
 					break;
 				case SDL_KEYUP:
 					switch(sdl_event.key.keysym.sym) {
+						case SDLK_e:
+							enemy_tag_loop();
+							update_caption = game_update_caption;
+							break;
 						case SDLK_w: case SDLK_a: case SDLK_s: case SDLK_d:
 						case SDLK_UP:
 						case SDLK_DOWN:
@@ -1528,6 +1550,8 @@ int main() {
 						case SDLK_LEFT:
 							cursors_pressed[cursor_lut[sdl_event.key.keysym.sym]] = 0;
 							goto check_anim;
+						case SDLK_ESCAPE:
+							goto dun_goofed;
 						default:
 							break;
 					}
