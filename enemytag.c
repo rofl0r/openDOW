@@ -267,6 +267,7 @@ static void enemy_tag_loop() {
 						case SDLK_s: insert_shot(); break;
 						case SDLK_p: do_pause(); break;
 						case SDLK_RETURN: dump_enemy(); break;
+						case SDLK_SPACE: update_tag_enemy(); break;
 						case SDLK_KP_PLUS:
 							dir = 1;
 						case SDLK_KP_MINUS:
