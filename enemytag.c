@@ -5,6 +5,14 @@ static struct enemy_spawn tag_enemy;
 static int tag_enemy_current_route;
 static int tag_enemy_current_shot;
 static int tag_enemy_id;
+static int tag_enemy_spawnline;
+static int tag_enemy_y;
+static int tag_enemy_upscrolled;
+
+static void scrollup() {
+	tag_enemy_upscrolled += 10;
+	objs[player_ids[0]].pos.y -= 10*SCALE;
+}
 
 #define STRING_ENTRY(x) [x] = #x
 static const char* enemy_weapon_string_lut[] = {
@@ -80,10 +88,10 @@ static void dump_enemy() {
  */
 #define tprintf(tabs, args...) do { int __tabs; for(__tabs = 0; __tabs < tabs; __tabs++) printf("\t"); printf(args); } while(0)
 	printf("XXX screen %d\n", map_spawn_screen_index);
-	tprintf(2, ".scroll_line = %d,\n", map_spawn_line);
+	tprintf(2, ".scroll_line = %d,\n", tag_enemy_spawnline);
 	tprintf(2, ".weapon = %s,\n", enemy_weapon_string_lut[tag_enemy.weapon]);
 	tprintf(2, ".x = %d,\n", tag_enemy.x);
-	tprintf(2, ".y = %d,\n", tag_enemy.y);
+	tprintf(2, ".y = %d,\n", tag_enemy_y);
 	tprintf(2, ".route = {\n");
 	int i;
 	for(i = 0; i < ENEMY_MAX_ROUTE; i++) {
@@ -106,8 +114,9 @@ static void reset_tag_enemy() {
 	tag_enemy.route[0].shape = ES_SOLDIER1_DOWN;
 }
 
-static void update_tag_enemy() {
-	remove_enemy(tag_enemy_id);
+static void update_tag_enemy(int doremove) {
+	if(doremove) remove_enemy(tag_enemy_id);
+	tag_enemy.y = tag_enemy_y + tag_enemy_upscrolled;
 	tag_enemy_id = init_enemy(&tag_enemy);
 }
 
@@ -135,7 +144,7 @@ static void toggle_vel(int veldir) {
 	int i;
 	for(i = tag_enemy_current_route; i < ENEMY_MAX_ROUTE; i++)
 		tag_enemy.route[i].vel = v;
-	update_tag_enemy();
+	update_tag_enemy(1);
 }
 
 static void toggle_route(int dir) {
@@ -242,20 +251,23 @@ static void enter_direction() {
 	else dir = DIR16_INVALID;
 	if(dir != DIR16_INVALID) tag_enemy.route[tag_enemy_current_route].dir = dir;
 	dup_route();
-	update_tag_enemy();
+	update_tag_enemy(1);
 }
 
 static void enemy_tag_loop() {
 	update_caption = tag_update_caption;
 	tag_enemy_current_route = 0;
 	tag_enemy_current_shot = 0;
+	tag_enemy_spawnline = map_spawn_line;
+	tag_enemy_y = 0;
+	tag_enemy_upscrolled = 0;
 	reset_tag_enemy();
 	tag_enemy_id = init_enemy(&tag_enemy);
 	
 	SDL_Event sdl_event;
 	while(1) {
-		if(!obj_slot_used[tag_enemy_id])
-			tag_enemy_id = init_enemy(&tag_enemy);
+		if(!obj_slot_used[tag_enemy_id]) update_tag_enemy(0);
+			//tag_enemy_id = init_enemy(&tag_enemy);
 		unsigned need_redraw = 1;
 		while (SDL_PollEvent(&sdl_event)) {
 			need_redraw = 0;
@@ -270,7 +282,8 @@ static void enemy_tag_loop() {
 						case SDLK_s: insert_shot(); break;
 						case SDLK_p: do_pause(); break;
 						case SDLK_RETURN: dump_enemy(); break;
-						case SDLK_SPACE: update_tag_enemy(); break;
+						case SDLK_SPACE: update_tag_enemy(1); break;
+						case SDLK_PAGEUP: scrollup(); break;
 						case SDLK_KP_PLUS:
 							dir = 1;
 						case SDLK_KP_MINUS:
@@ -297,15 +310,15 @@ static void enemy_tag_loop() {
 							if((sdl_event.key.keysym.mod & KMOD_RSHIFT) ||
 							   (sdl_event.key.keysym.mod & KMOD_LSHIFT)) dir *= 4;
 							tag_enemy.x += dir;
-							update_tag_enemy();
+							update_tag_enemy(1);
 							break;
 						case SDLK_DOWN:
 							dir = 1;
 						case SDLK_UP:
 							if((sdl_event.key.keysym.mod & KMOD_RSHIFT) ||
 							   (sdl_event.key.keysym.mod & KMOD_LSHIFT)) dir *= 4;
-							tag_enemy.y += dir;
-							update_tag_enemy();
+							tag_enemy_y += dir;
+							update_tag_enemy(1);
 							break;
 						default: ;
 					}
