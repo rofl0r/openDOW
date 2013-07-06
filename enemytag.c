@@ -121,9 +121,9 @@ static void toggle_shape(int shapedir) {
 	s += shapedir;
 	if(s < ES_FIRST) s = ES_MAX - 1;
 	else if(s >= ES_MAX) s = ES_FIRST;
-	tag_enemy.route[tag_enemy_current_route].shape = s;
-	dup_route();
-	update_tag_enemy();
+	int i;
+	for(i = tag_enemy_current_route; i < ENEMY_MAX_ROUTE; i++)
+		tag_enemy.route[i].shape = s;
 }
 
 static void toggle_vel(int veldir) {
