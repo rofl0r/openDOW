@@ -73,14 +73,13 @@ static void print_dirbuf(char* dirbuf) {
 }
 
 static void do_pause() {
-	static int save_vel, save_route;
+	static int save_vel[ENEMY_MAX_ROUTE];
+	int i;
 	if(!paused) {
-		save_vel = tag_enemy.route[tag_enemy_current_route].vel;
-		save_route = tag_enemy_current_route;
-		tag_enemy.route[tag_enemy_current_route].vel = 0;
-		dup_route();
+		for(i = 0; i < ENEMY_MAX_ROUTE; i++) save_vel[i] = tag_enemy.route[i].vel;
+		for(i = 0; i < ENEMY_MAX_ROUTE; i++) tag_enemy.route[i].vel = 0; 
 	} else {
-		tag_enemy.route[save_route].vel = save_vel;
+		for(i = 0; i < ENEMY_MAX_ROUTE; i++) tag_enemy.route[i].vel = save_vel[i]; 
 	}
 	paused = !paused;
 }
