@@ -147,8 +147,12 @@ static void enemy_tag_loop() {
 			need_redraw = 0;
 			int dir = -1;
 			switch (sdl_event.type) {
-				case SDL_KEYDOWN:
+				case SDL_KEYUP:
 					switch(sdl_event.key.keysym.sym) {
+						case SDLK_e: return;
+						case SDLK_d: enter_direction(); break;
+						case SDLK_i: insert_steps(); break;
+						case SDLK_p: do_pause(); break;
 						case SDLK_KP_PLUS:
 							dir = 1;
 						case SDLK_KP_MINUS:
@@ -162,10 +166,10 @@ static void enemy_tag_loop() {
 							else
 								toggle_vel(dir);
 							break;
-						case SDLK_e: return;
-						case SDLK_d: enter_direction(); break;
-						case SDLK_i: insert_steps(); break;
-						case SDLK_p: do_pause(); break;
+						default: break;
+					}
+				case SDL_KEYDOWN:
+					switch(sdl_event.key.keysym.sym) {
 						case SDLK_RIGHT: dir = 1;
 						case SDLK_LEFT:
 							if((sdl_event.key.keysym.mod & KMOD_RSHIFT) ||
