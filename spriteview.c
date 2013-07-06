@@ -589,6 +589,31 @@ static vec2f get_enemy_vel(int curr_step, const struct enemy_spawn *spawn) {
 	return get_vel_from_direction16(route->dir, (float)route->vel/8.f);
 }
 
+static const enum animation_id enemy_animation_lut[] = { 
+	[ES_SOLDIER1_DOWN] = ANIM_ENEMY_GUNNER_DOWN,
+	[ES_SOLDIER1_RIGHT] = ANIM_ENEMY_GUNNER_RIGHT,
+	[ES_SOLDIER1_LEFT] = ANIM_ENEMY_GUNNER_LEFT,
+	[ES_SOLDIER2_DOWN] = ANIM_ENEMY_BOMBER_DOWN,
+	[ES_SOLDIER2_RIGHT] = ANIM_ENEMY_BOMBER_RIGHT,
+	[ES_SOLDIER2_LEFT] = ANIM_ENEMY_BOMBER_LEFT,
+	[ES_JEEP] = ANIM_JEEP,
+	[ES_TANK_SMALL] = ANIM_TANK_SMALL,
+	[ES_TANK_BIG] = ANIM_TANK_BIG,
+	[ES_TRANSPORTER] = ANIM_TRANSPORTER,
+	[ES_GUNTURRET_MOVABLE_MACHINE] = ANIM_GUNTURRET_MOVABLE_MACHINE_S,
+	[ES_GUNTURRET_MOVABLE_MAN] = ANIM_GUNTURRET_MOVABLE_MAN_S,
+	[ES_MINE_FLAT] = ANIM_MINE_FLAT,
+	[ES_MINE_CROSS] = ANIM_MINE_CROSSED,
+	[ES_FLAMETURRET] = ANIM_FLAMETURRET,
+	[ES_GUNTURRET_FIXED_SOUTH] = ANIM_GUNTURRET_FIXED_SOUTH,
+	[ES_GUNTURRET_FIXED_NORTH] = ANIM_GUNTURRET_FIXED_NORTH,
+	[ES_BUNKER_1] = ANIM_BUNKER1,
+	[ES_BUNKER_2] = ANIM_BUNKER2,
+	[ES_BUNKER_3] = ANIM_BUNKER3,
+	[ES_BUNKER_4] = ANIM_BUNKER4,
+	[ES_BUNKER_5] = ANIM_BUNKER5,
+};
+
 static int init_enemy(const struct enemy_spawn *spawn) {
 	const enum objtype enemy_soldier_objtype_lut[] = {
 		[0] = OBJ_ENEMY_SHOOTER,
@@ -612,30 +637,6 @@ static int init_enemy(const struct enemy_spawn *spawn) {
 		[ES_BUNKER_4] = OBJ_BUNKER4,
 		[ES_BUNKER_5] = OBJ_BUNKER5,
 		[ES_BOSS] = OBJ_BOSS,
-	};
-	const enum animation_id enemy_animation_lut[] = { 
-		[ES_SOLDIER1_DOWN] = ANIM_ENEMY_GUNNER_DOWN,
-		[ES_SOLDIER1_RIGHT] = ANIM_ENEMY_GUNNER_RIGHT,
-		[ES_SOLDIER1_LEFT] = ANIM_ENEMY_GUNNER_LEFT,
-		[ES_SOLDIER2_DOWN] = ANIM_ENEMY_BOMBER_DOWN,
-		[ES_SOLDIER2_RIGHT] = ANIM_ENEMY_BOMBER_RIGHT,
-		[ES_SOLDIER2_LEFT] = ANIM_ENEMY_BOMBER_LEFT,
-		[ES_JEEP] = ANIM_JEEP,
-		[ES_TANK_SMALL] = ANIM_TANK_SMALL,
-		[ES_TANK_BIG] = ANIM_TANK_BIG,
-		[ES_TRANSPORTER] = ANIM_TRANSPORTER,
-		[ES_GUNTURRET_MOVABLE_MACHINE] = ANIM_GUNTURRET_MOVABLE_MACHINE_S,
-		[ES_GUNTURRET_MOVABLE_MAN] = ANIM_GUNTURRET_MOVABLE_MAN_S,
-		[ES_MINE_FLAT] = ANIM_MINE_FLAT,
-		[ES_MINE_CROSS] = ANIM_MINE_CROSSED,
-		[ES_FLAMETURRET] = ANIM_FLAMETURRET,
-		[ES_GUNTURRET_FIXED_SOUTH] = ANIM_GUNTURRET_FIXED_SOUTH,
-		[ES_GUNTURRET_FIXED_NORTH] = ANIM_GUNTURRET_FIXED_NORTH,
-		[ES_BUNKER_1] = ANIM_BUNKER1,
-		[ES_BUNKER_2] = ANIM_BUNKER2,
-		[ES_BUNKER_3] = ANIM_BUNKER3,
-		[ES_BUNKER_4] = ANIM_BUNKER4,
-		[ES_BUNKER_5] = ANIM_BUNKER5,
 	};
 	const enum animation_id boss_animation_lut[] = {
 		[0] = ANIM_BOSS1,
@@ -1110,6 +1111,10 @@ static int advance_animations(void) {
 	return res;
 }
 
+static void switch_enemy_shape(int objid, const struct enemy_route* r) {
+	switch_anim(objid, enemy_animation_lut[r->shape]);
+}
+
 static void game_update_caption(void) {
 	char buf [128];
 	snprintf(buf, 128, "objs: %d, map x,y %d/%d, index %d, xoff %d, yoff %d, spawnscreen %d, line %d", (int) obj_count, 
@@ -1182,11 +1187,14 @@ static void game_tick(int force_redraw) {
 				} else go->objspecific.bullet.step_curr++;
 			} else if (go->objtype == OBJ_ENEMY_SHOOTER || go->objtype == OBJ_ENEMY_BOMBER) {
 				if (tickcounter % 4 == go->anim_frame) {
-					if(get_enemy_current_route(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn)->vel) {
+					const struct enemy_route *rc = get_enemy_current_route(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
+					if(rc->vel) {
 						go->objspecific.enemy.curr_step++;
 						if(enemy_fires(&go->objspecific.enemy)) {
 							enemy_fire_bullet(i);
 						}
+						const struct enemy_route *rn = get_enemy_current_route(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
+						if(rn->shape != rc->shape) switch_enemy_shape(i, rn);
 					}
 				}
 				if(!is_death_anim(go->animid)) go->vel = get_enemy_vel(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
