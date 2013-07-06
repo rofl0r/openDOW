@@ -248,6 +248,7 @@ static void enter_direction() {
 static void enemy_tag_loop() {
 	update_caption = tag_update_caption;
 	tag_enemy_current_route = 0;
+	tag_enemy_current_shot = 0;
 	reset_tag_enemy();
 	tag_enemy_id = init_enemy(&tag_enemy);
 	
