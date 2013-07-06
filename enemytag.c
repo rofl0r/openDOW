@@ -6,6 +6,100 @@ static int tag_enemy_current_route;
 static int tag_enemy_current_shot;
 static int tag_enemy_id;
 
+#define STRING_ENTRY(x) [x] = #x
+static const char* enemy_weapon_string_lut[] = {
+	STRING_ENTRY(EW_GUN),
+	STRING_ENTRY(EW_GRENADE),
+};
+static const char* enemy_shape_string_lut[] = {
+	STRING_ENTRY(ES_SOLDIER1_DOWN),
+	STRING_ENTRY(ES_SOLDIER1_LEFT),
+	STRING_ENTRY(ES_SOLDIER1_RIGHT),
+	STRING_ENTRY(ES_SOLDIER2_DOWN),
+	STRING_ENTRY(ES_SOLDIER2_LEFT),
+	STRING_ENTRY(ES_SOLDIER2_RIGHT),
+	STRING_ENTRY(ES_GUNTURRET_MOVABLE_MAN),
+	STRING_ENTRY(ES_GUNTURRET_MOVABLE_MACHINE),
+	STRING_ENTRY(ES_JEEP),
+	STRING_ENTRY(ES_TANK_SMALL),
+	STRING_ENTRY(ES_TANK_BIG),
+	STRING_ENTRY(ES_TRANSPORTER),
+	STRING_ENTRY(ES_BUNKER_1),
+	STRING_ENTRY(ES_BUNKER_2),
+	STRING_ENTRY(ES_BUNKER_3),
+	STRING_ENTRY(ES_BUNKER_4),
+	STRING_ENTRY(ES_BUNKER_5),
+	STRING_ENTRY(ES_MINE_FLAT),
+	STRING_ENTRY(ES_MINE_CROSS),
+	STRING_ENTRY(ES_FLAMETURRET),
+	STRING_ENTRY(ES_GUNTURRET_FIXED_SOUTH),
+	STRING_ENTRY(ES_GUNTURRET_FIXED_NORTH),
+	STRING_ENTRY(ES_BOSS),
+	STRING_ENTRY(ES_MAX),
+};
+static const char* dir16_string_lut[] = {
+	STRING_ENTRY(DIR16_N),
+	STRING_ENTRY(DIR16_NNW),
+	STRING_ENTRY(DIR16_NW),
+	STRING_ENTRY(DIR16_WNW),
+	STRING_ENTRY(DIR16_W),
+	STRING_ENTRY(DIR16_WSW),
+	STRING_ENTRY(DIR16_SW),
+	STRING_ENTRY(DIR16_SSW),
+	STRING_ENTRY(DIR16_S),
+	STRING_ENTRY(DIR16_SSO),
+	STRING_ENTRY(DIR16_SO),
+	STRING_ENTRY(DIR16_OSO),
+	STRING_ENTRY(DIR16_O),
+	STRING_ENTRY(DIR16_ONO),
+	STRING_ENTRY(DIR16_NO),
+	STRING_ENTRY(DIR16_NNO),
+	STRING_ENTRY(DIR16_MAX),
+};
+static void dump_enemy() {
+/*
+		.scroll_line = 1,
+		.weapon = EW_GUN,
+		.x = 100,
+		.y = 100,
+		.route = {
+			[3] = {
+				.shape = ES_JEEP,
+				.dir = DIR16_WNW,
+				.start_step = 0,
+				.vel = 2,
+			},
+			[4] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_NNW,
+				.start_step = 128,
+				.vel = 2,
+			},
+			
+		},
+ */
+	printf("XXX screen %d\n", map_spawn_screen_index);
+	printf(".scroll_line = %d,\n", map_spawn_line);
+	printf(".weapon = %s,\n", enemy_weapon_string_lut[tag_enemy.weapon]);
+	printf(".x = %d\n", tag_enemy.x);
+	printf(".y = %d\n", tag_enemy.y);
+	printf(".route = {\n");
+	int i;
+	for(i = 0; i < ENEMY_MAX_ROUTE; i++) {
+		printf("[%d] = {\n", i);
+		printf(".shape = %s,\n", enemy_shape_string_lut[tag_enemy.route[i].shape]);
+		printf(".dir = %s,\n", dir16_string_lut[tag_enemy.route[i].dir]);
+		printf(".start_step = %d,\n", tag_enemy.route[i].start_step);
+		printf(".vel = %d,\n", tag_enemy.route[i].vel);
+		printf("},\n");
+	}
+	printf("},\n");
+	printf(".shots = {\n");
+	for(i = 0; i < ENEMY_MAX_SHOT; i++)
+		printf("[%d] = { %d },\n", i, tag_enemy.shots[i]);
+	printf("},\n");
+}
+
 static void reset_tag_enemy() {
 	memset(&tag_enemy, 0, sizeof(tag_enemy));
 	tag_enemy.route[0].shape = ES_SOLDIER1_DOWN;
@@ -172,6 +266,7 @@ static void enemy_tag_loop() {
 						case SDLK_i: insert_steps(); break;
 						case SDLK_s: insert_shot(); break;
 						case SDLK_p: do_pause(); break;
+						case SDLK_RETURN: dump_enemy(); break;
 						case SDLK_KP_PLUS:
 							dir = 1;
 						case SDLK_KP_MINUS:
