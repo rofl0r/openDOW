@@ -3,6 +3,7 @@
 #include <unistd.h>
 static struct enemy_spawn tag_enemy;
 static int tag_enemy_current_route;
+static int tag_enemy_current_shot;
 static int tag_enemy_id;
 
 static void reset_tag_enemy() {
@@ -48,20 +49,37 @@ static void toggle_route(int dir) {
 	tag_enemy_current_route = newroute;
 }
 
+static void toggle_shot(int dir) {
+	int newshot = tag_enemy_current_shot + dir;
+	if(newshot >= ENEMY_MAX_SHOT) newshot = 0;
+	else if(newshot < 0) newshot = ENEMY_MAX_SHOT -1;
+	tag_enemy_current_shot = newshot;
+}
+
+static void toggle_gun(void) {
+	if(tag_enemy.weapon == EW_GRENADE) tag_enemy.weapon = EW_GUN;
+	else tag_enemy.weapon = EW_GRENADE;
+}
+
 static void insert_steps(void) {
 	tag_enemy.route[tag_enemy_current_route].start_step = objs[tag_enemy_id].objspecific.enemy.curr_step;
 	dup_route();
 }
 
+static void insert_shot(void) {
+	tag_enemy.shots[tag_enemy_current_shot] = objs[tag_enemy_id].objspecific.enemy.curr_step;
+}
+
 static int paused;
 static void tag_update_caption(void) {
 	char buf [128];
-	snprintf(buf, 128, "%s tag mode: x %d, y %d, route: %d, vel: %d, step: %d", 
+	snprintf(buf, 128, "%s tag mode: x %d, y %d, route: %d, vel: %d, step: %d, shot: %d", 
 		 paused ? "XXXX PAUSED XXXX" : "",
 		 (int) tag_enemy.x, (int) tag_enemy.y,
 		 (int) tag_enemy_current_route,
 	         (int) tag_enemy.route[tag_enemy_current_route].vel,
-	         (int) objs[tag_enemy_id].objspecific.enemy.curr_step
+	         (int) objs[tag_enemy_id].objspecific.enemy.curr_step,
+	         (int) tag_enemy_current_shot
 		);
 	SDL_WM_SetCaption(buf, 0);
 }
@@ -149,8 +167,10 @@ static void enemy_tag_loop() {
 				case SDL_KEYUP:
 					switch(sdl_event.key.keysym.sym) {
 						case SDLK_e: return;
+						case SDLK_g: toggle_gun(); break;
 						case SDLK_d: enter_direction(); break;
 						case SDLK_i: insert_steps(); break;
+						case SDLK_s: insert_shot(); break;
 						case SDLK_p: do_pause(); break;
 						case SDLK_KP_PLUS:
 							dir = 1;
@@ -162,6 +182,10 @@ static void enemy_tag_loop() {
 							if((sdl_event.key.keysym.mod & KMOD_RALT) ||
 							   (sdl_event.key.keysym.mod & KMOD_LALT))
 								toggle_route(dir);
+							else
+							if((sdl_event.key.keysym.mod & KMOD_RCTRL) ||
+							   (sdl_event.key.keysym.mod & KMOD_LCTRL))
+								toggle_shot(dir);
 							else
 								toggle_vel(dir);
 							break;
