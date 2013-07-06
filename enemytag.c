@@ -131,8 +131,9 @@ static void toggle_vel(int veldir) {
 	v+=veldir;
 	if(v<0) v = 0;
 	else if(v > 255) v = 255;
-	tag_enemy.route[tag_enemy_current_route].vel = v;
-	dup_route();
+	int i;
+	for(i = tag_enemy_current_route; i < ENEMY_MAX_ROUTE; i++)
+		tag_enemy.route[i].vel = v;
 	update_tag_enemy();
 }
 
