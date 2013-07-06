@@ -319,7 +319,7 @@ static void draw_map() {
 	}
 }
 
-#define VSCROLL_TRESHOLD (200-64)
+#define VSCROLL_TRESHOLD (200-74)
 #define HSCROLLR_TRESHOLD 64
 #define HSCROLLL_TRESHOLD 128
 static int scroll_needed() {
