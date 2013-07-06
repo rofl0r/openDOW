@@ -478,7 +478,6 @@ static int init_grenade(vec2f *pos, vec2f *vel, int steps) {
 	int id = gameobj_alloc();
 	gameobj_init(id, pos, vel, SI_GRENADE, ANIM_GRENADE_SMALL, OBJ_GRENADE);
 	gameobj_init_bulletdata(id, steps);
-	add_grenade(id);
 	return id;
 }
 
@@ -773,6 +772,34 @@ static enum weapon_id get_active_weapon_id(int player_no) {
 static const struct weapon* get_active_weapon(int player_no) {
 	return &weapons[get_active_weapon_id(player_no)];
 }
+static enum direction get_shotdirection_from_enemy(int curr_step, const struct enemy_spawn *spawn) {
+	const struct enemy_route* r = get_enemy_current_route(curr_step, spawn);
+	switch(r->shape) {
+		case ES_SOLDIER1_DOWN: case ES_SOLDIER2_DOWN:
+			return DIR_S;
+		case ES_SOLDIER1_LEFT: case ES_SOLDIER2_LEFT:
+			return DIR_W;
+		case ES_SOLDIER1_RIGHT: case ES_SOLDIER2_RIGHT:
+			return DIR_O;
+		default:
+			assert(0);
+	}
+}
+
+static void enemy_fire_bullet(int objid) {
+	struct gameobj* go = &objs[objid];
+	enum direction dir = get_shotdirection_from_enemy(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
+	vec2f from = get_gameobj_center(objid);
+	vec2f vel = get_vel_from_direction(dir, 1.75);
+	int id;
+	if(go->objspecific.enemy.spawn->weapon == EW_GUN) {
+		id = init_bullet(&from, &vel, 40);
+		if(id != -1) add_ebullet(id);
+	} else {
+		id = init_grenade(&from, &vel, 40);
+		if(id != -1) add_grenade(id);
+	}
+}
 
 static void fire_bullet(int player_no) {
 	const struct weapon *pw = get_active_weapon(player_no);
@@ -838,6 +865,7 @@ static void fire_bullet(int player_no) {
 			break;
 		case ST_GRENADE:
 			id = init_grenade(&from, &vel, steps);
+			add_grenade(id);
 			break;
 		default:
 			abort();
@@ -1153,14 +1181,15 @@ static void game_tick(int force_redraw) {
 				} else go->objspecific.bullet.step_curr++;
 			} else if (go->objtype == OBJ_ENEMY_SHOOTER || go->objtype == OBJ_ENEMY_BOMBER) {
 				if (tickcounter % 4 == go->anim_frame) {
-					if(get_enemy_current_route(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn)->vel)
+					if(get_enemy_current_route(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn)->vel) {
 						go->objspecific.enemy.curr_step++;
+						if(enemy_fires(&go->objspecific.enemy)) {
+							enemy_fire_bullet(i);
+						}
+					}
 				}
 				if(!is_death_anim(go->animid)) go->vel = get_enemy_vel(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
 				else go->vel = VEC(0, 0);
-				if(enemy_fires(&go->objspecific.enemy)) {
-					//fire_bullet();
-				}
 			}
 			int ismoving = 0;
 			if(go->vel.x != 0 || go->vel.y != 0) {
