@@ -78,26 +78,27 @@ static void dump_enemy() {
 			
 		},
  */
+#define tprintf(tabs, args...) do { int __tabs; for(__tabs = 0; __tabs < tabs; __tabs++) printf("\t"); printf(args); } while(0)
 	printf("XXX screen %d\n", map_spawn_screen_index);
-	printf(".scroll_line = %d,\n", map_spawn_line);
-	printf(".weapon = %s,\n", enemy_weapon_string_lut[tag_enemy.weapon]);
-	printf(".x = %d\n", tag_enemy.x);
-	printf(".y = %d\n", tag_enemy.y);
-	printf(".route = {\n");
+	tprintf(2, ".scroll_line = %d,\n", map_spawn_line);
+	tprintf(2, ".weapon = %s,\n", enemy_weapon_string_lut[tag_enemy.weapon]);
+	tprintf(2, ".x = %d,\n", tag_enemy.x);
+	tprintf(2, ".y = %d,\n", tag_enemy.y);
+	tprintf(2, ".route = {\n");
 	int i;
 	for(i = 0; i < ENEMY_MAX_ROUTE; i++) {
-		printf("[%d] = {\n", i);
-		printf(".shape = %s,\n", enemy_shape_string_lut[tag_enemy.route[i].shape]);
-		printf(".dir = %s,\n", dir16_string_lut[tag_enemy.route[i].dir]);
-		printf(".start_step = %d,\n", tag_enemy.route[i].start_step);
-		printf(".vel = %d,\n", tag_enemy.route[i].vel);
-		printf("},\n");
+		tprintf(3, "[%d] = {\n", i);
+		tprintf(4, ".shape = %s,\n", enemy_shape_string_lut[tag_enemy.route[i].shape]);
+		tprintf(4, ".dir = %s,\n", dir16_string_lut[tag_enemy.route[i].dir]);
+		tprintf(4, ".start_step = %d,\n", tag_enemy.route[i].start_step);
+		tprintf(4, ".vel = %d,\n", tag_enemy.route[i].vel);
+		tprintf(3, "},\n");
 	}
-	printf("},\n");
-	printf(".shots = {\n");
+	tprintf(2, "},\n");
+	tprintf(2, ".shots = {\n");
 	for(i = 0; i < ENEMY_MAX_SHOT; i++)
-		printf("[%d] = { %d },\n", i, tag_enemy.shots[i]);
-	printf("},\n");
+		tprintf(3, "[%d] = %d,\n", i, tag_enemy.shots[i]);
+	tprintf(2, "},\n");
 }
 
 static void reset_tag_enemy() {
