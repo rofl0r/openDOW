@@ -585,7 +585,7 @@ static const struct enemy_route* get_enemy_current_route(int curr_step, const st
 
 static vec2f get_enemy_vel(int curr_step, const struct enemy_spawn *spawn) {
 	const struct enemy_route *route = get_enemy_current_route(curr_step, spawn);
-	return get_vel_from_direction16(route->dir, (float)route->vel/4.f);
+	return get_vel_from_direction16(route->dir, (float)route->vel/8.f);
 }
 
 static int init_enemy(const struct enemy_spawn *spawn) {
