@@ -1111,9 +1111,9 @@ static int advance_animations(void) {
 
 static void game_update_caption(void) {
 	char buf [128];
-	snprintf(buf, 128, "objs: %d, map x,y %d/%d, index %d, xoff %d, yoff %d, spawnscreen %d", (int) obj_count, 
+	snprintf(buf, 128, "objs: %d, map x,y %d/%d, index %d, xoff %d, yoff %d, spawnscreen %d, line %d", (int) obj_count, 
 		 (int)mapsquare.x, (int)mapsquare.y, (int)map->screen_map[mapsquare.y][mapsquare.x], 
-		 (int)mapscreen_xoff, (int)mapscreen_yoff, (int)map_spawn_screen_index);
+		 (int)mapscreen_xoff, (int)mapscreen_yoff, (int)map_spawn_screen_index, (int) map_spawn_line);
 	SDL_WM_SetCaption(buf, 0);	
 }
 static void(*update_caption)(void) = game_update_caption;
