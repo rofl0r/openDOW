@@ -360,7 +360,7 @@ static int init_enemy(const struct enemy_spawn *spawn);
 static void handle_spawns(unsigned scrollstep) {
 	assert(scrollstep <= 192);
 	unsigned i;
-	if(!spawn_map[map_spawn_screen_index].spawns) return;
+	if(!spawn_map[map_spawn_screen_index].spawns) goto done;
 	for(i = 0; i < scrollstep; i++) {
 		if(map_spawn_current >= spawn_map[map_spawn_screen_index].num_spawns) goto done;
 		while(map_spawn_line+i == spawn_map[map_spawn_screen_index].spawns[map_spawn_current].scroll_line) {
