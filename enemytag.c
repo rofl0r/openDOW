@@ -275,13 +275,12 @@ static void enemy_tag_loop() {
 			switch (sdl_event.type) {
 				case SDL_KEYUP:
 					switch(sdl_event.key.keysym.sym) {
-						case SDLK_e: return;
+						case SDLK_e: dump_enemy(); return;
 						case SDLK_g: toggle_gun(); break;
 						case SDLK_d: enter_direction(); break;
 						case SDLK_i: insert_steps(); break;
 						case SDLK_s: insert_shot(); break;
 						case SDLK_p: do_pause(); break;
-						case SDLK_RETURN: dump_enemy(); break;
 						case SDLK_SPACE: update_tag_enemy(1); break;
 						case SDLK_PAGEUP: scrollup(); break;
 						case SDLK_KP_PLUS:
