@@ -67,6 +67,7 @@ static void get_last_move_event(SDL_Event* e) {
 #endif
 
 static vec2f get_sprite_center(const struct palpic *p) {
+	assert(p->spritecount);
 	vec2f res;
 	res.x = palpic_getspritewidth(p) * SCALE / 2;
 	res.y = palpic_getspriteheight(p) * SCALE / 2;
@@ -979,8 +980,11 @@ static int remove_offscreen_objects(sblist *list) {
 	uint8_t *item_id;
 	ssize_t li;
 	sblist_iter_counter2s(list, li, item_id) {
+		assert(obj_slot_used[*item_id]);
 		struct gameobj *go = &objs[*item_id];
+		assert((int) go->spritemap_id < SI_MAX);
 		const struct palpic *p = spritemaps[go->spritemap_id];
+		assert(p->spritecount);
 		int h = palpic_getspriteheight(p), w = palpic_getspritewidth(p);
 		if(go->pos.x < SCREEN_MIN_X-w*SCALE || go->pos.x > SCREEN_MAX_X ||
 		   go->pos.y < SCREEN_MIN_Y-h*SCALE || go->pos.y > SCREEN_MAX_Y) {
