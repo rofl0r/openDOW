@@ -579,7 +579,10 @@ static int init_rocket(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
 
 static const struct enemy_route* get_enemy_current_route(int curr_step, const struct enemy_spawn *spawn) {
 	int i = ENEMY_MAX_ROUTE -1;
-	for(; i >= 0; i--) if(curr_step >= spawn->route[i].start_step) return &spawn->route[i];
+	for(; i >= 0; i--) 
+		if(spawn->route[i].shape != ES_INVALID &&
+		   curr_step >= spawn->route[i].start_step)
+			return &spawn->route[i];
 	return 0;
 }
 
