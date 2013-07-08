@@ -95,7 +95,7 @@ static void dump_enemy() {
 	tprintf(2, ".y = %d,\n", tag_enemy_y);
 	tprintf(2, ".route = {\n");
 	int i;
-	for(i = 0; i < ENEMY_MAX_ROUTE; i++) {
+	for(i = 0; i < ENEMY_MAX_ROUTE && tag_enemy.route[i].shape != ES_INVALID; i++) {
 		tprintf(3, "[%d] = {\n", i);
 		tprintf(4, ".shape = %s,\n", enemy_shape_string_lut[tag_enemy.route[i].shape]);
 		tprintf(4, ".dir = %s,\n", dir16_string_lut[tag_enemy.route[i].dir]);
@@ -121,20 +121,12 @@ static void update_tag_enemy(int doremove) {
 	tag_enemy_id = init_enemy(&tag_enemy);
 }
 
-static void dup_route() {
-	int i;
-	for(i = tag_enemy_current_route + 1; i < ENEMY_MAX_ROUTE; i++)
-		tag_enemy.route[i] = tag_enemy.route[tag_enemy_current_route];
-}
-
 static void toggle_shape(int shapedir) {
 	int s = tag_enemy.route[tag_enemy_current_route].shape;
 	s += shapedir;
 	if(s < ES_FIRST) s = ES_MAX - 1;
 	else if(s >= ES_MAX) s = ES_FIRST;
-	int i;
-	for(i = tag_enemy_current_route; i < ENEMY_MAX_ROUTE; i++)
-		tag_enemy.route[i].shape = s;
+	tag_enemy.route[tag_enemy_current_route].shape = s;
 }
 
 static void toggle_vel(int veldir) {
@@ -149,10 +141,13 @@ static void toggle_vel(int veldir) {
 }
 
 static void toggle_route(int dir) {
+	enum enemy_shape currshape = tag_enemy.route[tag_enemy_current_route].shape;
 	int newroute = tag_enemy_current_route + dir;
 	if(newroute >= ENEMY_MAX_ROUTE) newroute = 0;
 	else if(newroute < 0) newroute = ENEMY_MAX_ROUTE -1;
 	tag_enemy_current_route = newroute;
+	if(tag_enemy.route[tag_enemy_current_route].shape == ES_INVALID)
+		tag_enemy.route[tag_enemy_current_route].shape = currshape;
 }
 
 static void toggle_shot(int dir) {
@@ -169,7 +164,6 @@ static void toggle_gun(void) {
 
 static void insert_steps(void) {
 	tag_enemy.route[tag_enemy_current_route].start_step = objs[tag_enemy_id].objspecific.enemy.curr_step;
-	dup_route();
 }
 
 static void insert_shot(void) {
@@ -251,7 +245,6 @@ static void enter_direction() {
 	else if (!strcmp(dirbuf,"oso")) dir= DIR16_OSO;
 	else dir = DIR16_INVALID;
 	if(dir != DIR16_INVALID) tag_enemy.route[tag_enemy_current_route].dir = dir;
-	dup_route();
 	update_tag_enemy(1);
 }
 
