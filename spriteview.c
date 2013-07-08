@@ -1583,6 +1583,11 @@ int main() {
 							enemy_tag_loop();
 							update_caption = game_update_caption;
 							break;
+						case SDLK_c: 
+							clear_screen(); 
+							video_update();
+							need_redraw = 1; 
+							break;
 						case SDLK_w: case SDLK_a: case SDLK_s: case SDLK_d:
 						case SDLK_UP:
 						case SDLK_DOWN:
