@@ -1,5 +1,6 @@
 #include "enemy.h"
 #include "gameobj.h"
+#include "video.h"
 #include <unistd.h>
 static struct enemy_spawn tag_enemy;
 static int tag_enemy_current_route;
@@ -281,6 +282,7 @@ static void enemy_tag_loop() {
 						case SDLK_i: insert_steps(); break;
 						case SDLK_s: insert_shot(); break;
 						case SDLK_p: do_pause(); break;
+						case SDLK_c: clear_screen(); video_update(); need_redraw = 1; break;
 						case SDLK_SPACE: update_tag_enemy(1); break;
 						case SDLK_PAGEUP: scrollup(); break;
 						case SDLK_KP_PLUS:
