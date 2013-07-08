@@ -5,7 +5,8 @@
 #include <stdint.h>
 
 enum __attribute__ ((__packed__)) enemy_shape {
-	ES_FIRST = 0,
+	ES_INVALID = 0,
+	ES_FIRST = 1,
 	ES_SOLDIER1_DOWN = ES_FIRST,
 	ES_SOLDIER1_LEFT,
 	ES_SOLDIER1_RIGHT,
@@ -30,7 +31,6 @@ enum __attribute__ ((__packed__)) enemy_shape {
 	ES_GUNTURRET_FIXED_NORTH,
 	ES_BOSS,
 	ES_MAX,
-	ES_INVALID = ES_MAX,
 };
 
 // shotdirection is derived from the shape
