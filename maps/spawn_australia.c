@@ -42,12 +42,6 @@ static const struct enemy_spawn SPAWN_ENTRY(1)[] = {
 				.start_step = 53,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_O,
-				.start_step = 53,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] =  8,
@@ -80,18 +74,6 @@ static const struct enemy_spawn SPAWN_ENTRY(1)[] = {
 				.start_step = 43,
 				.vel = 6,
 			},
-			[3] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_O,
-				.start_step = 43,
-				.vel = 6,
-			},
-			[4] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_O,
-				.start_step = 43,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 9,
@@ -107,30 +89,6 @@ static const struct enemy_spawn SPAWN_ENTRY(1)[] = {
 		.y = 6,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_W,
 				.start_step = 0,
@@ -175,12 +133,6 @@ static const struct enemy_spawn SPAWN_ENTRY(1)[] = {
 				.start_step = 51,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_WSW,
-				.start_step = 51,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 5,
@@ -208,24 +160,6 @@ static const struct enemy_spawn SPAWN_ENTRY(1)[] = {
 				.start_step = 19,
 				.vel = 3,
 			},
-			[2] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_W,
-				.start_step = 19,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_W,
-				.start_step = 19,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_W,
-				.start_step = 19,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 19,
@@ -242,30 +176,6 @@ static const struct enemy_spawn SPAWN_ENTRY(1)[] = {
 		.y = -20,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -310,12 +220,6 @@ static const struct enemy_spawn SPAWN_ENTRY(1)[] = {
 				.start_step = 49,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_OSO,
-				.start_step = 49,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 6,
@@ -350,12 +254,6 @@ static const struct enemy_spawn SPAWN_ENTRY(1)[] = {
 				.vel = 6,
 			},
 			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_OSO,
-				.start_step = 51,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_OSO,
 				.start_step = 51,
@@ -397,18 +295,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 				.start_step = 54,
 				.vel = 6,
 			},
-			[3] = {
-				.shape = ES_SOLDIER1_LEFT,
-				.dir = DIR16_W,
-				.start_step = 54,
-				.vel = 6,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_LEFT,
-				.dir = DIR16_W,
-				.start_step = 54,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 28,
@@ -425,30 +311,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 		.y = -21,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -487,18 +349,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 				.start_step = 51,
 				.vel = 6,
 			},
-			[3] = {
-				.shape = ES_SOLDIER1_LEFT,
-				.dir = DIR16_W,
-				.start_step = 51,
-				.vel = 6,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_LEFT,
-				.dir = DIR16_W,
-				.start_step = 51,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 11,
@@ -527,18 +377,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 				.vel = 6,
 			},
 			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_O,
-				.start_step = 29,
-				.vel = 6,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_O,
-				.start_step = 29,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_O,
 				.start_step = 29,
@@ -712,18 +550,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 				.start_step = 24,
 				.vel = 6,
 			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 24,
-				.vel = 6,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 24,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 10,
@@ -752,18 +578,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 				.vel = 6,
 			},
 			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 32,
-				.vel = 6,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 32,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_W,
 				.start_step = 32,
@@ -808,12 +622,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 				.start_step = 50,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_WSW,
-				.start_step = 50,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 6,
@@ -842,18 +650,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 				.vel = 6,
 			},
 			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 23,
-				.vel = 6,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 23,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_W,
 				.start_step = 23,
@@ -898,12 +694,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 				.start_step = 58,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 58,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 11,
@@ -932,18 +722,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 				.vel = 6,
 			},
 			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 30,
-				.vel = 6,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 30,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_W,
 				.start_step = 30,
@@ -988,12 +766,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 				.start_step = 50,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_WSW,
-				.start_step = 50,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 5,
@@ -1033,12 +805,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 				.start_step = 58,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 58,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 11,
@@ -1060,30 +826,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 				.start_step = 0,
 				.vel = 3,
 			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 26,
@@ -1100,30 +842,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 		.y = -20,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -1151,30 +869,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 				.start_step = 0,
 				.vel = 3,
 			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 25,
@@ -1196,30 +890,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 				.start_step = 0,
 				.vel = 3,
 			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 23,
@@ -1236,30 +906,6 @@ static const struct enemy_spawn SPAWN_ENTRY(2)[] = {
 		.y = -20,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -1289,30 +935,6 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 				.start_step = 0,
 				.vel = 3,
 			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 24,
@@ -1334,30 +956,6 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 				.start_step = 0,
 				.vel = 3,
 			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 22,
@@ -1374,30 +972,6 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 		.y = -21,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -1487,12 +1061,6 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 				.start_step = 60,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_O,
-				.start_step = 60,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 15,
@@ -1505,139 +1073,67 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 	[5] = { 
 		/* the following 3 should all start on line 90
 		but each one with a little delay */
-                .scroll_line = 88,
-                .weapon = EW_GUN,
-                .x = 48,
-                .y = -20,
-                .route = {
-                        [0] = {
-                                .shape = ES_SOLDIER1_DOWN,
-                                .dir = DIR16_S,
-                                .start_step = 0,
-                                .vel = 3,
-                        },
-                        [1] = {
-                                .shape = ES_SOLDIER1_DOWN,
-                                .dir = DIR16_S,
-                                .start_step = 0,
-                                .vel = 3,
-                        },
-                        [2] = {
-                                .shape = ES_SOLDIER1_DOWN,
-                                .dir = DIR16_S,
-                                .start_step = 0,
-                                .vel = 3,
-                        },
-                        [3] = {
-                                .shape = ES_SOLDIER1_DOWN,
-                                .dir = DIR16_S,
-                                .start_step = 0,
-                                .vel = 3,
-                        },
-                        [4] = {
-                                .shape = ES_SOLDIER1_DOWN,
-                                .dir = DIR16_S,
-                                .start_step = 0,
-                                .vel = 3,
-                        },
-                },
-                .shots = {
-                        [0] = 24,
-                        [1] = 68,
-                        [2] = 86,
-                        [3] = 0,
-                        [4] = 0,
-                },
+		.scroll_line = 88,
+		.weapon = EW_GUN,
+		.x = 48,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 24,
+			[1] = 68,
+			[2] = 86,
+			[3] = 0,
+			[4] = 0,
+		},
 	},
 	[6] = {
-                .scroll_line = 89,
-                .weapon = EW_GUN,
-                .x = 80,
-                .y = -20,
-                .route = {
-                        [0] = {
-                                .shape = ES_SOLDIER1_DOWN,
-                                .dir = DIR16_S,
-                                .start_step = 0,
-                                .vel = 3,
-                        },
-                        [1] = {
-                                .shape = ES_SOLDIER1_DOWN,
-                                .dir = DIR16_S,
-                                .start_step = 0,
-                                .vel = 3,
-                        },
-                        [2] = {
-                                .shape = ES_SOLDIER1_DOWN,
-                                .dir = DIR16_S,
-                                .start_step = 0,
-                                .vel = 3,
-                        },
-                        [3] = {
-                                .shape = ES_SOLDIER1_DOWN,
-                                .dir = DIR16_S,
-                                .start_step = 0,
-                                .vel = 3,
-                        },
-                        [4] = {
-                                .shape = ES_SOLDIER1_DOWN,
-                                .dir = DIR16_S,
-                                .start_step = 0,
-                                .vel = 3,
-                        },
-                },
-                .shots = {
-                        [0] = 24,
-                        [1] = 68,
-                        [2] = 86,
-                        [3] = 0,
-                        [4] = 0,
-                },
+		.scroll_line = 89,
+		.weapon = EW_GUN,
+		.x = 80,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 24,
+			[1] = 68,
+			[2] = 86,
+			[3] = 0,
+			[4] = 0,
+		},
 	},
 	[7] = {
-                .scroll_line = 90,
-                .weapon = EW_GUN,
-                .x = 112,
-                .y = -20,
-                .route = {
-                        [0] = {
-                                .shape = ES_SOLDIER1_DOWN,
-                                .dir = DIR16_S,
-                                .start_step = 0,
-                                .vel = 3,
-                        },
-                        [1] = {
-                                .shape = ES_SOLDIER1_DOWN,
-                                .dir = DIR16_S,
-                                .start_step = 0,
-                                .vel = 3,
-                        },
-                        [2] = {
-                                .shape = ES_SOLDIER1_DOWN,
-                                .dir = DIR16_S,
-                                .start_step = 0,
-                                .vel = 3,
-                        },
-                        [3] = {
-                                .shape = ES_SOLDIER1_DOWN,
-                                .dir = DIR16_S,
-                                .start_step = 0,
-                                .vel = 3,
-                        },
-                        [4] = {
-                                .shape = ES_SOLDIER1_DOWN,
-                                .dir = DIR16_S,
-                                .start_step = 0,
-                                .vel = 3,
-                        },
-                },
-                .shots = {
-                        [0] = 24,
-                        [1] = 68,
-                        [2] = 86,
-                        [3] = 0,
-                        [4] = 0,
-                },
+		.scroll_line = 90,
+		.weapon = EW_GUN,
+		.x = 112,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 24,
+			[1] = 68,
+			[2] = 86,
+			[3] = 0,
+			[4] = 0,
+		},
 	},
 	[8] = {
 		.scroll_line = 97,
@@ -1646,30 +1142,6 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 		.y = -21,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -1691,30 +1163,6 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 		.y = -20,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -1743,30 +1191,6 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 				.start_step = 0,
 				.vel = 3,
 			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 21,
@@ -1783,30 +1207,6 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 		.y = -21,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -1851,12 +1251,6 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 				.start_step = 34,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_O,
-				.start_step = 34,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 9,
@@ -1896,12 +1290,6 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 				.start_step = 62,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_O,
-				.start_step = 62,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 15,
@@ -1930,18 +1318,6 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 				.vel = 6,
 			},
 			[2] = {
-				.shape = ES_SOLDIER1_RIGHT,
-				.dir = DIR16_O,
-				.start_step = 49,
-				.vel = 6,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_RIGHT,
-				.dir = DIR16_O,
-				.start_step = 49,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_RIGHT,
 				.dir = DIR16_O,
 				.start_step = 49,
@@ -1986,12 +1362,6 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 				.start_step = 40,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER2_LEFT,
-				.dir = DIR16_W,
-				.start_step = 40,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 15,
@@ -2020,18 +1390,6 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 				.vel = 6,
 			},
 			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 28,
-				.vel = 6,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 28,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_W,
 				.start_step = 28,
@@ -2070,18 +1428,6 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 				.start_step = 53,
 				.vel = 6,
 			},
-			[3] = {
-				.shape = ES_SOLDIER1_RIGHT,
-				.dir = DIR16_O,
-				.start_step = 53,
-				.vel = 6,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_RIGHT,
-				.dir = DIR16_O,
-				.start_step = 53,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 10,
@@ -2110,18 +1456,6 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 				.vel = 6,
 			},
 			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_O,
-				.start_step = 29,
-				.vel = 6,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_O,
-				.start_step = 29,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_O,
 				.start_step = 29,
@@ -2160,18 +1494,6 @@ static const struct enemy_spawn SPAWN_ENTRY(3)[] = {
 				.start_step = 27,
 				.vel = 6,
 			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 27,
-				.vel = 6,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 27,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 16,
@@ -2203,18 +1525,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 				.vel = 6,
 			},
 			[2] = {
-				.shape = ES_SOLDIER2_LEFT,
-				.dir = DIR16_W,
-				.start_step = 37,
-				.vel = 6,
-			},
-			[3] = {
-				.shape = ES_SOLDIER2_LEFT,
-				.dir = DIR16_W,
-				.start_step = 37,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER2_LEFT,
 				.dir = DIR16_W,
 				.start_step = 37,
@@ -2259,12 +1569,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 				.start_step = 53,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER1_RIGHT,
-				.dir = DIR16_O,
-				.start_step = 53,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 11,
@@ -2293,18 +1597,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 				.vel = 6,
 			},
 			[2] = {
-				.shape = ES_SOLDIER2_RIGHT,
-				.dir = DIR16_O,
-				.start_step = 43,
-				.vel = 6,
-			},
-			[3] = {
-				.shape = ES_SOLDIER2_RIGHT,
-				.dir = DIR16_O,
-				.start_step = 43,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER2_RIGHT,
 				.dir = DIR16_O,
 				.start_step = 43,
@@ -2343,18 +1635,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 				.start_step = 28,
 				.vel = 6,
 			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 28,
-				.vel = 6,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 28,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 16,
@@ -2383,18 +1663,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 				.vel = 6,
 			},
 			[2] = {
-				.shape = ES_SOLDIER2_LEFT,
-				.dir = DIR16_W,
-				.start_step = 40,
-				.vel = 6,
-			},
-			[3] = {
-				.shape = ES_SOLDIER2_LEFT,
-				.dir = DIR16_W,
-				.start_step = 40,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER2_LEFT,
 				.dir = DIR16_W,
 				.start_step = 40,
@@ -2439,12 +1707,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 				.start_step = 51,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_OSO,
-				.start_step = 51,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 8,
@@ -2479,12 +1741,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 				.vel = 6,
 			},
 			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_OSO,
-				.start_step = 48,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_OSO,
 				.start_step = 48,
@@ -2529,12 +1785,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 				.start_step = 50,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_OSO,
-				.start_step = 50,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 8,
@@ -2569,12 +1819,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 				.vel = 6,
 			},
 			[3] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_O,
-				.start_step = 64,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER2_DOWN,
 				.dir = DIR16_O,
 				.start_step = 64,
@@ -2619,12 +1863,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 				.start_step = 34,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_O,
-				.start_step = 34,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 10,
@@ -2659,12 +1897,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 				.vel = 6,
 			},
 			[3] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_O,
-				.start_step = 57,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER2_DOWN,
 				.dir = DIR16_O,
 				.start_step = 57,
@@ -2709,12 +1941,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 				.start_step = 60,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_O,
-				.start_step = 60,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 15,
@@ -2749,12 +1975,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 				.vel = 6,
 			},
 			[3] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_O,
-				.start_step = 36,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER2_DOWN,
 				.dir = DIR16_O,
 				.start_step = 36,
@@ -2799,12 +2019,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 				.start_step = 62,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_O,
-				.start_step = 62,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 15,
@@ -2821,30 +2035,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 		.y = -20,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -2871,30 +2061,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 				.start_step = 0,
 				.vel = 3,
 			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 22,
@@ -2911,30 +2077,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 		.y = -21,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -2974,12 +2116,6 @@ static const struct enemy_spawn SPAWN_ENTRY(4)[] = {
 				.vel = 6,
 			},
 			[3] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_O,
-				.start_step = 62,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER2_DOWN,
 				.dir = DIR16_O,
 				.start_step = 62,
@@ -3027,12 +2163,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.start_step = 32,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_O,
-				.start_step = 32,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 11,
@@ -3072,12 +2202,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.start_step = 65,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_O,
-				.start_step = 65,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 15,
@@ -3106,18 +2230,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.vel = 6,
 			},
 			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_O,
-				.start_step = 28,
-				.vel = 6,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_O,
-				.start_step = 28,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_O,
 				.start_step = 28,
@@ -3162,12 +2274,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.start_step = 48,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_OSO,
-				.start_step = 48,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 6,
@@ -3196,18 +2302,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.vel = 6,
 			},
 			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_O,
-				.start_step = 27,
-				.vel = 6,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_O,
-				.start_step = 27,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_O,
 				.start_step = 27,
@@ -3252,12 +2346,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.start_step = 50,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_OSO,
-				.start_step = 50,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 6,
@@ -3286,18 +2374,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.vel = 6,
 			},
 			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_O,
-				.start_step = 28,
-				.vel = 6,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_O,
-				.start_step = 28,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_O,
 				.start_step = 28,
@@ -3342,12 +2418,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.start_step = 48,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_OSO,
-				.start_step = 48,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 6,
@@ -3376,18 +2446,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.vel = 6,
 			},
 			[2] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_OSO,
-				.start_step = 48,
-				.vel = 6,
-			},
-			[3] = {
-				.shape = ES_SOLDIER2_DOWN,
-				.dir = DIR16_OSO,
-				.start_step = 48,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER2_DOWN,
 				.dir = DIR16_OSO,
 				.start_step = 48,
@@ -3432,12 +2490,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.start_step = 50,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_OSO,
-				.start_step = 50,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 6,
@@ -3477,12 +2529,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.start_step = 48,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_OSO,
-				.start_step = 48,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 6,
@@ -3499,30 +2545,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 		.y = -21,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -3549,30 +2571,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.start_step = 0,
 				.vel = 3,
 			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 19,
@@ -3589,30 +2587,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 		.y = -20,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -3639,30 +2613,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.start_step = 0,
 				.vel = 3,
 			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 23,
@@ -3679,30 +2629,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 		.y = -20,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -3729,30 +2655,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.start_step = 0,
 				.vel = 3,
 			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 22,
@@ -3774,30 +2676,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.start_step = 0,
 				.vel = 3,
 			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 22,
@@ -3814,30 +2692,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 		.y = -21,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -3876,18 +2730,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.start_step = 26,
 				.vel = 6,
 			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_O,
-				.start_step = 26,
-				.vel = 6,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_O,
-				.start_step = 26,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 15,
@@ -3916,18 +2758,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.vel = 6,
 			},
 			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 26,
-				.vel = 6,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 26,
-				.vel = 6,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_W,
 				.start_step = 26,
@@ -3966,18 +2796,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.start_step = 26,
 				.vel = 6,
 			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_O,
-				.start_step = 26,
-				.vel = 6,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_O,
-				.start_step = 26,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 15,
@@ -4011,18 +2829,6 @@ static const struct enemy_spawn SPAWN_ENTRY(5)[] = {
 				.start_step = 26,
 				.vel = 6,
 			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 26,
-				.vel = 6,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_W,
-				.start_step = 26,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 15,
@@ -4042,30 +2848,6 @@ static const struct enemy_spawn SPAWN_ENTRY(6)[] = {
 		.y = -21,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -4092,30 +2874,6 @@ static const struct enemy_spawn SPAWN_ENTRY(6)[] = {
 				.start_step = 0,
 				.vel = 3,
 			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 21,
@@ -4132,30 +2890,6 @@ static const struct enemy_spawn SPAWN_ENTRY(6)[] = {
 		.y = -21,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -4182,30 +2916,6 @@ static const struct enemy_spawn SPAWN_ENTRY(6)[] = {
 				.start_step = 0,
 				.vel = 3,
 			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 21,
@@ -4222,30 +2932,6 @@ static const struct enemy_spawn SPAWN_ENTRY(6)[] = {
 		.y = -21,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -4272,30 +2958,6 @@ static const struct enemy_spawn SPAWN_ENTRY(6)[] = {
 				.start_step = 0,
 				.vel = 3,
 			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 21,
@@ -4312,30 +2974,6 @@ static const struct enemy_spawn SPAWN_ENTRY(6)[] = {
 		.y = -21,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
 				.shape = ES_SOLDIER1_DOWN,
 				.dir = DIR16_S,
 				.start_step = 0,
@@ -4362,30 +3000,6 @@ static const struct enemy_spawn SPAWN_ENTRY(6)[] = {
 				.start_step = 0,
 				.vel = 3,
 			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 21,
@@ -4407,30 +3021,6 @@ static const struct enemy_spawn SPAWN_ENTRY(6)[] = {
 				.start_step = 0,
 				.vel = 3,
 			},
-			[1] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[2] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[3] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
-			[4] = {
-				.shape = ES_SOLDIER1_DOWN,
-				.dir = DIR16_S,
-				.start_step = 0,
-				.vel = 3,
-			},
 		},
 		.shots = {
 			[0] = 21,
@@ -4444,49 +3034,25 @@ static const struct enemy_spawn SPAWN_ENTRY(6)[] = {
 
 static const struct enemy_spawn SPAWN_ENTRY(7)[] = {
 	[0] = {
-                .scroll_line = 9,
-                .weapon = EW_GUN,
-                .x = -14,
-                .y = 95,
-                .route = {
-                        [0] = {
-                                .shape = ES_SOLDIER1_RIGHT,
-                                .dir = DIR16_O,
-                                .start_step = 0,
-                                .vel = 6,
-                        },
-                        [1] = {
-                                .shape = ES_SOLDIER1_RIGHT,
-                                .dir = DIR16_O,
-                                .start_step = 0,
-                                .vel = 6,
-                        },
-                        [2] = {
-                                .shape = ES_SOLDIER1_RIGHT,
-                                .dir = DIR16_O,
-                                .start_step = 0,
-                                .vel = 6,
-                        },
-                        [3] = {
-                                .shape = ES_SOLDIER1_RIGHT,
-                                .dir = DIR16_O,
-                                .start_step = 0,
-                                .vel = 6,
-                        },
-                        [4] = {
-                                .shape = ES_SOLDIER1_RIGHT,
-                                .dir = DIR16_O,
-                                .start_step = 0,
-                                .vel = 6,
-                        },
-                },
-                .shots = {
-                        [0] = 19,
-                        [1] = 30,
-                        [2] = 41,
-                        [3] = 52,
-                        [4] = 0,
-                },
+		.scroll_line = 9,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 95,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 19,
+			[1] = 30,
+			[2] = 41,
+			[3] = 52,
+			[4] = 0,
+		},
 	},
 	[1] = {
 		.scroll_line = 18,
@@ -4551,24 +3117,6 @@ static const struct enemy_spawn SPAWN_ENTRY(7)[] = {
 				.start_step = 10,
 				.vel = 6,
 			},
-			[2] = {
-				.shape = ES_SOLDIER2_RIGHT,
-				.dir = DIR16_OSO,
-				.start_step = 10,
-				.vel = 6,
-			},
-			[3] = {
-				.shape = ES_SOLDIER2_RIGHT,
-				.dir = DIR16_OSO,
-				.start_step = 10,
-				.vel = 6,
-			},
-			[4] = {
-				.shape = ES_SOLDIER2_RIGHT,
-				.dir = DIR16_OSO,
-				.start_step = 10,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 19,
@@ -4608,12 +3156,6 @@ static const struct enemy_spawn SPAWN_ENTRY(7)[] = {
 				.start_step = 49,
 				.vel = 6,
 			},
-			[4] = {
-				.shape = ES_SOLDIER1_RIGHT,
-				.dir = DIR16_OSO,
-				.start_step = 49,
-				.vel = 6,
-			},
 		},
 		.shots = {
 			[0] = 18,
@@ -4630,30 +3172,6 @@ static const struct enemy_spawn SPAWN_ENTRY(7)[] = {
 		.y = 16,
 		.route = {
 			[0] = {
-				.shape = ES_SOLDIER2_RIGHT,
-				.dir = DIR16_OSO,
-				.start_step = 0,
-				.vel = 9,
-			},
-			[1] = {
-				.shape = ES_SOLDIER2_RIGHT,
-				.dir = DIR16_OSO,
-				.start_step = 0,
-				.vel = 9,
-			},
-			[2] = {
-				.shape = ES_SOLDIER2_RIGHT,
-				.dir = DIR16_OSO,
-				.start_step = 0,
-				.vel = 9,
-			},
-			[3] = {
-				.shape = ES_SOLDIER2_RIGHT,
-				.dir = DIR16_OSO,
-				.start_step = 0,
-				.vel = 9,
-			},
-			[4] = {
 				.shape = ES_SOLDIER2_RIGHT,
 				.dir = DIR16_OSO,
 				.start_step = 0,
@@ -4738,7 +3256,7 @@ static const struct enemy_spawn SPAWN_ENTRY(7)[] = {
 
 const struct enemy_spawn_screen SPAWN_MAP[NUM_SCREENS] = {
 	[7] = {
-		.num_spawns = 5,
+		.num_spawns = 6,
 		.spawns = SPAWN_ENTRY(7),
 	},
 	[6] = {
