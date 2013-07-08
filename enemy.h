@@ -52,8 +52,8 @@ struct enemy_route {
 	enum enemy_shape shape;
 };
 
-#define ENEMY_MAX_ROUTE 5
-#define ENEMY_MAX_SHOT 5
+#define ENEMY_MAX_ROUTE 8
+#define ENEMY_MAX_SHOT 8
 
 struct enemy_spawn {
 	uint8_t scroll_line;
