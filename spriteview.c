@@ -321,16 +321,14 @@ static void draw_map() {
 }
 
 #define VSCROLL_TRESHOLD (200-74)
-#define HSCROLLR_TRESHOLD 64
-#define HSCROLLL_TRESHOLD 128
+#define HSCROLLR_TRESHOLD (78+4)
+#define HSCROLLL_TRESHOLD (192-(78+3))
 static int scroll_needed() {
 	struct gameobj *player = &objs[player_ids[0]];
-	if(mapscrolldir == MS_UP && player->pos.y < VSCROLL_TRESHOLD*SCALE) {
-			return 1;
-	} else if((mapscrolldir == MS_RIGHT && player->pos.x - SCREEN_MIN_X > HSCROLLR_TRESHOLD*SCALE) ||
-		  (mapscrolldir == MS_LEFT  && player->pos.x - SCREEN_MIN_X < HSCROLLL_TRESHOLD*SCALE)) {
+	if((mapscrolldir == MS_UP    && player->pos.y - SCREEN_MIN_Y <  VSCROLL_TRESHOLD*SCALE) ||
+	   (mapscrolldir == MS_RIGHT && player->pos.x - SCREEN_MIN_X > HSCROLLR_TRESHOLD*SCALE) ||
+	   (mapscrolldir == MS_LEFT  && player->pos.x - SCREEN_MIN_X < HSCROLLL_TRESHOLD*SCALE))
 		return 1;
-	}
 	return 0;
 }
 
