@@ -3165,6 +3165,7 @@ static const struct enemy_spawn SPAWN_ENTRY(7)[] = {
 			[4] = 0,
 		},
 	},
+	/* first enemy with vel 9 */
 	[4] = {
 		.scroll_line = 84,
 		.weapon = EW_GUN,
@@ -3186,6 +3187,7 @@ static const struct enemy_spawn SPAWN_ENTRY(7)[] = {
 			[4] = 0,
 		},
 	},
+	/* first enemy with more than 5 routes */
 	[5] = {
 		.scroll_line = 105,
 		.weapon = EW_GUN,
@@ -3252,11 +3254,546 @@ static const struct enemy_spawn SPAWN_ENTRY(7)[] = {
 			[7] = 0,
 		},
 	},
+	/* first "enemy object" */
+	[6] = {
+		.scroll_line = 124,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 144,
+		.route = {
+			[0] = {
+				.shape = ES_MINE_CROSS,
+				.dir = DIR16_N,
+				.start_step = 0,
+				.vel = 0,
+			},
+		},
+	},
+	/* first enemy changing velocity between routes */
+	[7] = {
+		.scroll_line = 126,
+		.weapon = EW_GRENADE,
+		.x = 83,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 9,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 11,
+				.vel = 3,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_S,
+				.start_step = 22,
+				.vel = 3,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_N,
+				.start_step = 32,
+				.vel = 9,
+			},
+			[4] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 35,
+				.vel = 3,
+			},
+			[5] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_N,
+				.start_step = 45,
+				.vel = 9,
+			},
+		},
+		.shots = {
+			[0] = 10,
+			[1] = 22,
+			[2] = 32,
+			[3] = 35,
+			[4] = 45,
+			[5] = 0,
+			[6] = 0,
+			[7] = 0,
+		},
+	},
+	[8] = {
+		.scroll_line = 143,
+		.weapon = EW_GRENADE,
+		.x = -14,
+		.y = 16,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SO,
+				.start_step = 24,
+				.vel = 9,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 38,
+				.vel = 9,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 61,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 14,
+			[1] = 22,
+			[2] = 38,
+			[3] = 59,
+		},
+	},
+	[9] = {
+		.scroll_line = 164,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 48,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 0,
+				.vel = 8, /* yes, no typo */
+			},
+		},
+		.shots = {
+			[0] = 20,
+			[1] = 32,
+			[2] = 42,
+			[3] = 0,
+			[4] = 0,
+			[5] = 0,
+			[6] = 0,
+			[7] = 0,
+		},
+	},
+	[10] = {
+		.scroll_line = 174,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 61,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_OSO,
+				.start_step = 0,
+				.vel = 9,
+			},
+		},
+		.shots = {
+			[0] = 13,
+			[1] = 22,
+		},
+	},
+	[11] = {
+		.scroll_line = 178,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 80,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_OSO,
+				.start_step = 0,
+				.vel = 9,
+			},
+		},
+		.shots = {
+			[0] = 13,
+			[1] = 22,
+		},
+	},
+	[12] = {
+		.scroll_line = 186,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 20,
+			[1] = 30,
+			[2] = 40,
+			[3] = 50,
+		},
+	},
+	[13] = {
+		.scroll_line = 186,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 112,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 20,
+			[1] = 30,
+			[2] = 40,
+			[3] = 50,
+		},
+	},
+};
+
+static const struct enemy_spawn SPAWN_ENTRY(8)[] = {
+	[0] = {
+		.scroll_line = 22,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 180,
+		.route = {
+			[0] = {
+				.shape = ES_GUNTURRET_FIXED_NORTH,
+				.dir = DIR16_N,
+				.start_step = 0,
+				.vel = 0,
+			},
+		},
+	},
+	[1] = {
+		.scroll_line = 61,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 90,
+		.route = {
+			[0] = {
+				.shape = ES_FLAMETURRET,
+				.dir = DIR16_N,
+				.start_step = 0,
+				.vel = 0,
+			},
+		},
+	},
+	[2] = {
+		.scroll_line = 101,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 180,
+		.route = {
+			[0] = {
+				.shape = ES_GUNTURRET_FIXED_NORTH,
+				.dir = DIR16_N,
+				.start_step = 0,
+				.vel = 0,
+			},
+		},
+	},
+	[3] = {
+		.scroll_line = 104,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 16,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 20,
+			[1] = 30,
+			[2] = 40,
+			[3] = 50,
+		},
+	},
+	[4] = {
+		.scroll_line = 104,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 112,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 20,
+			[1] = 30,
+			[2] = 40,
+			[3] = 50,
+		},
+	},
+	[5] = { /* the hawk */
+		.scroll_line = 114,
+		.weapon = EW_GRENADE,
+		.x = -15,
+		.y = 32,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 26,
+				.vel = 12,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SO,
+				.start_step = 29,
+				.vel = 12,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 35,
+				.vel = 12,
+			},
+			[4] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 53,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 14,
+			[1] = 24,
+			[2] = 35,
+		},
+	},
+	[6] = {
+		.scroll_line = 152,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 79,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 0,
+				.vel = 7,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 33,
+			[2] = 45,
+		},
+	},
+	[7] = {
+		.scroll_line = 158,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 64,
+		.route = {
+			[0] = {
+				.shape = ES_MINE_CROSS,
+				.dir = DIR16_N,
+				.start_step = 0,
+				.vel = 0,
+			},
+		},
+	},
+	[8] = {
+		.scroll_line = 181,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 112,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 0,
+				.vel = 7,
+			},
+		},
+		.shots = {
+			[0] = 23,
+			[1] = 34,
+		},
+	},
+};
+
+static const struct enemy_spawn SPAWN_ENTRY(9)[] = {
+	[0] = {
+		.scroll_line = 25,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 112,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 3,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 28,
+				.vel = 3,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 39,
+				.vel = 3,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 48,
+				.vel = 3,
+			},
+			[4] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 59,
+				.vel = 3,
+			},
+			[5] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 70,
+				.vel = 3,
+			},
+			[6] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 79,
+				.vel = 3,
+			},
+			[7] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 90,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 28,
+			[1] = 39,
+			[2] = 48,
+			[3] = 59,
+			[4] = 70,
+			[5] = 79,
+			[6] = 90,
+			[7] = 0,
+		},
+	},
+	[1] = {
+		.scroll_line = 59,
+		.weapon = EW_GRENADE,
+		.x = -14,
+		.y = 144,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_ONO,
+				.start_step = 23,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 43,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SO,
+				.start_step = 54,
+				.vel = 6,
+			},
+			[4] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 72,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 23,
+			[1] = 43,
+			[2] = 52,
+			[3] = 65,
+		},
+	},
+	/* this enemy throws his first grenade exactly 1 pixel past the mine
+	 * in his path, so it doesnt explode */
+	[2] = {
+		.scroll_line = 60,
+		.weapon = EW_GRENADE,
+		.x = -14,
+		.y = 64,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SO,
+				.start_step = 25,
+				.vel = 12,
+			},
+		},
+		.shots = {
+			[0] = 14,
+			[1] = 22,
+			[2] = 38,
+		},
+	},
 };
 
 const struct enemy_spawn_screen SPAWN_MAP[NUM_SCREENS] = {
+	[9] = {
+		.num_spawns = 3,
+		.spawns = SPAWN_ENTRY(9),
+	},
+	[8] = {
+		.num_spawns = 9,
+		.spawns = SPAWN_ENTRY(8),
+	},
 	[7] = {
-		.num_spawns = 6,
+		.num_spawns = 14,
 		.spawns = SPAWN_ENTRY(7),
 	},
 	[6] = {
