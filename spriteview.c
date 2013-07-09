@@ -804,10 +804,10 @@ static void enemy_fire_bullet(int objid) {
 	vec2f vel = get_vel_from_direction(dir, 1.75);
 	int id;
 	if(go->objspecific.enemy.spawn->weapon == EW_GUN) {
-		id = init_bullet(&from, &vel, 40);
+		id = init_bullet(&from, &vel, 42);
 		if(id != -1) add_ebullet(id);
 	} else {
-		id = init_grenade(&from, &vel, 40);
+		id = init_grenade(&from, &vel, 42);
 		if(id != -1) add_grenade(id);
 	}
 }
