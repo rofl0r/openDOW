@@ -928,8 +928,15 @@ static enum animation_id get_die_anim(unsigned id) {
 			return ANIM_ENEMY_BOMBER_DIE;
 		case OBJ_ENEMY_SHOOTER:
 			return ANIM_ENEMY_GUNNER_DIE;
+		case OBJ_BUNKER1: case OBJ_BUNKER2: case OBJ_BUNKER3:
+		case OBJ_BUNKER4: case OBJ_BUNKER5:
+			return ANIM_BUNKER_DESTROYED;
+		case OBJ_GUNTURRET_MOVABLE_MACHINE:
+			return ANIM_GUNTURRET_MOVABLE_MACHINE_DESTROYED;
+		case OBJ_GUNTURRET_MOVABLE_MAN:
+			return ANIM_GUNTURRET_MOVABLE_MAN_DESTROYED;
 		default:
-			abort();
+			return ANIM_INVALID;
 	}
 }
 
