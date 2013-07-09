@@ -95,6 +95,7 @@ static sblist go_flames;
 static sblist go_rockets;
 static sblist go_grenades;
 static sblist go_vehicles;
+static sblist go_mines;
 static void add_pbullet(uint8_t bullet_id) {
 	sblist_add(&go_player_bullets, &bullet_id);
 }
@@ -124,6 +125,9 @@ static void add_rocket(uint8_t id) {
 }
 static void add_vehicle(uint8_t id) {
 	sblist_add(&go_vehicles, &id);
+}
+static void add_mine(uint8_t id) {
+	sblist_add(&go_mines, &id);
 }
 static void golist_remove(sblist *l, uint8_t objid) {
 	size_t i;
@@ -703,6 +707,9 @@ static int init_enemy(const struct enemy_spawn *spawn) {
 	objs[id].objspecific.enemy.curr_step = 0;
 	objs[id].objspecific.enemy.spawn = spawn;
 	switch(objid) {
+		case OBJ_MINE_CROSSED: case OBJ_MINE_FLAT:
+			add_mine(id);
+			break;
 		case OBJ_JEEP: case OBJ_TRANSPORTER:
 		case OBJ_TANK_BIG: case OBJ_TANK_SMALL:
 			add_vehicle(id);
@@ -891,6 +898,7 @@ static void init_game_objs() {
 	sblist_init(&go_walls, 1, 32);
 	sblist_init(&go_enemies, 1, 32);
 	sblist_init(&go_vehicles, 1, 4);
+	sblist_init(&go_mines, 1, 4);
 	init_player(0);
 	init_crosshair();
 	init_map(current_map);
@@ -1078,6 +1086,12 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 							if(target_list == &go_vehicles) goto next_bullet;
 						}
 						enum animation_id death_anim = bullet_subtybe == BS_FLAME ? ANIM_ENEMY_BURNT : get_die_anim(*target_id);
+						if(death_anim == ANIM_INVALID) {
+							gameobj_free(*target_id);
+							sblist_delete(target_list, lj);
+							lj--;
+							goto next_target;
+						}
 						switch_anim(*target_id, death_anim);
 						target->vel = VEC(0,0);
 						if(target->objtype == OBJ_ENEMY_BOMBER || target->objtype == OBJ_ENEMY_SHOOTER) {
@@ -1095,6 +1109,7 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 					point = vecadd(&point, &velquarter);
 				}
 			}
+			next_target:;
 		}
 		next_bullet:
 		res = 1;
@@ -1175,6 +1190,7 @@ static void game_tick(int force_redraw) {
 	if(hit_bullets(&go_rockets, &go_vehicles)) need_redraw = 1;
 	if(hit_bullets(&go_explosions, &go_enemies)) need_redraw = 1;
 	if(hit_bullets(&go_explosions, &go_vehicles)) need_redraw = 1;
+	if(hit_bullets(&go_explosions, &go_mines)) need_redraw = 1;
 	if(hit_bullets(&go_explosions, &go_players)) need_redraw = 1;
 	if(hit_bullets(&go_enemy_bullets, &go_players)) need_redraw = 1;
 	if(remove_bullets(&go_player_bullets)) need_redraw = 1;
@@ -1250,6 +1266,7 @@ static void game_tick(int force_redraw) {
 	}
 	if(remove_offscreen_objects(&go_enemies)) need_redraw = 1;
 	if(remove_offscreen_objects(&go_vehicles)) need_redraw = 1;
+	if(remove_offscreen_objects(&go_mines)) need_redraw = 1;
 	long ms_used = 0;
 	struct timeval timer;
 	gettimestamp(&timer);
