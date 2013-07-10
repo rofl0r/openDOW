@@ -88,12 +88,14 @@ static vec2f get_vel_from_direction16(enum direction16 dir, float speed);
 static sblist go_player_bullets;
 static sblist go_enemy_bullets;
 static sblist go_explosions;
+static sblist go_enemy_explosions;
 static sblist go_walls;
 static sblist go_enemies;
 static sblist go_players;
 static sblist go_flames;
 static sblist go_rockets;
 static sblist go_grenades;
+static sblist go_enemy_grenades;
 static sblist go_vehicles;
 static sblist go_mines;
 static void add_pbullet(uint8_t bullet_id) {
@@ -111,6 +113,9 @@ static void add_enemy(uint8_t enem_id) {
 static void add_explosion(uint8_t expl_id) {
 	sblist_add(&go_explosions, &expl_id);
 }
+static void add_enemy_explosion(uint8_t expl_id) {
+	sblist_add(&go_enemy_explosions, &expl_id);
+}
 static void add_wall(uint8_t wall_id) {
 	sblist_add(&go_walls, &wall_id);
 }
@@ -119,6 +124,9 @@ static void add_flame(uint8_t id) {
 }
 static void add_grenade(uint8_t id) {
 	sblist_add(&go_grenades, &id);
+}
+static void add_enemy_grenade(uint8_t id) {
+	sblist_add(&go_enemy_grenades, &id);
 }
 static void add_rocket(uint8_t id) {
 	sblist_add(&go_rockets, &id);
@@ -485,7 +493,7 @@ static int init_grenade(vec2f *pos, vec2f *vel, int steps) {
 	return id;
 }
 
-static int init_grenade_explosion(vec2f *pos) {
+static int init_grenade_explosion(vec2f *pos, int from_enemy) {
 	const int ticks_per_anim_frame = 4;
 	const int expl_anim_frames = 11;
 	vec2f grenade_center = get_sprite_center(spritemaps[SI_GRENADE_EXPLOSION]);
@@ -495,7 +503,8 @@ static int init_grenade_explosion(vec2f *pos) {
 	gameobj_init(id, &mypos, &VEC(0,0), SI_GRENADE_EXPLOSION, ANIM_GRENADE_EXPLOSION, OBJ_GRENADE_EXPLOSION);
 	gameobj_init_bulletdata(id, expl_anim_frames*ticks_per_anim_frame -1);
 	audio_play_wave_resource(wavesounds[WS_GRENADE_EXPLOSION]);
-	add_explosion(id);
+	if(!from_enemy) add_explosion(id);
+	else add_enemy_explosion(id);
 	return id;
 }
 
@@ -519,8 +528,8 @@ static int init_rocket_explosion(vec2f *pos) {
 	vec2f cx = vecadd(pos, &VEC(-8*SCALE, -8*SCALE));
 	vec2f dx = vecadd(pos, &VEC(8*SCALE, 8*SCALE));
 	int ret = 0;
-	ret += init_grenade_explosion(&ax) != -1;
-	ret += init_grenade_explosion(&bx) != -1;
+	ret += init_grenade_explosion(&ax, 0) != -1;
+	ret += init_grenade_explosion(&bx, 0) != -1;
 	ret += init_big_explosion(&cx) != -1;
 	ret += init_big_explosion(&dx) != -1;
 	return ret;
@@ -808,7 +817,7 @@ static void enemy_fire_bullet(int objid) {
 		if(id != -1) add_ebullet(id);
 	} else {
 		id = init_grenade(&from, &vel, 42);
-		if(id != -1) add_grenade(id);
+		if(id != -1) add_enemy_grenade(id);
 	}
 }
 
@@ -893,7 +902,9 @@ static void init_game_objs() {
 	sblist_init(&go_flames, 1, 32);
 	sblist_init(&go_enemy_bullets, 1, 32);
 	sblist_init(&go_explosions, 1, 16);
+	sblist_init(&go_enemy_explosions, 1, 16);
 	sblist_init(&go_grenades, 1, 16);
+	sblist_init(&go_enemy_grenades, 1, 16);
 	sblist_init(&go_rockets, 1, 8);
 	sblist_init(&go_walls, 1, 32);
 	sblist_init(&go_enemies, 1, 32);
@@ -974,7 +985,7 @@ static int remove_explosives(sblist *list) {
 	sblist_iter_counter2s(list, li, item_id) {
 		struct gameobj *go = &objs[*item_id];
 		if(go->objspecific.bullet.step_curr >= go->objspecific.bullet.step_max) {
-			if(go->objtype == OBJ_GRENADE) init_grenade_explosion(&go->pos);
+			if(go->objtype == OBJ_GRENADE) init_grenade_explosion(&go->pos, list == &go_enemy_grenades);
 			else init_rocket_explosion(&go->pos);
 			gameobj_free(*item_id);
 			sblist_delete(list, li);
@@ -1192,12 +1203,15 @@ static void game_tick(int force_redraw) {
 	if(hit_bullets(&go_explosions, &go_vehicles)) need_redraw = 1;
 	if(hit_bullets(&go_explosions, &go_mines)) need_redraw = 1;
 	if(hit_bullets(&go_explosions, &go_players)) need_redraw = 1;
+	if(hit_bullets(&go_enemy_explosions, &go_players)) need_redraw = 1;
 	if(hit_bullets(&go_enemy_bullets, &go_players)) need_redraw = 1;
 	if(remove_bullets(&go_player_bullets)) need_redraw = 1;
 	if(remove_bullets(&go_flames)) need_redraw = 1;
 	if(remove_bullets(&go_explosions)) need_redraw = 1;
+	if(remove_bullets(&go_enemy_explosions)) need_redraw = 1;
 	if(remove_bullets(&go_enemy_bullets)) need_redraw = 1;
 	if(remove_explosives(&go_grenades)) need_redraw = 1;
+	if(remove_explosives(&go_enemy_grenades)) need_redraw = 1;
 	if(remove_explosives(&go_rockets)) need_redraw = 1;
 	if(tickcounter % 2 == 0 && scroll_map()) need_redraw = 1;
 	
