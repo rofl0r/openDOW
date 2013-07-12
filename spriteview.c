@@ -333,7 +333,7 @@ static void draw_map() {
 }
 
 #define VSCROLL_TRESHOLD (200-74)
-#define HSCROLLR_TRESHOLD (78+4)
+#define HSCROLLR_TRESHOLD (54-6)
 #define HSCROLLL_TRESHOLD (192-(78+3))
 static int scroll_needed() {
 	struct gameobj *player = &objs[player_ids[0]];
