@@ -400,6 +400,7 @@ static int scroll_map() {
 						mapscrolldir = MS_LEFT;
 					} else {
 						mapscrolldir = MS_RIGHT;
+						next_screen();
 					}
 					scroll_step = 0;
 				} else {
