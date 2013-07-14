@@ -374,7 +374,7 @@ static void handle_spawns(unsigned scrollstep) {
 	if(!spawn_map[map_spawn_screen_index].spawns) goto done;
 	for(i = 0; i < scrollstep; i++) {
 		while(map_spawn_current < spawn_map[map_spawn_screen_index].num_spawns &&
-		      map_spawn_line+i == spawn_map[map_spawn_screen_index].spawns[map_spawn_current].scroll_line) {
+		      map_spawn_line+i >= spawn_map[map_spawn_screen_index].spawns[map_spawn_current].scroll_line) {
 			init_enemy(&spawn_map[map_spawn_screen_index].spawns[map_spawn_current]);
 			map_spawn_current++;
 		}
