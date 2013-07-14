@@ -254,7 +254,6 @@ void audio_play_wave_resource(const WAVE_HEADER_COMPLETE* wave) {
 		abort();
 	}
 	ByteArray_set_endian(mine, BAE_LITTLE);
-	/* assuming 16bit, 44khz stereo wav for the beginning. */
 	playa.wavhdr = *wave;
 	
 	playa.play_waveslot = playa.free_waveslot;
