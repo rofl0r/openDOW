@@ -1284,6 +1284,7 @@ static void game_tick(int force_redraw) {
 	if(remove_bullets(&go_explosions)) need_redraw = 1;
 	if(remove_bullets(&go_enemy_explosions)) need_redraw = 1;
 	if(remove_bullets(&go_enemy_bullets)) need_redraw = 1;
+	if(remove_bullets(&go_muzzleflash)) need_redraw = 1;
 	if(remove_explosives(&go_grenades)) need_redraw = 1;
 	if(remove_explosives(&go_enemy_grenades)) need_redraw = 1;
 	if(remove_explosives(&go_rockets)) need_redraw = 1;
@@ -1295,14 +1296,7 @@ static void game_tick(int force_redraw) {
 			struct gameobj *go = &objs[i];
 			obj_visited++;
 			if(go->anim_curr == ANIM_STEP_INIT) need_redraw = 1;
-			if(go->objtype == OBJ_FLASH) {
-				if(go->objspecific.bullet.step_curr >= go->objspecific.bullet.step_max) {
-					gameobj_free(i);
-					golist_remove(&go_muzzleflash, i);
-					need_redraw = 1;
-					continue;
-				} else go->objspecific.bullet.step_curr++;
-			} else if (go->objtype == OBJ_ENEMY_SHOOTER || go->objtype == OBJ_ENEMY_BOMBER) {
+			if(go->objtype == OBJ_ENEMY_SHOOTER || go->objtype == OBJ_ENEMY_BOMBER) {
 				if (tickcounter % 4 == go->anim_frame) {
 					const struct enemy_route *rc = get_enemy_current_route(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
 					if(rc->vel) {
