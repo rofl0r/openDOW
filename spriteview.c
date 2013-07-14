@@ -228,19 +228,19 @@ static mapscreen_index screen_to_mapscreen(int *x, int *y) {
 	return map->screen_map[mapsquare.y + yscr][mapsquare.x + xscr];
 }
 
-static int is_wall(vec2f *pos) {
+static enum walltype is_wall(vec2f *pos) {
 	int x = pos->x;
 	int y = pos->y;
 	mapscreen_index scr_idx = screen_to_mapscreen(&x, &y);
 	/* can happen when a bullet goes partially off-screen */
-	if(scr_idx == MAPSCREEN_BLOCKED) return 0;
+	if(scr_idx == MAPSCREEN_BLOCKED) return WT_NONE;
 	uint8_t spriteno = map_scr[scr_idx].fg.fg[y/16][x/16];
-	if(spriteno && walls[map->maptype][spriteno]) return 1;
+	if(spriteno && walls[map->maptype][spriteno]) return walls[map->maptype][spriteno];
 	scr_idx = get_bonus_layer_index(scr_idx);
-	if(scr_idx == MAPSCREEN_BLOCKED) return 0;
+	if(scr_idx == MAPSCREEN_BLOCKED) return WT_NONE;
 	spriteno = map_bonus_scr[scr_idx].fg[y/16][x/16];
-	if(spriteno && walls[map->maptype][spriteno]) return 1;
-	return 0;
+	if(spriteno && walls[map->maptype][spriteno]) return walls[map->maptype][spriteno];
+	return WT_NONE;
 }
 
 static void draw_map() {
@@ -1056,7 +1056,7 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 		
 		vec2f bullet_center = get_gameobj_center(*bullet_id);
 		if(bullet_list == &go_player_bullets || bullet_list == &go_flames) {
-			if(is_wall(&bullet_center)) goto remove_bullet;
+			if(is_wall(&bullet_center) == WT_SOLID) goto remove_bullet;
 		}
 		
 		const float bullet_radius[] = { [BS_BULLET] = 1.f, [BS_FLAME] = 6.f, 
