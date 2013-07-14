@@ -13170,6 +13170,20 @@ static const struct enemy_spawn SPAWN_ENTRY(29)[] = {
 		},
 	},
 	[8] = {
+		.scroll_line = 169,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 64,
+		.route = {
+			[0] = {
+				.shape = ES_MINE_FLAT,
+				.dir = DIR16_N,
+				.start_step = 0,
+				.vel = 0,
+			},
+		},
+	},
+	[9] = {
 		.scroll_line = 171,
 		.weapon = EW_GUN,
 		.x = -14,
@@ -13188,20 +13202,6 @@ static const struct enemy_spawn SPAWN_ENTRY(29)[] = {
 			[2] = 40,
 			[3] = 50,
 			[4] = 60,
-		},
-	},
-	[9] = {
-		.scroll_line = 169,
-		.weapon = EW_GUN,
-		.x = -15,
-		.y = 64,
-		.route = {
-			[0] = {
-				.shape = ES_MINE_FLAT,
-				.dir = DIR16_N,
-				.start_step = 0,
-				.vel = 0,
-			},
 		},
 	},
 	[10] = {
