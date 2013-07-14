@@ -1314,21 +1314,7 @@ static void game_tick(int force_redraw) {
 				fire_bullet(player_no);
 		}
 	}
-	/* 1) remove bullets/rockets hitting walls (and spawn expl in the latter case)- TODO
-	 * 2) check player bullets against enemies, remove bullets and enemies
-	 * 3) check enemy bullets against players, remove bullets and players
-	 * 4) bullets: move* 
-	 * 5) check grenades, remove and spawn exposions if necessary
-	 * 6) enemies: move, kill player on hit
-	 * 7) player: move
-	 */
-	/*
-	// remove dead enemies
-	sblist_iter_counter2(&go_enemies, li, &item_id) {
-		if(objs[item_id].anim_curr == animations[objs[item_id].animid].last &&
-		   (objs[item_id].animid == ANIM_ENEMY_BOMBER_DIE || objs[item_id].animid == ANIM_ENEMY_GUNNER_DIE))
-	}
-	*/
+
 	if(advance_animations()) need_redraw = 1;
 	if(hit_bullets(&go_player_bullets, &go_enemies)) need_redraw = 1;
 	if(hit_bullets(&go_player_bullets, &go_vehicles)) need_redraw = 1;
