@@ -23,6 +23,7 @@
 #include "mapsprites.h"
 #include "walls.h"
 #include "music.h"
+#include "spawnmaps.h"
 
 #include <SDL/SDL.h>
 
@@ -206,8 +207,6 @@ enum map_scrolldir mapscrolldir;
 unsigned map_spawn_screen_index;
 unsigned map_spawn_line;
 unsigned map_spawn_current;
-#include "maps/spawn_australia.c"
-const struct enemy_spawn_screen *spawn_map = spawn_screens_australia;
 
 static void init_map(enum map_index mapindex) {
 	map = maps[mapindex];
@@ -386,6 +385,7 @@ static int init_enemy(const struct enemy_spawn *spawn);
 static void handle_spawns(unsigned scrollstep) {
 	assert(scrollstep <= 192);
 	unsigned i;
+	const struct enemy_spawn_screen *spawn_map = spawn_maps[current_map];
 	if(!spawn_map[map_spawn_screen_index].spawns) goto done;
 	for(i = 0; i < scrollstep; i++) {
 		while(map_spawn_current < spawn_map[map_spawn_screen_index].num_spawns &&
