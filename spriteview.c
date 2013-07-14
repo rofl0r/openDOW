@@ -1246,6 +1246,51 @@ static void process_soldiers(void) {
 	}
 }
 
+static int move_gameobjs(void) {
+	int res = 0;
+	size_t i, obj_visited;
+	for(i = 0, obj_visited = 0; obj_visited < obj_count && i < OBJ_MAX; i++) {
+		if(obj_slot_used[i]) {
+			struct gameobj *go = &objs[i];
+			obj_visited++;
+			if(go->anim_curr == ANIM_STEP_INIT) res = 1;
+			if(go->vel.x != 0 || go->vel.y != 0) {
+				vec2f oldpos = go->pos;
+				go->pos.x += go->vel.x;
+				go->pos.y += go->vel.y;
+				
+				if(go->objtype == OBJ_P1 || go->objtype == OBJ_P2) {
+					if(go->pos.y < SCREEN_MIN_Y) go->pos.y = SCREEN_MIN_Y;
+					else if(go->pos.y+25*SCALE > SCREEN_MAX_Y) go->pos.y = SCREEN_MAX_Y-25*SCALE;
+					if(go->pos.x < SCREEN_MIN_X) go->pos.x = SCREEN_MIN_X;
+					else if(go->pos.x+32*SCALE > SCREEN_MAX_X) go->pos.x = SCREEN_MAX_X-32*SCALE;
+					vec2f center = get_sprite_center(spritemaps[go->spritemap_id]);
+					center = vecadd(&center, &go->pos);
+					if(is_wall(&center)) {
+						go->pos = oldpos;
+						go->vel = VEC(0,0);
+					}
+				}
+				
+				res = 1;
+			}
+			if((go->objtype == OBJ_ENEMY_BOMBER || go->objtype == OBJ_ENEMY_SHOOTER) &&
+			   go->anim_curr == animations[go->animid].last &&
+					  (go->animid == ANIM_ENEMY_BOMBER_DIE || 
+					   go->animid == ANIM_ENEMY_GUNNER_DIE || 
+					   go->animid == ANIM_ENEMY_BURNT)) {
+						dprintf(2, "removed enemy from %.2f,%.2f\n", go->pos.x, go->pos.y);
+						gameobj_free(i);
+						golist_remove(&go_enemies, i);
+						res = 1;
+						continue;
+				
+			}
+		}
+	}
+	return res;
+}
+
 static void game_update_caption(void) {
 	char buf [128];
 	snprintf(buf, 128, "objs: %d, map x,y %d/%d, index %d, xoff %d, yoff %d, spawnscreen %d, line %d", (int) obj_count, 
@@ -1257,9 +1302,7 @@ static void(*update_caption)(void) = game_update_caption;
 
 static void game_tick(int force_redraw) {
 	int need_redraw = force_redraw;
-	size_t obj_visited;
 	const int fps = 64;
-	size_t i;
 	if(mousebutton_down[MB_LEFT] > 1) {
 		const int player_no = 0;
 		const struct weapon *pw = get_active_weapon(player_no);
@@ -1312,54 +1355,14 @@ static void game_tick(int force_redraw) {
 	if(tickcounter % 2 == 0 && scroll_map()) need_redraw = 1;
 	
 	process_soldiers();
+	if(move_gameobjs()) need_redraw = 1;
 	
-	size_t obj_count_copy = obj_count;
-	for(i = 0, obj_visited = 0; obj_visited < obj_count_copy && i < OBJ_MAX; i++) {
-		if(obj_slot_used[i]) {
-			struct gameobj *go = &objs[i];
-			obj_visited++;
-			if(go->anim_curr == ANIM_STEP_INIT) need_redraw = 1;
-			int ismoving = 0;
-			if(go->vel.x != 0 || go->vel.y != 0) {
-				ismoving = 1;
-				vec2f oldpos = go->pos;
-				go->pos.x += go->vel.x;
-				go->pos.y += go->vel.y;
-				
-				if(go->objtype == OBJ_P1 || go->objtype == OBJ_P2) {
-					if(go->pos.y < SCREEN_MIN_Y) go->pos.y = SCREEN_MIN_Y;
-					else if(go->pos.y+25*SCALE > SCREEN_MAX_Y) go->pos.y = SCREEN_MAX_Y-25*SCALE;
-					if(go->pos.x < SCREEN_MIN_X) go->pos.x = SCREEN_MIN_X;
-					else if(go->pos.x+32*SCALE > SCREEN_MAX_X) go->pos.x = SCREEN_MAX_X-32*SCALE;
-					vec2f center = get_sprite_center(spritemaps[go->spritemap_id]);
-					center = vecadd(&center, &go->pos);
-					if(is_wall(&center)) {
-						go->pos = oldpos;
-						go->vel = VEC(0,0);
-					}
-				}
-				
-				need_redraw = 1;
-			}
-			if((go->objtype == OBJ_ENEMY_BOMBER || go->objtype == OBJ_ENEMY_SHOOTER) &&
-			   go->anim_curr == animations[go->animid].last &&
-					  (go->animid == ANIM_ENEMY_BOMBER_DIE || 
-					   go->animid == ANIM_ENEMY_GUNNER_DIE || 
-					   go->animid == ANIM_ENEMY_BURNT)) {
-						dprintf(2, "removed enemy from %.2f,%.2f\n", go->pos.x, go->pos.y);
-						gameobj_free(i);
-						golist_remove(&go_enemies, i);
-						need_redraw = 1;
-						continue;
-				
-			}
-		}
-	}
 	if(remove_offscreen_objects(&go_enemies)) need_redraw = 1;
 	if(remove_offscreen_objects(&go_vehicles)) need_redraw = 1;
 	if(remove_offscreen_objects(&go_mines)) need_redraw = 1;
 	if(remove_offscreen_objects(&go_turrets)) need_redraw = 1;
 	if(remove_offscreen_objects(&go_bunkers)) need_redraw = 1;
+	
 	long ms_used = 0;
 	struct timeval timer;
 	gettimestamp(&timer);
