@@ -16811,7 +16811,7 @@ static const struct enemy_spawn SPAWN_ENTRY(35)[] = {
 
 const struct enemy_spawn_screen SPAWN_MAP[NUM_SCREENS] = {
 	[35] = {
-		.num_spawns = 10,
+		.num_spawns = 11,
 		.spawns = SPAWN_ENTRY(35),
 	},
 	[34] = {
