@@ -100,6 +100,7 @@ static sblist go_turrets;
 static sblist go_bunkers;
 static sblist go_boss;
 static sblist go_crosshair;
+static sblist go_muzzleflash;
 static void add_pbullet(uint8_t bullet_id) {
 	sblist_add(&go_player_bullets, &bullet_id);
 }
@@ -147,6 +148,9 @@ static void add_boss(uint8_t id) {
 }
 static void add_crosshair(uint8_t id) {
 	sblist_add(&go_crosshair, &id);
+}
+static void add_muzzleflash(uint8_t id) {
+	sblist_add(&go_muzzleflash, &id);
 }
 static void golist_remove(sblist *l, uint8_t objid) {
 	size_t i;
@@ -850,6 +854,7 @@ static int get_crosshair_id(void) {
 }
 
 static void fire_bullet(int player_no) {
+	int id;
 	const struct weapon *pw = get_active_weapon(player_no);
 	if(player_ammo[player_no][pw->ammo] == 0) return;
 	vec2f from = get_gameobj_center(player_ids[player_no]);
@@ -884,7 +889,8 @@ static void fire_bullet(int player_no) {
 			vec2f ffrom = from;
 			ffrom.x -= flash_start[dir].x * SCALE;
 			ffrom.y -= flash_start[dir].y * SCALE;
-			init_flash(&ffrom, dir);
+			id = init_flash(&ffrom, dir);
+			if(id != -1) add_muzzleflash(id);
 		}
 		vel = velocity(&from, &to);		
 	}
@@ -899,7 +905,6 @@ static void fire_bullet(int player_no) {
 	float deg = atan2(vel.y, vel.x);
 	vel.x = cos(deg) * speed;
 	vel.y = sin(deg) * speed;
-	int id;
 	switch(pw->shot) {
 		case ST_LAUNCHER:
 			id = init_rocket(dir, &from, &vel, steps);
@@ -927,6 +932,7 @@ static void fire_bullet(int player_no) {
 static void init_game_objs() {
 	sblist_init(&go_crosshair, 1, 4);
 	sblist_init(&go_players, 1, 4);
+	sblist_init(&go_muzzleflash, 1, 4);
 	sblist_init(&go_player_bullets, 1, 32);
 	sblist_init(&go_flames, 1, 32);
 	sblist_init(&go_enemy_bullets, 1, 32);
@@ -1258,6 +1264,7 @@ static void game_tick(int force_redraw) {
 			if(go->objtype == OBJ_FLASH) {
 				if(go->objspecific.bullet.step_curr >= go->objspecific.bullet.step_max) {
 					gameobj_free(i);
+					golist_remove(&go_muzzleflash, i);
 					need_redraw = 1;
 					continue;
 				} else go->objspecific.bullet.step_curr++;
