@@ -1225,6 +1225,27 @@ static void draw_gameobjs(void) {
 	draw_golist(&go_muzzleflash);
 }
 
+static void process_soldiers(void) {
+	uint8_t *itemid;
+	sblist_iter(&go_enemies, itemid) {
+		struct gameobj *go = &objs[*itemid];
+		assert(go->objtype == OBJ_ENEMY_SHOOTER || go->objtype == OBJ_ENEMY_BOMBER);
+		if (tickcounter % 4 == go->anim_frame) {
+			const struct enemy_route *rc = get_enemy_current_route(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
+			if(rc->vel) {
+				go->objspecific.enemy.curr_step++;
+				if(enemy_fires(&go->objspecific.enemy)) {
+					enemy_fire_bullet(*itemid);
+				}
+				const struct enemy_route *rn = get_enemy_current_route(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
+				if(rn->shape != rc->shape) switch_enemy_shape(*itemid, rn);
+			}
+		}
+		if(!is_death_anim(go->animid)) go->vel = get_enemy_vel(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
+		else go->vel = VEC(0, 0);
+	}
+}
+
 static void game_update_caption(void) {
 	char buf [128];
 	snprintf(buf, 128, "objs: %d, map x,y %d/%d, index %d, xoff %d, yoff %d, spawnscreen %d, line %d", (int) obj_count, 
@@ -1290,27 +1311,14 @@ static void game_tick(int force_redraw) {
 	if(remove_explosives(&go_rockets)) need_redraw = 1;
 	if(tickcounter % 2 == 0 && scroll_map()) need_redraw = 1;
 	
+	process_soldiers();
+	
 	size_t obj_count_copy = obj_count;
 	for(i = 0, obj_visited = 0; obj_visited < obj_count_copy && i < OBJ_MAX; i++) {
 		if(obj_slot_used[i]) {
 			struct gameobj *go = &objs[i];
 			obj_visited++;
 			if(go->anim_curr == ANIM_STEP_INIT) need_redraw = 1;
-			if(go->objtype == OBJ_ENEMY_SHOOTER || go->objtype == OBJ_ENEMY_BOMBER) {
-				if (tickcounter % 4 == go->anim_frame) {
-					const struct enemy_route *rc = get_enemy_current_route(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
-					if(rc->vel) {
-						go->objspecific.enemy.curr_step++;
-						if(enemy_fires(&go->objspecific.enemy)) {
-							enemy_fire_bullet(i);
-						}
-						const struct enemy_route *rn = get_enemy_current_route(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
-						if(rn->shape != rc->shape) switch_enemy_shape(i, rn);
-					}
-				}
-				if(!is_death_anim(go->animid)) go->vel = get_enemy_vel(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
-				else go->vel = VEC(0, 0);
-			}
 			int ismoving = 0;
 			if(go->vel.x != 0 || go->vel.y != 0) {
 				ismoving = 1;
