@@ -75,7 +75,6 @@ static vec2f get_sprite_center(const struct palpic *p) {
 }
 
 static int player_ids[2];
-static int crosshair_id;
 static enum weapon_id player_weapons[2][WP_MAX];
 static int weapon_count[2];
 static enum weapon_id weapon_active[2]; // index into player_weapons[playerno]
@@ -100,6 +99,7 @@ static sblist go_mines;
 static sblist go_turrets;
 static sblist go_bunkers;
 static sblist go_boss;
+static sblist go_crosshair;
 static void add_pbullet(uint8_t bullet_id) {
 	sblist_add(&go_player_bullets, &bullet_id);
 }
@@ -144,6 +144,9 @@ static void add_bunker(uint8_t id) {
 }
 static void add_boss(uint8_t id) {
 	sblist_add(&go_boss, &id);
+}
+static void add_crosshair(uint8_t id) {
+	sblist_add(&go_crosshair, &id);
 }
 static void golist_remove(sblist *l, uint8_t objid) {
 	size_t i;
@@ -483,7 +486,6 @@ static int init_crosshair() {
 	int id = gameobj_alloc();
 	gameobj_init(id, &VEC(VMODE_W/2, VMODE_H/2), &VEC(0,0), SI_CROSSHAIR, ANIM_CROSSHAIR, OBJ_CROSSHAIR);
 	if(id == -1) return -1;
-	crosshair_id = id;
 	mousepos = &objs[id].pos;
 	return id;
 }
@@ -841,12 +843,18 @@ static void enemy_fire_bullet(int objid) {
 	}
 }
 
+static int get_crosshair_id(void) {
+	assert(sblist_getsize(&go_crosshair));
+	uint8_t *id = sblist_get(&go_crosshair, 0);
+	return *id;
+}
+
 static void fire_bullet(int player_no) {
 	const struct weapon *pw = get_active_weapon(player_no);
 	if(player_ammo[player_no][pw->ammo] == 0) return;
 	vec2f from = get_gameobj_center(player_ids[player_no]);
 	//get_anim_from_vel(0, objs[player].
-	vec2f to = get_gameobj_center(crosshair_id);
+	vec2f to = get_gameobj_center(get_crosshair_id());
 	to.x += 4*SCALE - rand()%8*SCALE;
 	to.y += 4*SCALE - rand()%8*SCALE;
 	vec2f vel = velocity(&from, &to);
@@ -917,6 +925,7 @@ static void fire_bullet(int player_no) {
 }
 
 static void init_game_objs() {
+	sblist_init(&go_crosshair, 1, 4);
 	sblist_init(&go_players, 1, 4);
 	sblist_init(&go_player_bullets, 1, 32);
 	sblist_init(&go_flames, 1, 32);
@@ -933,7 +942,7 @@ static void init_game_objs() {
 	sblist_init(&go_bunkers, 1, 4);
 	sblist_init(&go_boss, 1, 4);
 	init_player(0);
-	init_crosshair();
+	add_crosshair(init_crosshair());
 	init_map(current_map);
 }
 
