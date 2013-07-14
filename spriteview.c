@@ -1191,6 +1191,40 @@ static void switch_enemy_shape(int objid, const struct enemy_route* r) {
 	switch_anim(objid, enemy_animation_lut[r->shape]);
 }
 
+static void draw_golist(sblist *list) {
+	size_t i;
+	uint8_t *itemid;
+	sblist_iter_counter2(list, i, itemid) {
+		assert(obj_slot_used[*itemid]);
+		struct gameobj *o = &objs[*itemid];
+		const prgb *palette = (o->objtype == OBJ_ENEMY_BOMBER || o->objtype == OBJ_ENEMY_SHOOTER) ? map->enemy_palette : 0;
+		blit_sprite(o->pos.x, o->pos.y, &video,
+		            SCALE, spritemaps[o->spritemap_id], 
+		            o->anim_curr == ANIM_STEP_INIT ? get_next_anim_frame(o->animid, o->anim_curr) : o->anim_curr,
+		            palette);
+	}
+}
+
+static void draw_gameobjs(void) {
+	draw_golist(&go_mines);
+	draw_golist(&go_turrets);
+	draw_golist(&go_bunkers);
+	draw_golist(&go_vehicles);
+	draw_golist(&go_enemies);
+	draw_golist(&go_enemy_bullets);
+	draw_golist(&go_boss);
+	draw_golist(&go_rockets);
+	draw_golist(&go_players);
+	draw_golist(&go_player_bullets);
+	draw_golist(&go_enemy_explosions);
+	draw_golist(&go_flames);
+	draw_golist(&go_explosions);
+	draw_golist(&go_grenades);
+	draw_golist(&go_enemy_grenades);
+	draw_golist(&go_crosshair);
+	draw_golist(&go_muzzleflash);
+}
+
 static void game_update_caption(void) {
 	char buf [128];
 	snprintf(buf, 128, "objs: %d, map x,y %d/%d, index %d, xoff %d, yoff %d, spawnscreen %d, line %d", (int) obj_count, 
@@ -1329,15 +1363,7 @@ static void game_tick(int force_redraw) {
 	gettimestamp(&timer);
 	if(need_redraw) {
 		draw_map();
-		for(i = 0, obj_visited = 0; obj_visited < obj_count && i < OBJ_MAX; i++) {
-			if(!obj_slot_used[i]) continue;
-			struct gameobj *o = &objs[i];
-			const prgb *palette = (o->objtype == OBJ_ENEMY_BOMBER || o->objtype == OBJ_ENEMY_SHOOTER) ? map->enemy_palette : 0;
-			blit_sprite(o->pos.x, o->pos.y, &video,
-			            SCALE, spritemaps[o->spritemap_id], 
-			            o->anim_curr == ANIM_STEP_INIT ? get_next_anim_frame(o->animid, o->anim_curr) : o->anim_curr, palette);
-			obj_visited++;
-		}
+		draw_gameobjs();
 		draw_status_bar();
 		video_update_region(SCREEN_MIN_X ,SCREEN_MIN_Y , SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
 	}
