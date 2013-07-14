@@ -12220,7 +12220,4632 @@ static const struct enemy_spawn SPAWN_ENTRY(26)[] = {
 	},
 };
 
+static const struct enemy_spawn SPAWN_ENTRY(27)[] = {
+	[0] = {
+		.scroll_line = 6,
+		.weapon = EW_GRENADE,
+		.x = -14,
+		.y = 128,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_ONO,
+				.start_step = 22,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 40,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SO,
+				.start_step = 49,
+				.vel = 8,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 40,
+			[2] = 48,
+			[3] = 61,
+		},
+	},
+	[1] = {
+		.scroll_line = 14,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 32,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_OSO,
+				.start_step = 0,
+				.vel = 9,
+			},
+		},
+		.shots = {
+			[0] = 14,
+			[1] = 20,
+		},
+	},
+	[2] = {
+		.scroll_line = 29,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 32,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_SO,
+				.start_step = 17,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 32,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_OSO,
+				.start_step = 50,
+				.vel = 7,
+			},
+		},
+		.shots = {
+			[0] = 17,
+			[1] = 32,
+			[2] = 50,
+		},
+	},
+	[3] = {
+		.scroll_line = 68,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 64,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SO,
+				.start_step = 27,
+				.vel = 8,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SW,
+				.start_step = 37,
+				.vel = 8,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 54,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 19,
+			[1] = 25,
+			[2] = 37,
+			[3] = 54,
+		},
+	},
+	[4] = {
+		.scroll_line = 68,
+		.weapon = EW_GRENADE,
+		.x = -15,
+		.y = 96,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 27,
+				.vel = 10,
+			},
+		},
+		.shots = {
+			[0] = 17,
+			[1] = 26,
+			[2] = 42,
+		},
+	},
+	[5] = {
+		.scroll_line = 85,
+		.weapon = EW_GRENADE,
+		.x = -14,
+		.y = 176,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 21,
+			[1] = 32,
+			[2] = 44,
+			[3] = 54,
+		},
+	},
+	[6] = {
+		.scroll_line = 105,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 96,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 3,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 24,
+				.vel = 3,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 32,
+				.vel = 3,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 45,
+				.vel = 3,
+			},
+			[4] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 59,
+				.vel = 3,
+			},
+			[5] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 69,
+				.vel = 3,
+			},
+			[6] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 79,
+				.vel = 3,
+			},
+			[7] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 90,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 24,
+			[1] = 32,
+			[2] = 45,
+			[3] = 59,
+			[4] = 69,
+			[5] = 79,
+			[6] = 90,
+		},
+	},
+	[7] = {
+		.scroll_line = 125,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 0,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 0,
+				.vel = 7,
+			},
+		},
+		.shots = {
+			[0] = 25,
+			[1] = 37,
+			[2] = 47,
+		},
+	},
+	[8] = {
+		.scroll_line = 125,
+		.weapon = EW_GRENADE,
+		.x = 80,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 17,
+				.vel = 3,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_S,
+				.start_step = 26,
+				.vel = 9,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_N,
+				.start_step = 28,
+				.vel = 8,
+			},
+			[4] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 32,
+				.vel = 3,
+			},
+			[5] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_N,
+				.start_step = 43,
+				.vel = 10,
+			},
+		},
+		.shots = {
+			[0] = 16,
+			[1] = 26,
+			[2] = 28,
+			[3] = 29,
+			[4] = 43,
+		},
+	},
+	[9] = {
+		.scroll_line = 144,
+		.weapon = EW_GRENADE,
+		.x = -14,
+		.y = 64,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 24,
+				.vel = 12,
+			},
+		},
+		.shots = {
+			[0] = 16,
+			[1] = 23,
+			[2] = 34,
+		},
+	},
+	[10] = {
+		.scroll_line = 166,
+		.weapon = EW_GRENADE,
+		.x = -15,
+		.y = 112,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_NO,
+				.start_step = 21,
+				.vel = 9,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 33,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SO,
+				.start_step = 44,
+				.vel = 9,
+			},
+			[4] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 57,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 20,
+			[1] = 28,
+			[2] = 33,
+			[3] = 44,
+			[4] = 49,
+			[5] = 55,
+		},
+	},
+	[11] = {
+		.scroll_line = 173,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 112,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_SO,
+				.start_step = 16,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 31,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_OSO,
+				.start_step = 47,
+				.vel = 7,
+			},
+		},
+		.shots = {
+			[0] = 16,
+			[1] = 31,
+			[2] = 47,
+		},
+	},
+	[12] = {
+		.scroll_line = 176,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 72,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 0,
+				.vel = 7,
+			},
+		},
+		.shots = {
+			[0] = 25,
+			[1] = 37,
+			[2] = 47,
+		},
+	},
+};
+
+static const struct enemy_spawn SPAWN_ENTRY(28)[] = {
+	[0] = {
+		.scroll_line = 1,
+		.weapon = EW_GUN,
+		.x = -31,
+		.y = 48,
+		.route = {
+			[0] = {
+				.shape = ES_BUNKER_5,
+				.dir = DIR16_N,
+				.start_step = 0,
+				.vel = 0,
+			},
+		},
+	},
+	[1] = {
+		.scroll_line = 7,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 128,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 3,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 30,
+				.vel = 3,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 38,
+				.vel = 3,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 51,
+				.vel = 3,
+			},
+			[4] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 65,
+				.vel = 3,
+			},
+			[5] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 75,
+				.vel = 3,
+			},
+			[6] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 85,
+				.vel = 3,
+			},
+			[7] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 96,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 30,
+			[1] = 38,
+			[2] = 51,
+			[3] = 65,
+			[4] = 75,
+			[5] = 85,
+			[6] = 96,
+		},
+	},
+	[2] = {
+		.scroll_line = 13,
+		.weapon = EW_GRENADE,
+		.x = -15,
+		.y = 80,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_S,
+				.start_step = 30,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 19,
+			[1] = 28,
+			[2] = 38,
+		},
+	},
+	[3] = {
+		.scroll_line = 31,
+		.weapon = EW_GUN,
+		.x = -31,
+		.y = 120,
+		.route = {
+			[0] = {
+				.shape = ES_BUNKER_5,
+				.dir = DIR16_N,
+				.start_step = 0,
+				.vel = 0,
+			},
+		},
+	},
+	[4] = {
+		/* got burnt */
+		.scroll_line = 44,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 88,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 20,
+			[1] = 30,
+			[2] = 50,
+			[3] = 60,
+		},
+	},
+	[5] = {
+		.scroll_line = 79,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 144,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_OSO,
+				.start_step = 0,
+				.vel = 8,
+			},
+		},
+		.shots = {
+			[0] = 15,
+			[1] = 23,
+		},
+	},
+	[6] = {
+		.scroll_line = 101,
+		.weapon = EW_GUN,
+		.x = -31,
+		.y = 40,
+		.route = {
+			[0] = {
+				.shape = ES_BUNKER_5,
+				.dir = DIR16_N,
+				.start_step = 0,
+				.vel = 0,
+			},
+		},
+	},
+	[7] = {
+		/* got burnt */
+		.scroll_line = 104,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 68,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 20,
+			[1] = 30,
+			[2] = 50,
+			[3] = 60,
+		},
+	},
+	[8] = {
+		/* got burnt */
+		.scroll_line = 104,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 144,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 20,
+			[1] = 30,
+			[2] = 50,
+			[3] = 60,
+		},
+	},
+	[9] = {
+		/* got burnt */
+		.scroll_line = 153,
+		.weapon = EW_GRENADE,
+		.x = -14,
+		.y = 96,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 26,
+			[1] = 43,
+		},
+	},
+	[10] = {
+		.scroll_line = 176,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 144,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_OSO,
+				.start_step = 0,
+				.vel = 9,
+			},
+		},
+		.shots = {
+			[0] = 12,
+			[1] = 22,
+		},
+	},
+};
+
+static const struct enemy_spawn SPAWN_ENTRY(29)[] = {
+	[0] = {
+		/* got burnt */
+		.scroll_line = 2,
+		.weapon = EW_GUN,
+		.x = 16,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 6,
+			},
+		},
+	},
+	[1] = {
+		.scroll_line = 30,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 132,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_ONO,
+				.start_step = 19,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 36,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 49,
+				.vel = 6,
+			},
+			[4] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_ONO,
+				.start_step = 70,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 19,
+			[1] = 35,
+			[2] = 48,
+			[3] = 70,
+		},
+	},
+	[2] = {
+		.scroll_line = 61,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 80,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_OSO,
+				.start_step = 0,
+				.vel = 9,
+			},
+		},
+		.shots = {
+			[0] = 14,
+			[1] = 25,
+		},
+	},
+	[3] = {
+		.scroll_line = 104,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 0,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_SO,
+				.start_step = 17,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 34,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_OSO,
+				.start_step = 48,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 17,
+			[1] = 34,
+			[2] = 48,
+		},
+	},
+	[4] = {
+		.scroll_line = 110,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 96,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_ONO,
+				.start_step = 19,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 36,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 49,
+				.vel = 6,
+			},
+			[4] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_ONO,
+				.start_step = 70,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 19,
+			[1] = 35,
+			[2] = 48,
+			[3] = 70,
+		},
+	},
+	[5] = {
+		.scroll_line = 122,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 80,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SO,
+				.start_step = 27,
+				.vel = 9,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SW,
+				.start_step = 35,
+				.vel = 9,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 50,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 21,
+			[1] = 27,
+			[2] = 36,
+			[3] = 50,
+		},
+	},
+	[6] = {
+		.scroll_line = 139,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 144,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_ONO,
+				.start_step = 19,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 36,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 49,
+				.vel = 6,
+			},
+			[4] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_ONO,
+				.start_step = 70,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 19,
+			[1] = 35,
+			[2] = 48,
+			[3] = 70,
+		},
+	},
+	[7] = {
+		.scroll_line = 143,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 128,
+		.route = {
+			[0] = {
+				.shape = ES_MINE_FLAT,
+				.dir = DIR16_N,
+				.start_step = 0,
+				.vel = 0,
+			},
+		},
+	},
+	[8] = {
+		.scroll_line = 171,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 80,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 20,
+			[1] = 30,
+			[2] = 40,
+			[3] = 50,
+			[4] = 60,
+		},
+	},
+	[9] = {
+		.scroll_line = 169,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 64,
+		.route = {
+			[0] = {
+				.shape = ES_MINE_FLAT,
+				.dir = DIR16_N,
+				.start_step = 0,
+				.vel = 0,
+			},
+		},
+	},
+	[10] = {
+		.scroll_line = 180,
+		.weapon = EW_GRENADE,
+		.x = -14,
+		.y = 154,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 21,
+			[1] = 31,
+			[2] = 41,
+			[3] = 51,
+		},
+	},
+};
+
+static const struct enemy_spawn SPAWN_ENTRY(30)[] = {
+	[0] = {
+		.scroll_line = 2,
+		.weapon = EW_GRENADE,
+		.x = -14,
+		.y = 96,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_NO,
+				.start_step = 20,
+				.vel = 9,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 32,
+				.vel = 9,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SO,
+				.start_step = 39,
+				.vel = 9,
+			},
+			[4] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 51,
+				.vel = 7,
+			},
+		},
+		.shots = {
+			[0] = 19,
+			[1] = 27,
+			[2] = 32,
+			[3] = 39,
+			[4] = 43,
+			[5] = 50,
+		},
+	},
+	[1] = {
+		.scroll_line = 19,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 32,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_SO,
+				.start_step = 17,
+				.vel = 8,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 27,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_OSO,
+				.start_step = 45,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 17,
+			[1] = 27,
+			[2] = 45,
+		},
+	},
+	[2] = {
+		.scroll_line = 49,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 54,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_OSO,
+				.start_step = 0,
+				.vel = 11,
+			},
+		},
+		.shots = {
+			[0] = 12,
+			[1] = 19,
+		},
+	},
+	[3] = {
+		.scroll_line = 68,
+		.weapon = EW_GRENADE,
+		.x = -15,
+		.y = 96,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_S,
+				.start_step = 30,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 19,
+			[1] = 28,
+			[2] = 38,
+		},
+	},
+	[4] = {
+		.scroll_line = 90,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 104,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_OSO,
+				.start_step = 0,
+				.vel = 11,
+			},
+		},
+		.shots = {
+			[0] = 13,
+			[1] = 23,
+		},
+	},
+	[5] = {
+		.scroll_line = 115,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 84,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_SO,
+				.start_step = 17,
+				.vel = 8,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 27,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_OSO,
+				.start_step = 45,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 17,
+			[1] = 27,
+			[2] = 45,
+		},
+	},
+	[6] = {
+		.scroll_line = 134,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 80,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SO,
+				.start_step = 27,
+				.vel = 9,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SW,
+				.start_step = 35,
+				.vel = 9,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 50,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 21,
+			[1] = 27,
+			[2] = 36,
+			[3] = 50,
+		},
+	},
+};
+
+static const struct enemy_spawn SPAWN_ENTRY(31)[] = {
+	[0] = {
+		.scroll_line = 26,
+		.weapon = EW_GRENADE,
+		.x = 48,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 32,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 39,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 11,
+			[1] = 32,
+			[2] = 39,
+			[3] = 60,
+		},
+	},
+	[1] = {
+		.scroll_line = 29,
+		.weapon = EW_GRENADE,
+		.x = 96,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SW,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 15,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 15,
+			[1] = 31,
+		},
+	},
+	[2] = {
+		.scroll_line = 39,
+		.weapon = EW_GRENADE,
+		.x = 160,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 8,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 23,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 47,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 8,
+			[1] = 23,
+			[2] = 47,
+			[3] = 63,
+		},
+	},
+	[3] = {
+		.scroll_line = 74,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 2,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 5,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 30,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 49,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 4,
+			[1] = 30,
+			[2] = 49,
+		},
+	},
+	[4] = {
+		.scroll_line = 74,
+		.weapon = EW_GUN,
+		.x = 191,
+		.y = 2,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 17,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 28,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 17,
+			[1] = 28,
+			[2] = 50,
+		},
+	},
+	[5] = {
+		.scroll_line = 89,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 16,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 5,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 30,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 49,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 4,
+			[1] = 30,
+			[2] = 49,
+		},
+	},
+	[6] = {
+		.scroll_line = 89,
+		.weapon = EW_GUN,
+		.x = 191,
+		.y = 16,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 17,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 28,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 17,
+			[1] = 28,
+			[2] = 50,
+		},
+	},
+	[7] = {
+		.scroll_line = 106,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 34,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 5,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 30,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 49,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 4,
+			[1] = 30,
+			[2] = 49,
+		},
+	},
+	[8] = {
+		.scroll_line = 106,
+		.weapon = EW_GUN,
+		.x = 191,
+		.y = 34,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 17,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 28,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 17,
+			[1] = 28,
+			[2] = 50,
+		},
+	},
+	[9] = {
+		.scroll_line = 124,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 52,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 5,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 30,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 49,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 4,
+			[1] = 30,
+			[2] = 49,
+		},
+	},
+	[10] = {
+		.scroll_line = 124,
+		.weapon = EW_GUN,
+		.x = 191,
+		.y = 52,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 17,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 28,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 17,
+			[1] = 28,
+			[2] = 50,
+		},
+	},
+	[11] = {
+		.scroll_line = 139,
+		.weapon = EW_GUN,
+		.x = 0,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 11,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 23,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 39,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 11,
+			[1] = 23,
+			[2] = 39,
+		},
+	},
+	[12] = {
+		.scroll_line = 139,
+		.weapon = EW_GUN,
+		.x = 20,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SO,
+				.start_step = 9,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 22,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 46,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 9,
+			[1] = 20,
+			[3] = 46,
+		},
+	},
+	[13] = {
+		.scroll_line = 139,
+		.weapon = EW_GUN,
+		.x = 60,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 11,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 24,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 48,
+				.vel = 6,
+			},
+			[4] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 71,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 11,
+			[1] = 24,
+			[2] = 48,
+		},
+	},
+	[14] = {
+		.scroll_line = 139,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 16,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 5,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 30,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 49,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 4,
+			[1] = 30,
+			[2] = 49,
+		},
+	},
+	[15] = {
+		.scroll_line = 148,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 6,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 6,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 20,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 48,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 6,
+			[1] = 27,
+			[2] = 48,
+		},
+	},
+	[16] = {
+		.scroll_line = 168,
+		.weapon = EW_GUN,
+		.x = 0,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 10,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 21,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 36,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 10,
+			[1] = 21,
+			[2] = 36,
+		},
+	},
+	[17] = {
+		.scroll_line = 168,
+		.weapon = EW_GUN,
+		.x = 36,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 11,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 22,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 48,
+				.vel = 6,
+			},
+			[4] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 69,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 11,
+			[1] = 22,
+			[2] = 48,
+			[3] = 69,
+		},
+	},
+	[18] = {
+		.scroll_line = 168,
+		.weapon = EW_GRENADE,
+		.x = 190,
+		.y = 2,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 31,
+			[1] = 51,
+			[2] = 73,
+			[3] = 96,
+			[4] = 117,
+		},
+	},
+};
+
+static const struct enemy_spawn SPAWN_ENTRY(32)[] = {
+	[0] = {
+		.scroll_line = 11,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 3,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 15,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 28,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 15,
+			[1] = 28,
+			[2] = 48,
+		},
+	},
+	[1] = {
+		.scroll_line = 11,
+		.weapon = EW_GRENADE,
+		.x = -14,
+		.y = 20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 10,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 38,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 57,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 10,
+			[1] = 32,
+			[2] = 55,
+		},
+	},
+	[2] = {
+		.scroll_line = 21,
+		.weapon = EW_GRENADE,
+		.x = 190,
+		.y = 0,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 3,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 19,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 19,
+		},
+	},
+	[3] = {
+		.scroll_line = 29,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 4,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 5,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 30,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 49,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 4,
+			[1] = 30,
+			[2] = 49,
+		},
+	},
+	[4] = {
+		.scroll_line = 29,
+		.weapon = EW_GRENADE,
+		.x = -14,
+		.y = 20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 10,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 37,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 56,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 10,
+			[1] = 35,
+			[2] = 53,
+		},
+	},
+	[5] = {
+		.scroll_line = 42,
+		.weapon = EW_GRENADE,
+		.x = 191,
+		.y = 20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 3,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 21,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 21,
+		},
+	},
+	[6] = {
+		.scroll_line = 42,
+		.weapon = EW_GUN,
+		.x = 0,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 12,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 23,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 51,
+				.vel = 6,
+			},
+			[4] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 66,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 12,
+			[1] = 23,
+			[2] = 51,
+			[3] = 66,
+		},
+	},
+	[7] = {
+		.scroll_line = 42,
+		.weapon = EW_GUN,
+		.x = 24,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 12,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 23,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 51,
+				.vel = 6,
+			},
+			[4] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 66,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 12,
+			[1] = 23,
+			[2] = 51,
+			[3] = 66,
+		},
+	},
+	[8] = {
+		.scroll_line = 77,
+		.weapon = EW_GUN,
+		.x = 16,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 27,
+			[1] = 71,
+			[2] = 92,
+		},
+	},
+	[9] = {
+		.scroll_line = 77,
+		.weapon = EW_GUN,
+		.x = 40,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 27,
+			[1] = 71,
+			[2] = 92,
+		},
+	},
+	[10] = {
+		.scroll_line = 77,
+		.weapon = EW_GUN,
+		.x = 64,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 27,
+			[1] = 71,
+			[2] = 92,
+		},
+	},
+	[11] = {
+		.scroll_line = 82,
+		.weapon = EW_GUN,
+		.x = 80,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 16,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 16,
+			[1] = 27,
+		},
+	},
+	[12] = {
+		.scroll_line = 89,
+		.weapon = EW_GRENADE,
+		.x = -14,
+		.y = 0,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 11,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 26,
+				.vel = 9,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 35,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 11,
+			[1] = 26,
+			[2] = 35,
+		},
+	},
+	[13] = {
+		.scroll_line = 104,
+		.weapon = EW_GRENADE,
+		.x = -14,
+		.y = 0,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 16,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 40,
+				.vel = 8,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 57,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 16,
+			[1] = 40,
+			[2] = 57,
+		},
+	},
+	[14] = {
+		.scroll_line = 104,
+		.weapon = EW_GRENADE,
+		.x = -14,
+		.y = 16,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 11,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 26,
+				.vel = 9,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 35,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 11,
+			[1] = 26,
+			[2] = 35,
+		},
+	},
+	[15] = {
+		.scroll_line = 122,
+		.weapon = EW_GUN,
+		.x = 16,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 12,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 23,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 51,
+				.vel = 6,
+			},
+			[4] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 66,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 12,
+			[1] = 23,
+			[2] = 51,
+			[3] = 66,
+		},
+	},
+	[16] = {
+		.scroll_line = 128,
+		.weapon = EW_GUN,
+		.x = 48,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 12,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 23,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 51,
+				.vel = 6,
+			},
+			[4] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 66,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 12,
+			[1] = 23,
+			[2] = 51,
+			[3] = 66,
+		},
+	},
+	[17] = {
+		.scroll_line = 140,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 4,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_ONO,
+				.start_step = 26,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 50,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 53,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 11,
+			[1] = 26,
+			[2] = 50,
+		},
+	},
+	[18] = {
+		.scroll_line = 140,
+		.weapon = EW_GUN,
+		.x = 190,
+		.y = 4,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 17,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 32,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 17,
+			[1] = 28,
+			[2] = 50,
+		},
+	},
+	[19] = {
+		.scroll_line = 149,
+		.weapon = EW_GUN,
+		.x = -15,
+		.y = 2,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_ONO,
+				.start_step = 26,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 50,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 53,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 11,
+			[1] = 26,
+			[2] = 50,
+		},
+	},
+	[20] = {
+		.scroll_line = 149,
+		.weapon = EW_GUN,
+		.x = 190,
+		.y = 2,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 17,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 32,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 17,
+			[1] = 28,
+			[2] = 50,
+		},
+	},
+	[21] = {
+		.scroll_line = 160,
+		.weapon = EW_GUN,
+		.x = 16,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 21,
+			[1] = 63,
+			[2] = 83,
+		},
+	},
+	[22] = {
+		.scroll_line = 162,
+		.weapon = EW_GUN,
+		.x = 40,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 21,
+			[1] = 63,
+			[2] = 83,
+		},
+	},
+	[23] = {
+		.scroll_line = 163,
+		.weapon = EW_GUN,
+		.x = 64,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 21,
+			[1] = 63,
+			[2] = 83,
+		},
+	},
+	[24] = {
+		.scroll_line = 164,
+		.weapon = EW_GUN,
+		.x = 88,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 21,
+			[1] = 63,
+			[2] = 83,
+		},
+	},
+	[25] = {
+		.scroll_line = 177,
+		.weapon = EW_GRENADE,
+		.x = 48,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SO,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 15,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_S,
+				.start_step = 29,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 37,
+				.vel = 6,
+			},
+			[4] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 48,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 15,
+			[1] = 29,
+			[2] = 48,
+			[3] = 68,
+		},
+	},
+	[26] = {
+		.scroll_line = 177,
+		.weapon = EW_GRENADE,
+		.x = 96,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SW,
+				.start_step = 0,
+				.vel = 7,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 13,
+				.vel = 7,
+			},
+		},
+		.shots = {
+			[0] = 13,
+			[1] = 31,
+		},
+	},
+	[27] = {
+		.scroll_line = 184,
+		.weapon = EW_GRENADE,
+		.x = 160,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 8,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 23,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 47,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 8,
+			[1] = 23,
+			[2] = 47,
+			[3] = 63,
+		},
+	},
+};
+
+static const struct enemy_spawn SPAWN_ENTRY(33)[] = {
+	[0] = {
+		.scroll_line = 8,
+		.weapon = EW_GUN,
+		.x = 64,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SW,
+				.start_step = 13,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 24,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 36,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 13,
+			[1] = 20,
+			[2] = 36,
+		},
+	},
+	[1] = {
+		.scroll_line = 12,
+		.weapon = EW_GUN,
+		.x = 80,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 12,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 12,
+			[1] = 26,
+		},
+	},
+	[2] = {
+		.scroll_line = 13,
+		.weapon = EW_GUN,
+		.x = 0,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 0,
+				.vel = 7,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 12,
+				.vel = 7,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 20,
+				.vel = 7,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 37,
+				.vel = 7,
+			},
+			[4] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 59,
+				.vel = 7,
+			},
+		},
+		.shots = {
+			[0] = 12,
+			[1] = 20,
+			[2] = 37,
+			[3] = 59,
+		},
+	},
+	[3] = {
+		.scroll_line = 27,
+		.weapon = EW_GRENADE,
+		.x = -14,
+		.y = 4,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 13,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 24,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 37,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 13,
+			[1] = 24,
+			[2] = 37,
+		},
+	},
+	[4] = {
+		.scroll_line = 44,
+		.weapon = EW_GRENADE,
+		.x = -15,
+		.y = 2,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 18,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 45,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 73,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 18,
+			[1] = 45,
+			[2] = 73,
+		},
+	},
+	[5] = {
+		.scroll_line = 44,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 4,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 10,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 47,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 6,
+			[1] = 27,
+			[2] = 47,
+		},
+	},
+	[6] = {
+		.scroll_line = 53,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 2,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 5,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 28,
+				.vel = 7,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 46,
+				.vel = 7,
+			},
+		},
+		.shots = {
+			[0] = 4,
+			[1] = 28,
+			[2] = 46,
+		},
+	},
+	[7] = {
+		.scroll_line = 57,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 4,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 7,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 13,
+				.vel = 7,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 26,
+				.vel = 7,
+			},
+		},
+		.shots = {
+			[0] = 13,
+			[1] = 26,
+			[2] = 40,
+		},
+	},
+	[8] = {
+		.scroll_line = 59,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 0,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 5,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 28,
+				.vel = 7,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 46,
+				.vel = 7,
+			},
+		},
+		.shots = {
+			[0] = 4,
+			[1] = 28,
+			[2] = 46,
+		},
+	},
+	[9] = {
+		.scroll_line = 62,
+		.weapon = EW_GRENADE,
+		.x = 190,
+		.y = 0,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 9,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 24,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 37,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 9,
+			[1] = 24,
+			[2] = 37,
+		},
+	},
+	[10] = {
+		.scroll_line = 95,
+		.weapon = EW_GUN,
+		.x = 16,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[11] = {
+		.scroll_line = 95,
+		.weapon = EW_GUN,
+		.x = 120,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[12] = {
+		.scroll_line = 95,
+		.weapon = EW_GUN,
+		.x = 144,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[13] = {
+		.scroll_line = 95,
+		.weapon = EW_GUN,
+		.x = 168,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[14] = {
+		.scroll_line = 118,
+		.weapon = EW_GRENADE,
+		.x = 190,
+		.y = 4,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 9,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 25,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 37,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 9,
+			[1] = 26,
+			[2] = 37,
+		},
+	},
+	[15] = {
+		.scroll_line = 133,
+		.weapon = EW_GUN,
+		.x = 16,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[16] = {
+		.scroll_line = 133,
+		.weapon = EW_GUN,
+		.x = 120,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[17] = {
+		.scroll_line = 133,
+		.weapon = EW_GUN,
+		.x = 144,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[18] = {
+		.scroll_line = 133,
+		.weapon = EW_GUN,
+		.x = 168,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[19] = {
+		.scroll_line = 153,
+		.weapon = EW_GRENADE,
+		.x = 190,
+		.y = 0,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 9,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 25,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 37,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 9,
+			[1] = 26,
+			[2] = 37,
+		},
+	},
+	[20] = {
+		.scroll_line = 178,
+		.weapon = EW_GUN,
+		.x = 16,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[21] = {
+		.scroll_line = 178,
+		.weapon = EW_GUN,
+		.x = 120,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[22] = {
+		.scroll_line = 178,
+		.weapon = EW_GUN,
+		.x = 144,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[23] = {
+		.scroll_line = 178,
+		.weapon = EW_GUN,
+		.x = 168,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+};
+
+static const struct enemy_spawn SPAWN_ENTRY(34)[] = {
+	[0] = {
+		.scroll_line = 1,
+		.weapon = EW_GRENADE,
+		.x = 160,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 0,
+				.vel = 7,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 10,
+				.vel = 7,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 21,
+				.vel = 7,
+			},
+		},
+		.shots = {
+			[0] = 10,
+			[1] = 21,
+		},
+	},
+	[1] = {
+		.scroll_line = 10,
+		.weapon = EW_GRENADE,
+		.x = -14,
+		.y = 2,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 11,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 23,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 34,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 11,
+			[1] = 23,
+			[2] = 34,
+		},
+	},
+	[2] = {
+		.scroll_line = 15,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 0,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 7,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 13,
+				.vel = 7,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 25,
+				.vel = 7,
+			},
+		},
+		.shots = {
+			[0] = 13,
+			[1] = 25,
+			[2] = 40,
+		},
+	},
+	[3] = {
+		.scroll_line = 21,
+		.weapon = EW_GUN,
+		.x = 190,
+		.y = 0,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 17,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 29,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 17,
+			[1] = 29,
+			[2] = 48,
+		},
+	},
+	[4] = {
+		.scroll_line = 40,
+		.weapon = EW_GUN,
+		.x = 190,
+		.y = 16,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 17,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 29,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 17,
+			[1] = 29,
+			[2] = 48,
+		},
+	},
+	[5] = {
+		.scroll_line = 55,
+		.weapon = EW_GUN,
+		.x = 190,
+		.y = 32,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 17,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 29,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 17,
+			[1] = 29,
+			[2] = 48,
+		},
+	},
+	[6] = {
+		.scroll_line = 63,
+		.weapon = EW_GUN,
+		.x = 16,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[7] = {
+		.scroll_line = 63,
+		.weapon = EW_GUN,
+		.x = 120,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[8] = {
+		.scroll_line = 63,
+		.weapon = EW_GUN,
+		.x = 144,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[9] = {
+		.scroll_line = 63,
+		.weapon = EW_GUN,
+		.x = 168,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[10] = {
+		.scroll_line = 85,
+		.weapon = EW_GRENADE,
+		.x = 48,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 35,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 44,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 12,
+			[1] = 35,
+			[2] = 44,
+			[3] = 64,
+		},
+	},
+	[11] = {
+		.scroll_line = 85,
+		.weapon = EW_GRENADE,
+		.x = 96,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_SW,
+				.start_step = 0,
+				.vel = 7,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 13,
+				.vel = 7,
+			},
+		},
+		.shots = {
+			[0] = 13,
+			[1] = 27,
+		},
+	},
+	[12] = {
+		.scroll_line = 90,
+		.weapon = EW_GRENADE,
+		.x = 160,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 8,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 24,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 46,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 8,
+			[1] = 24,
+			[2] = 46,
+			[3] = 62,
+		},
+	},
+	[13] = {
+		.scroll_line = 95,
+		.weapon = EW_GUN,
+		.x = 190,
+		.y = 0,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 15,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 30,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 15,
+			[1] = 30,
+			[2] = 50,
+		},
+	},
+	[14] = {
+		.scroll_line = 101,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 0,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 5,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 28,
+				.vel = 7,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 46,
+				.vel = 7,
+			},
+		},
+		.shots = {
+			[0] = 4,
+			[1] = 28,
+			[2] = 46,
+		},
+	},
+	[15] = {
+		.scroll_line = 103,
+		.weapon = EW_GRENADE,
+		.x = 48,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 7,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 34,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 7,
+			[1] = 31,
+		},
+	},
+	[16] = {
+		.scroll_line = 117,
+		.weapon = EW_GRENADE,
+		.x = 32,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 7,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 29,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_RIGHT,
+				.dir = DIR16_O,
+				.start_step = 31,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 7,
+			[1] = 29,
+		},
+	},
+	[17] = {
+		.scroll_line = 117,
+		.weapon = EW_GUN,
+		.x = 96,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SW,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 7,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_LEFT,
+				.dir = DIR16_W,
+				.start_step = 25,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 7,
+			[1] = 23,
+		},
+	},
+	[18] = {
+		.scroll_line = 122,
+		.weapon = EW_GUN,
+		.x = 0,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 15,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSO,
+				.start_step = 24,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 50,
+				.vel = 6,
+			},
+			[4] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 70,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 15,
+			[1] = 24,
+			[2] = 50,
+			[3] = 70,
+		},
+	},
+	[19] = {
+		.scroll_line = 138,
+		.weapon = EW_GRENADE,
+		.x = 190,
+		.y = 2,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 30,
+			[1] = 55,
+			[2] = 75,
+			[3] = 95,
+			[4] = 118,
+		},
+	},
+	[20] = {
+		.scroll_line = 152,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 0,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 15,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 27,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 15,
+			[1] = 27,
+			[2] = 48,
+		},
+	},
+	[21] = {
+		.scroll_line = 152,
+		.weapon = EW_GRENADE,
+		.x = 190,
+		.y = 0,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 30,
+			[1] = 55,
+			[2] = 75,
+			[3] = 95,
+			[4] = 118,
+		},
+	},
+	[22] = {
+		.scroll_line = 170,
+		.weapon = EW_GUN,
+		.x = -14,
+		.y = 2,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 14,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_O,
+				.start_step = 27,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 14,
+			[1] = 27,
+			[2] = 48,
+		},
+	},
+	[23] = {
+		.scroll_line = 170,
+		.weapon = EW_GUN,
+		.x = 8,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[24] = {
+		.scroll_line = 173,
+		.weapon = EW_GUN,
+		.x = 32,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[25] = {
+		.scroll_line = 174,
+		.weapon = EW_GUN,
+		.x = 58,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[26] = {
+		.scroll_line = 175,
+		.weapon = EW_GUN,
+		.x = 80,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 22,
+			[1] = 63,
+			[2] = 87,
+		},
+	},
+	[27] = {
+		.scroll_line = 188,
+		.weapon = EW_GUN,
+		.x = 80,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 10,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 22,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 39,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 10,
+			[1] = 22,
+			[2] = 39,
+		},
+	},
+	[28] = {
+		.scroll_line = 191,
+		.weapon = EW_GUN,
+		.x = 100,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 12,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 21,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 37,
+				.vel = 8,
+			},
+		},
+		.shots = {
+			[0] = 12,
+			[1] = 21,
+			[2] = 37,
+		},
+	},
+};
+
+static const struct enemy_spawn SPAWN_ENTRY(35)[] = {
+	[0] = {
+		.scroll_line = 11,
+		.weapon = EW_GRENADE,
+		.x = 190,
+		.y = 2,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 11,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_OSO,
+				.start_step = 24,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER2_DOWN,
+				.dir = DIR16_O,
+				.start_step = 37,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 11,
+			[1] = 24,
+			[2] = 37,
+			[3] = 0,
+			[4] = 0,
+			[5] = 0,
+			[6] = 0,
+			[7] = 0,
+		},
+	},
+	[1] = {
+		.scroll_line = 11,
+		.weapon = EW_GUN,
+		.x = 80,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SW,
+				.start_step = 14,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 21,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 38,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 14,
+			[1] = 21,
+			[2] = 38,
+		},
+	},
+	[2] = {
+		.scroll_line = 13,
+		.weapon = EW_GUN,
+		.x = 104,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SW,
+				.start_step = 14,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 21,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 38,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 14,
+			[1] = 21,
+			[2] = 38,
+		},
+	},
+	[3] = {
+		.scroll_line = 26,
+		.weapon = EW_GUN,
+		.x = 80,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SW,
+				.start_step = 14,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 21,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 38,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 14,
+			[1] = 21,
+			[2] = 38,
+		},
+	},
+	[4] = {
+		.scroll_line = 31,
+		.weapon = EW_GUN,
+		.x = 104,
+		.y = -21,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SW,
+				.start_step = 14,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 21,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_SSW,
+				.start_step = 38,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 14,
+			[1] = 21,
+			[2] = 38,
+		},
+	},
+	[5] = {
+		.scroll_line = 38,
+		.weapon = EW_GUN,
+		.x = 190,
+		.y = 2,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_LEFT,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 5,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 30,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 49,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 4,
+			[1] = 30,
+			[2] = 49,
+		},
+	},
+	[6] = {
+		.scroll_line = 48,
+		.weapon = EW_GUN,
+		.x = 190,
+		.y = 20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_LEFT,
+				.dir = DIR16_W,
+				.start_step = 0,
+				.vel = 6,
+			},
+			[1] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 5,
+				.vel = 6,
+			},
+			[2] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_W,
+				.start_step = 30,
+				.vel = 6,
+			},
+			[3] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_WSW,
+				.start_step = 49,
+				.vel = 6,
+			},
+		},
+		.shots = {
+			[0] = 4,
+			[1] = 30,
+			[2] = 49,
+		},
+	},
+	[7] = {
+		.scroll_line = 59,
+		.weapon = EW_GUN,
+		.x = 48,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 25,
+			[1] = 71,
+			[2] = 90,
+		},
+	},
+	[8] = {
+		.scroll_line = 59,
+		.weapon = EW_GUN,
+		.x = 68,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 25,
+			[1] = 71,
+			[2] = 90,
+		},
+	},
+	[9] = {
+		.scroll_line = 59,
+		.weapon = EW_GUN,
+		.x = 88,
+		.y = -20,
+		.route = {
+			[0] = {
+				.shape = ES_SOLDIER1_DOWN,
+				.dir = DIR16_S,
+				.start_step = 0,
+				.vel = 3,
+			},
+		},
+		.shots = {
+			[0] = 25,
+			[1] = 71,
+			[2] = 90,
+		},
+	},
+	[10] = {
+		.scroll_line = 136,
+		.weapon = EW_GUN,
+		.x = 64,
+		.y = -24,
+		.route = {
+			[0] = {
+				.shape = ES_BOSS,
+				.dir = DIR16_N,
+				.start_step = 0,
+				.vel = 0,
+			},
+		},
+	},
+};
+
+
 const struct enemy_spawn_screen SPAWN_MAP[NUM_SCREENS] = {
+	[35] = {
+		.num_spawns = 10,
+		.spawns = SPAWN_ENTRY(35),
+	},
+	[34] = {
+		.num_spawns = 29,
+		.spawns = SPAWN_ENTRY(34),
+	},
+	[33] = {
+		.num_spawns = 24,
+		.spawns = SPAWN_ENTRY(33),
+	},
+	[32] = {
+		.num_spawns = 28,
+		.spawns = SPAWN_ENTRY(32),
+	},
+	[31] = {
+		.num_spawns = 19,
+		.spawns = SPAWN_ENTRY(31),
+	},
+	[30] = {
+		.num_spawns = 7,
+		.spawns = SPAWN_ENTRY(30),
+	},
+	[29] = {
+		.num_spawns = 11,
+		.spawns = SPAWN_ENTRY(29),
+	},
+	[28] = {
+		.num_spawns = 11,
+		.spawns = SPAWN_ENTRY(28),
+	},
+	[27] = {
+		.num_spawns = 13,
+		.spawns = SPAWN_ENTRY(27),
+	},
 	[26] = {
 		.num_spawns = 10,
 		.spawns = SPAWN_ENTRY(26),
