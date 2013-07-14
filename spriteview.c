@@ -89,7 +89,6 @@ static sblist go_player_bullets;
 static sblist go_enemy_bullets;
 static sblist go_explosions;
 static sblist go_enemy_explosions;
-static sblist go_walls;
 static sblist go_enemies;
 static sblist go_players;
 static sblist go_flames;
@@ -117,9 +116,6 @@ static void add_explosion(uint8_t expl_id) {
 }
 static void add_enemy_explosion(uint8_t expl_id) {
 	sblist_add(&go_enemy_explosions, &expl_id);
-}
-static void add_wall(uint8_t wall_id) {
-	sblist_add(&go_walls, &wall_id);
 }
 static void add_flame(uint8_t id) {
 	sblist_add(&go_flames, &id);
@@ -923,7 +919,6 @@ static void init_game_objs() {
 	sblist_init(&go_grenades, 1, 16);
 	sblist_init(&go_enemy_grenades, 1, 16);
 	sblist_init(&go_rockets, 1, 8);
-	sblist_init(&go_walls, 1, 32);
 	sblist_init(&go_enemies, 1, 32);
 	sblist_init(&go_vehicles, 1, 4);
 	sblist_init(&go_mines, 1, 4);
