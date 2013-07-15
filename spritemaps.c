@@ -23,6 +23,7 @@
 #include "sprites/bunkers.c"
 #include "sprites/gunturret.c"
 #include "sprites/bosses.c"
+#include "sprites/misc.c"
 
 #define spritemap_entry(x, y) [ x ] = &(y .header)
 const struct palpic *spritemaps[] = { 
@@ -49,4 +50,5 @@ const struct palpic *spritemaps[] = {
 	spritemap_entry(SI_BUNKERS, bunkers),
 	spritemap_entry(SI_GUNTURRET, gunturret),
 	spritemap_entry(SI_BOSSES, bosses),
+	spritemap_entry(SI_MISC, misc),
 };
