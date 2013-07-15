@@ -124,6 +124,7 @@ enum __attribute__ ((__packed__)) animation_id {
 	ANIM_BOSS10,
 	ANIM_BOSS11,
 	ANIM_BOSS12,
+	ANIM_BLOOD,
 	ANIM_MAX,
 	ANIM_INVALID = ANIM_MAX
 };

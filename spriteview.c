@@ -102,6 +102,7 @@ static sblist go_bunkers;
 static sblist go_boss;
 static sblist go_crosshair;
 static sblist go_muzzleflash;
+static sblist go_blood;
 static void add_pbullet(uint8_t bullet_id) {
 	sblist_add(&go_player_bullets, &bullet_id);
 }
@@ -152,6 +153,9 @@ static void add_crosshair(uint8_t id) {
 }
 static void add_muzzleflash(uint8_t id) {
 	sblist_add(&go_muzzleflash, &id);
+}
+static void add_blood(uint8_t id) {
+	sblist_add(&go_blood, &id);
 }
 static void golist_remove(sblist *l, uint8_t objid) {
 	size_t i;
@@ -491,6 +495,13 @@ static int init_crosshair() {
 	gameobj_init(id, &VEC(VMODE_W/2, VMODE_H/2), &VEC(0,0), SI_CROSSHAIR, ANIM_CROSSHAIR, OBJ_CROSSHAIR);
 	if(id == -1) return -1;
 	mousepos = &objs[id].pos;
+	return id;
+}
+
+static int init_blood(vec2f *pos) {
+	int id = gameobj_alloc();
+	gameobj_init(id, pos, &VEC(0,0), SI_MISC, ANIM_BLOOD, OBJ_BLOOD);
+	gameobj_init_bulletdata(id, 4);
 	return id;
 }
 
@@ -947,6 +958,7 @@ static void init_game_objs() {
 	sblist_init(&go_turrets, 1, 8);
 	sblist_init(&go_bunkers, 1, 4);
 	sblist_init(&go_boss, 1, 4);
+	sblist_init(&go_blood, 1, 16);
 	init_player(0);
 	add_crosshair(init_crosshair());
 	init_map(current_map);
@@ -1146,6 +1158,13 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 						if(target->objtype == OBJ_ENEMY_BOMBER || target->objtype == OBJ_ENEMY_SHOOTER) {
 							const enum wavesound_id wid[] = { WS_SCREAM, WS_SCREAM2 };
 							audio_play_wave_resource(wavesounds[wid[rand()%2]]);
+							if(bullet_subtybe == BS_BULLET) {
+								vec2f bloodpos = vecadd(&target->pos, &VEC(0, (2+rand()%7)*SCALE));
+								/* original displays at 0,8 but i prefer a random effect */
+								//vec2f bloodpos = vecadd(&target->pos, &VEC(0, 8*SCALE));
+								int id = init_blood(&bloodpos);
+								if(id != -1) add_blood(id);
+							}
 						}
 						if(bullet_subtybe == BS_BULLET) {
 							remove_bullet:
@@ -1197,7 +1216,19 @@ static void draw_golist(sblist *list) {
 	sblist_iter_counter2(list, i, itemid) {
 		assert(obj_slot_used[*itemid]);
 		struct gameobj *o = &objs[*itemid];
-		const prgb *palette = (o->objtype == OBJ_ENEMY_BOMBER || o->objtype == OBJ_ENEMY_SHOOTER) ? map->enemy_palette : 0;
+		const prgb *palette;
+		switch(o->objtype) {
+			case OBJ_BLOOD:
+				// original blood color is bb5511 but that is hardly visible
+				// palette = (prgb[]) {PRGB(0,0,0), PRGB(0xbb, 0x55, 0x11)};
+				palette = (const prgb[]) {PRGB(0,0,0), PRGB(0xff, 0x0, 0x0)};
+				break;
+			case OBJ_ENEMY_BOMBER: case OBJ_ENEMY_SHOOTER:
+				palette = map->enemy_palette;
+				break;
+			default:
+				palette = 0;
+		}
 		blit_sprite(o->pos.x, o->pos.y, &video,
 		            SCALE, spritemaps[o->spritemap_id], 
 		            o->anim_curr == ANIM_STEP_INIT ? get_next_anim_frame(o->animid, o->anim_curr) : o->anim_curr,
@@ -1211,6 +1242,7 @@ static void draw_gameobjs(void) {
 	draw_golist(&go_bunkers);
 	draw_golist(&go_vehicles);
 	draw_golist(&go_enemies);
+	draw_golist(&go_blood);
 	draw_golist(&go_enemy_bullets);
 	draw_golist(&go_boss);
 	draw_golist(&go_rockets);
@@ -1335,6 +1367,7 @@ static void game_tick(int force_redraw) {
 	if(remove_bullets(&go_enemy_explosions)) need_redraw = 1;
 	if(remove_bullets(&go_enemy_bullets)) need_redraw = 1;
 	if(remove_bullets(&go_muzzleflash)) need_redraw = 1;
+	if(remove_bullets(&go_blood)) need_redraw = 1;
 	if(remove_explosives(&go_grenades)) need_redraw = 1;
 	if(remove_explosives(&go_enemy_grenades)) need_redraw = 1;
 	if(remove_explosives(&go_rockets)) need_redraw = 1;

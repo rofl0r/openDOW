@@ -116,5 +116,6 @@ const struct anim animations[] = {
 	ANIM(ANIM_BOSS10, 9, 1),
 	ANIM(ANIM_BOSS11, 10, 1),
 	ANIM(ANIM_BOSS12, 11, 1),
+	ANIM(ANIM_BLOOD, 106, 1),
 };
 
