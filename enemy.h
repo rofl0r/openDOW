@@ -43,6 +43,7 @@ enum __attribute__ ((__packed__)) enemy_type {
 enum __attribute__ ((__packed__)) enemy_weapon {
 	EW_GUN = 0,
 	EW_GRENADE,
+	EW_FLAME,
 };
 
 struct enemy_route {
