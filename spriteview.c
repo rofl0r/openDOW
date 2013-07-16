@@ -843,17 +843,19 @@ static enum direction get_shotdirection_from_enemy(int curr_step, const struct e
 	}
 }
 
-static void enemy_fire_bullet(int objid) {
+static void enemy_fire_bullet(int objid, enum direction16 dir16, int steps) {
 	struct gameobj* go = &objs[objid];
-	enum direction dir = get_shotdirection_from_enemy(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
+	enum direction16 dir = dir16;
+	if(dir == DIR16_INVALID) 
+		dir = get_shotdirection_from_enemy(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
 	vec2f from = get_gameobj_center(objid);
-	vec2f vel = get_vel_from_direction(dir, 1.75);
+	vec2f vel = get_vel_from_direction16(dir, 1.75);
 	int id;
 	if(go->objspecific.enemy.spawn->weapon == EW_GUN) {
-		id = init_bullet(&from, &vel, 41);
+		id = init_bullet(&from, &vel, steps);
 		if(id != -1) add_ebullet(id);
 	} else {
-		id = init_grenade(&from, &vel, 41);
+		id = init_grenade(&from, &vel, steps);
 		if(id != -1) add_enemy_grenade(id);
 	}
 }
@@ -1267,7 +1269,7 @@ static void process_soldiers(void) {
 			if(rc->vel) {
 				go->objspecific.enemy.curr_step++;
 				if(enemy_fires(&go->objspecific.enemy)) {
-					enemy_fire_bullet(*itemid);
+					enemy_fire_bullet(*itemid, DIR16_INVALID, 41);
 				}
 				const struct enemy_route *rn = get_enemy_current_route(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
 				if(rn->shape != rc->shape) switch_enemy_shape(*itemid, rn);
@@ -1276,6 +1278,27 @@ static void process_soldiers(void) {
 		if(!is_death_anim(go->animid)) go->vel = get_enemy_vel(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
 		else go->vel = VEC(0, 0);
 	}
+}
+
+static int process_turrets(void) {
+	int res = 0;
+	uint8_t *itemid;
+	sblist_iter(&go_turrets, itemid) {
+		struct gameobj *go = &objs[*itemid];
+		enum direction16 dir = DIR16_S;
+		switch(go->objtype) {
+			case OBJ_GUNTURRET_FIXED_NORTH:
+				dir = DIR16_N;
+			case OBJ_GUNTURRET_FIXED_SOUTH:
+				if(rand()%8 == 0) {
+					enemy_fire_bullet(*itemid, dir, 92);
+					res = 1;
+				}
+				break;
+			default:;
+		}
+	}
+	return res;
 }
 
 static int move_gameobjs(void) {
@@ -1374,6 +1397,8 @@ static void game_tick(int force_redraw) {
 	if(tickcounter % 2 == 0 && scroll_map()) need_redraw = 1;
 	
 	process_soldiers();
+	if(tickcounter % 4 == 0 && process_turrets()) need_redraw = 1;
+
 	if(move_gameobjs()) need_redraw = 1;
 	
 	if(remove_offscreen_objects(&go_enemies)) need_redraw = 1;
