@@ -92,6 +92,7 @@ static sblist go_enemy_explosions;
 static sblist go_enemies;
 static sblist go_players;
 static sblist go_flames;
+static sblist go_enemy_flames;
 static sblist go_rockets;
 static sblist go_grenades;
 static sblist go_enemy_grenades;
@@ -156,6 +157,9 @@ static void add_muzzleflash(uint8_t id) {
 }
 static void add_blood(uint8_t id) {
 	sblist_add(&go_blood, &id);
+}
+static void add_enemy_flame(uint8_t id) {
+	sblist_add(&go_enemy_flames, &id);
 }
 static void golist_remove(sblist *l, uint8_t objid) {
 	size_t i;
@@ -561,7 +565,15 @@ static int init_rocket_explosion(vec2f *pos) {
 	return ret;
 }
 
-static int init_flame(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
+static int init_flame(vec2f *pos, vec2f *vel, int steps) {
+	int id = gameobj_alloc();
+	if(id == -1) return -1;
+	gameobj_init(id, pos, vel, SI_FLAME, ANIM_FLAME, OBJ_FLAME);
+	gameobj_init_bulletdata(id, steps);
+	return id;
+}
+
+static int init_player_flame(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
 	static const vec2f flame_origin[] = {
 		[DIR_O] = { 4.0, 8.0 },
 		[DIR_NO] = { 5.0, 11.0 },
@@ -575,12 +587,7 @@ static int init_flame(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
 	vec2f mypos = *pos;
 	mypos.x -= flame_origin[dir].x * SCALE;
 	mypos.y -= flame_origin[dir].y * SCALE;
-	int id = gameobj_alloc();
-	if(id == -1) return -1;
-	gameobj_init(id, &mypos, vel, SI_FLAME, ANIM_FLAME, OBJ_FLAME);
-	gameobj_init_bulletdata(id, steps);
-	add_flame(id);
-	return id;
+	return init_flame(&mypos, vel, steps);
 }
 
 static int init_rocket(enum direction dir, vec2f *pos, vec2f *vel, int steps) {
@@ -843,7 +850,7 @@ static enum direction get_shotdirection_from_enemy(int curr_step, const struct e
 	}
 }
 
-static void enemy_fire_bullet(int objid, enum direction16 dir16, int steps) {
+static void enemy_fire_bullet(int objid, enum direction16 dir16, int steps, enum enemy_weapon wpn) {
 	struct gameobj* go = &objs[objid];
 	enum direction16 dir = dir16;
 	if(dir == DIR16_INVALID) 
@@ -851,12 +858,19 @@ static void enemy_fire_bullet(int objid, enum direction16 dir16, int steps) {
 	vec2f from = get_gameobj_center(objid);
 	vec2f vel = get_vel_from_direction16(dir, 1.75);
 	int id;
-	if(go->objspecific.enemy.spawn->weapon == EW_GUN) {
+	if(wpn == EW_GUN) {
 		id = init_bullet(&from, &vel, steps);
 		if(id != -1) add_ebullet(id);
-	} else {
+	} else if (wpn == EW_GRENADE) {
 		id = init_grenade(&from, &vel, steps);
 		if(id != -1) add_enemy_grenade(id);
+	} else {
+		if(go->objtype == OBJ_FLAMETURRET) {
+			from = go->pos;
+			from.y += (dir == DIR16_N ? -8*SCALE : 8*SCALE);
+		}
+		id = init_flame(&from, &vel, steps);
+		if(id != -1) add_enemy_flame(id);
 	}
 }
 
@@ -927,7 +941,8 @@ static void fire_bullet(int player_no) {
 			if(id != -1) add_pbullet(id);
 			break;
 		case ST_FLAMES:
-			id = init_flame(dir, &from, &vel, steps);
+			id = init_player_flame(dir, &from, &vel, steps);
+			if(id != -1) add_flame(id);
 			break;
 		case ST_GRENADE:
 			id = init_grenade(&from, &vel, steps);
@@ -961,6 +976,7 @@ static void init_game_objs() {
 	sblist_init(&go_bunkers, 1, 4);
 	sblist_init(&go_boss, 1, 4);
 	sblist_init(&go_blood, 1, 16);
+	sblist_init(&go_enemy_flames, 1, 16);
 	init_player(0);
 	add_crosshair(init_crosshair());
 	init_map(current_map);
@@ -1148,7 +1164,8 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 							if(target_list == &go_vehicles || target_list == &go_bunkers)
 								goto next_bullet;
 						}
-						enum animation_id death_anim = bullet_subtybe == BS_FLAME ? ANIM_ENEMY_BURNT : get_die_anim(*target_id);
+						enum animation_id death_anim = (bullet_subtybe == BS_FLAME && target_list == &go_enemies) ?
+						                               ANIM_ENEMY_BURNT : get_die_anim(*target_id);
 						if(death_anim == ANIM_INVALID) {
 							gameobj_free(*target_id);
 							sblist_delete(target_list, lj);
@@ -1252,6 +1269,7 @@ static void draw_gameobjs(void) {
 	draw_golist(&go_player_bullets);
 	draw_golist(&go_enemy_explosions);
 	draw_golist(&go_flames);
+	draw_golist(&go_enemy_flames);
 	draw_golist(&go_explosions);
 	draw_golist(&go_grenades);
 	draw_golist(&go_enemy_grenades);
@@ -1269,7 +1287,7 @@ static void process_soldiers(void) {
 			if(rc->vel) {
 				go->objspecific.enemy.curr_step++;
 				if(enemy_fires(&go->objspecific.enemy)) {
-					enemy_fire_bullet(*itemid, DIR16_INVALID, 41);
+					enemy_fire_bullet(*itemid, DIR16_INVALID, 41, go->objspecific.enemy.spawn->weapon);
 				}
 				const struct enemy_route *rn = get_enemy_current_route(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
 				if(rn->shape != rc->shape) switch_enemy_shape(*itemid, rn);
@@ -1286,15 +1304,36 @@ static int process_turrets(void) {
 	sblist_iter(&go_turrets, itemid) {
 		struct gameobj *go = &objs[*itemid];
 		enum direction16 dir = DIR16_S;
+		enum enemy_weapon ew = EW_GUN;
+		int steps = 92;
 		switch(go->objtype) {
 			case OBJ_GUNTURRET_FIXED_NORTH:
 				dir = DIR16_N;
 			case OBJ_GUNTURRET_FIXED_SOUTH:
+				shot_test:
 				if(rand()%8 == 0) {
-					enemy_fire_bullet(*itemid, dir, 92);
+					shot:
+					enemy_fire_bullet(*itemid, dir, steps, ew);
 					res = 1;
 				}
 				break;
+			case OBJ_FLAMETURRET:
+				ew = EW_FLAME;
+				steps = 48;
+				if(objs[player_ids[0]].pos.y <= (192-25)*SCALE/2) dir = DIR16_N;
+				/* abusing curr_step variable to save position in a burst of flames */
+				if(go->objspecific.enemy.curr_step && go->objspecific.enemy.curr_step < 16)
+					goto do_flame;
+				else if(go->objspecific.enemy.curr_step)
+					go->objspecific.enemy.curr_step = 0;
+				
+				if(objs[player_ids[0]].pos.x < go->pos.x-32*SCALE || objs[player_ids[0]].pos.x > go->pos.x + (16+32)*SCALE)
+					break;
+				if(rand()%8 == 0) {
+					do_flame:
+					go->objspecific.enemy.curr_step++;
+					goto shot;
+				}
 			default:;
 		}
 	}
@@ -1374,6 +1413,7 @@ static void game_tick(int force_redraw) {
 	if(hit_bullets(&go_player_bullets, &go_enemies)) need_redraw = 1;
 	if(hit_bullets(&go_player_bullets, &go_vehicles)) need_redraw = 1;
 	if(hit_bullets(&go_flames, &go_enemies)) need_redraw = 1;
+	if(hit_bullets(&go_enemy_flames, &go_enemies)) need_redraw = 1;
 	if(hit_bullets(&go_rockets, &go_enemies)) need_redraw = 1;
 	if(hit_bullets(&go_rockets, &go_vehicles)) need_redraw = 1;
 	if(hit_bullets(&go_explosions, &go_enemies)) need_redraw = 1;
@@ -1384,11 +1424,13 @@ static void game_tick(int force_redraw) {
 	if(hit_bullets(&go_explosions, &go_players)) need_redraw = 1;
 	if(hit_bullets(&go_enemy_explosions, &go_players)) need_redraw = 1;
 	if(hit_bullets(&go_enemy_bullets, &go_players)) need_redraw = 1;
+	if(hit_bullets(&go_enemy_flames, &go_players)) need_redraw = 1;
 	if(remove_bullets(&go_player_bullets)) need_redraw = 1;
 	if(remove_bullets(&go_flames)) need_redraw = 1;
 	if(remove_bullets(&go_explosions)) need_redraw = 1;
 	if(remove_bullets(&go_enemy_explosions)) need_redraw = 1;
 	if(remove_bullets(&go_enemy_bullets)) need_redraw = 1;
+	if(remove_bullets(&go_enemy_flames)) need_redraw = 1;
 	if(remove_bullets(&go_muzzleflash)) need_redraw = 1;
 	if(remove_bullets(&go_blood)) need_redraw = 1;
 	if(remove_explosives(&go_grenades)) need_redraw = 1;
