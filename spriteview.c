@@ -1335,27 +1335,56 @@ static int process_turrets(sblist* list) {
 					goto shot;
 				}
 				break;
-			case OBJ_BUNKER5:
-				if(tickcounter > (uint32_t) go->objspecific.enemy.curr_step + fps*3) {
+			case OBJ_BUNKER1:
+			case OBJ_BUNKER5: {
+				vec2f *bunkerpos;
+				enum direction16 *bunkerdir;
+				unsigned count, sec;
+				static const enum direction16 bunker5_dir[] = {
+					[0] = DIR16_N, [1] = DIR16_NO, [2] = DIR16_O, [3] = DIR16_SO, 
+					[4] = DIR16_S, [5] = DIR16_SW, [6] = DIR16_W, [7] = DIR16_NW,
+				};
+				static const enum direction16 bunker1_dir[] = {
+					[0] = DIR16_NNW, [1] = DIR16_NNO, [2] = DIR16_NO, [3] = DIR16_O, 
+					[4] = DIR16_SO, [5] = DIR16_SSO, [6] = DIR16_SSW, [7] = DIR16_SW,
+					[8] = DIR16_W, [9] = DIR16_NW,
+				};
+				static const vec2f bunker5_pos[] = {
+					[0] = VEC(9,-8), [1] = VEC(18,-6), [2] = VEC(26,2), [3] = VEC(22,10),
+					[4] = VEC(9,16), [5] = VEC(-5,13), [6] = VEC(-7,2), [7] = VEC(-5,-6),
+				};
+				static const vec2f bunker1_pos[] = {
+					[0] = VEC(6,-6), [1] = VEC(18,-6), [2] = VEC(26,2), [3] = VEC(26,12),
+					[4] = VEC(26,16), [5] = VEC(20,24), [6] = VEC(6,24), [7] = VEC(0,20),
+					[8] = VEC(0,12), [9] = VEC(0,2),
+				};
+				
+				if(go->objtype == OBJ_BUNKER1) {
+					ew = EW_GRENADE;
+					bunkerpos = bunker1_pos;
+					bunkerdir = bunker1_dir;
+					count = 10;
+					sec = 2;
+				} else {
+					ew = EW_FLAME;
+					bunkerpos = bunker5_pos;
+					bunkerdir = bunker5_dir;
+					count = 8;
+					sec = 3;
+				}
+				if(tickcounter > (uint32_t) go->objspecific.enemy.curr_step + fps*sec) {
 					go->objspecific.enemy.curr_step = tickcounter;
-					static const enum direction16 bunker5_dir[] = {
-						[0] = DIR16_N, [1] = DIR16_NO, [2] = DIR16_O, [3] = DIR16_SO, 
-						[4] = DIR16_S, [5] = DIR16_SW, [6] = DIR16_W, [7] = DIR16_NW,
-					};
-					static const vec2f bunker5_pos[] = {
-						[0] = VEC(9,-8), [1] = VEC(18,-6), [2] = VEC(26,2), [3] = VEC(22,10),
-						[4] = VEC(9,16), [5] = VEC(-5,13), [6] = VEC(-7,2), [7] = VEC(-5,-6),
-					};
-					unsigned b5;
-					for(b5 = 0; b5 < 8; b5++) {
+					unsigned b;
+					for(b = 0; b < count; b++) {
 						from = go->pos;
-						from.x += bunker5_pos[b5].x*SCALE;
-						from.y += bunker5_pos[b5].y*SCALE;
-						enemy_fire_bullet(bunker5_dir[b5], 28, EW_FLAME, &from);
+						from.x += bunkerpos[b].x*SCALE;
+						from.y += bunkerpos[b].y*SCALE;
+						enemy_fire_bullet(bunkerdir[b], 28, ew, &from);
 					}
 					res = 1;
 				}
 				break;
+			}
 			default:;
 		}
 	}
