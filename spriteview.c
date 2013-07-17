@@ -216,6 +216,8 @@ unsigned map_spawn_screen_index;
 unsigned map_spawn_line;
 unsigned map_spawn_current;
 
+static const int fps = 64;
+
 static void init_map(enum map_index mapindex) {
 	map = maps[mapindex];
 	map_scr = map_screens[mapindex];
@@ -850,26 +852,21 @@ static enum direction get_shotdirection_from_enemy(int curr_step, const struct e
 	}
 }
 
-static void enemy_fire_bullet(int objid, enum direction16 dir16, int steps, enum enemy_weapon wpn) {
+static void enemy_fire_bullet(int objid, enum direction16 dir16, int steps, enum enemy_weapon wpn, vec2f *pos) {
 	struct gameobj* go = &objs[objid];
 	enum direction16 dir = dir16;
 	if(dir == DIR16_INVALID) 
 		dir = get_shotdirection_from_enemy(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
-	vec2f from = get_gameobj_center(objid);
 	vec2f vel = get_vel_from_direction16(dir, 1.75);
 	int id;
 	if(wpn == EW_GUN) {
-		id = init_bullet(&from, &vel, steps);
+		id = init_bullet(pos, &vel, steps);
 		if(id != -1) add_ebullet(id);
 	} else if (wpn == EW_GRENADE) {
-		id = init_grenade(&from, &vel, steps);
+		id = init_grenade(pos, &vel, steps);
 		if(id != -1) add_enemy_grenade(id);
 	} else {
-		if(go->objtype == OBJ_FLAMETURRET) {
-			from = go->pos;
-			from.y += (dir == DIR16_N ? -8*SCALE : 8*SCALE);
-		}
-		id = init_flame(&from, &vel, steps);
+		id = init_flame(pos, &vel, steps);
 		if(id != -1) add_enemy_flame(id);
 	}
 }
@@ -1287,7 +1284,8 @@ static void process_soldiers(void) {
 			if(rc->vel) {
 				go->objspecific.enemy.curr_step++;
 				if(enemy_fires(&go->objspecific.enemy)) {
-					enemy_fire_bullet(*itemid, DIR16_INVALID, 41, go->objspecific.enemy.spawn->weapon);
+					vec2f from = get_gameobj_center(*itemid);
+					enemy_fire_bullet(*itemid, DIR16_INVALID, 41, go->objspecific.enemy.spawn->weapon, &from);
 				}
 				const struct enemy_route *rn = get_enemy_current_route(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
 				if(rn->shape != rc->shape) switch_enemy_shape(*itemid, rn);
@@ -1298,29 +1296,34 @@ static void process_soldiers(void) {
 	}
 }
 
-static int process_turrets(void) {
+static int process_turrets(sblist* list) {
 	int res = 0;
 	uint8_t *itemid;
-	sblist_iter(&go_turrets, itemid) {
+	sblist_iter(list, itemid) {
 		struct gameobj *go = &objs[*itemid];
 		enum direction16 dir = DIR16_S;
 		enum enemy_weapon ew = EW_GUN;
 		int steps = 92;
+		vec2f from;
 		switch(go->objtype) {
 			case OBJ_GUNTURRET_FIXED_NORTH:
 				dir = DIR16_N;
 			case OBJ_GUNTURRET_FIXED_SOUTH:
-				shot_test:
+				from = get_gameobj_center(*itemid);
 				if(rand()%8 == 0) {
 					shot:
-					enemy_fire_bullet(*itemid, dir, steps, ew);
+					enemy_fire_bullet(*itemid, dir, steps, ew, &from);
 					res = 1;
 				}
 				break;
 			case OBJ_FLAMETURRET:
 				ew = EW_FLAME;
 				steps = 48;
+				
 				if(objs[player_ids[0]].pos.y <= (192-25)*SCALE/2) dir = DIR16_N;
+				from = go->pos;
+				from.y += (dir == DIR16_N ? -8*SCALE : 8*SCALE);
+				
 				/* abusing curr_step variable to save position in a burst of flames */
 				if(go->objspecific.enemy.curr_step && go->objspecific.enemy.curr_step < 16)
 					goto do_flame;
@@ -1334,6 +1337,28 @@ static int process_turrets(void) {
 					go->objspecific.enemy.curr_step++;
 					goto shot;
 				}
+				break;
+			case OBJ_BUNKER5:
+				if(tickcounter > (uint32_t) go->objspecific.enemy.curr_step + fps*3) {
+					go->objspecific.enemy.curr_step = tickcounter;
+					static const enum direction16 bunker5_dir[] = {
+						[0] = DIR16_N, [1] = DIR16_NO, [2] = DIR16_O, [3] = DIR16_SO, 
+						[4] = DIR16_S, [5] = DIR16_SW, [6] = DIR16_W, [7] = DIR16_NW,
+					};
+					static const vec2f bunker5_pos[] = {
+						[0] = VEC(9,-8), [1] = VEC(18,-6), [2] = VEC(26,2), [3] = VEC(22,10),
+						[4] = VEC(9,16), [5] = VEC(-5,13), [6] = VEC(-7,2), [7] = VEC(-5,-6),
+					};
+					unsigned b5;
+					for(b5 = 0; b5 < 8; b5++) {
+						from = go->pos;
+						from.x += bunker5_pos[b5].x*SCALE;
+						from.y += bunker5_pos[b5].y*SCALE;
+						enemy_fire_bullet(*itemid, bunker5_dir[b5], 28, EW_FLAME, &from);
+					}
+					res = 1;
+				}
+				break;
 			default:;
 		}
 	}
@@ -1396,7 +1421,6 @@ static void(*update_caption)(void) = game_update_caption;
 
 static void game_tick(int force_redraw) {
 	int need_redraw = force_redraw;
-	const int fps = 64;
 	if(mousebutton_down[MB_LEFT] > 1) {
 		const int player_no = 0;
 		const struct weapon *pw = get_active_weapon(player_no);
@@ -1439,7 +1463,8 @@ static void game_tick(int force_redraw) {
 	if(tickcounter % 2 == 0 && scroll_map()) need_redraw = 1;
 	
 	process_soldiers();
-	if(tickcounter % 4 == 0 && process_turrets()) need_redraw = 1;
+	if(tickcounter % 4 == 0 && process_turrets(&go_turrets)) need_redraw = 1;
+	if(tickcounter % 4 == 0 && process_turrets(&go_bunkers)) need_redraw = 1;
 
 	if(move_gameobjs()) need_redraw = 1;
 	
