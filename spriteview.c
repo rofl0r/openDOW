@@ -838,25 +838,21 @@ static enum weapon_id get_active_weapon_id(int player_no) {
 static const struct weapon* get_active_weapon(int player_no) {
 	return &weapons[get_active_weapon_id(player_no)];
 }
-static enum direction get_shotdirection_from_enemy(int curr_step, const struct enemy_spawn *spawn) {
+static enum direction16 get_shotdirection_from_enemy(int curr_step, const struct enemy_spawn *spawn) {
 	const struct enemy_route* r = get_enemy_current_route(curr_step, spawn);
 	switch(r->shape) {
 		case ES_SOLDIER1_DOWN: case ES_SOLDIER2_DOWN:
-			return DIR_S;
+			return DIR16_S;
 		case ES_SOLDIER1_LEFT: case ES_SOLDIER2_LEFT:
-			return DIR_W;
+			return DIR16_W;
 		case ES_SOLDIER1_RIGHT: case ES_SOLDIER2_RIGHT:
-			return DIR_O;
+			return DIR16_O;
 		default:
 			assert(0);
 	}
 }
 
-static void enemy_fire_bullet(int objid, enum direction16 dir16, int steps, enum enemy_weapon wpn, vec2f *pos) {
-	struct gameobj* go = &objs[objid];
-	enum direction16 dir = dir16;
-	if(dir == DIR16_INVALID) 
-		dir = get_shotdirection_from_enemy(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
+static void enemy_fire_bullet(enum direction16 dir, int steps, enum enemy_weapon wpn, vec2f *pos) {
 	vec2f vel = get_vel_from_direction16(dir, 1.75);
 	int id;
 	if(wpn == EW_GUN) {
@@ -1285,7 +1281,8 @@ static void process_soldiers(void) {
 				go->objspecific.enemy.curr_step++;
 				if(enemy_fires(&go->objspecific.enemy)) {
 					vec2f from = get_gameobj_center(*itemid);
-					enemy_fire_bullet(*itemid, DIR16_INVALID, 41, go->objspecific.enemy.spawn->weapon, &from);
+					enum direction16 dir = get_shotdirection_from_enemy(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
+					enemy_fire_bullet(dir, 41, go->objspecific.enemy.spawn->weapon, &from);
 				}
 				const struct enemy_route *rn = get_enemy_current_route(go->objspecific.enemy.curr_step, go->objspecific.enemy.spawn);
 				if(rn->shape != rc->shape) switch_enemy_shape(*itemid, rn);
@@ -1312,7 +1309,7 @@ static int process_turrets(sblist* list) {
 				from = get_gameobj_center(*itemid);
 				if(rand()%8 == 0) {
 					shot:
-					enemy_fire_bullet(*itemid, dir, steps, ew, &from);
+					enemy_fire_bullet(dir, steps, ew, &from);
 					res = 1;
 				}
 				break;
@@ -1354,7 +1351,7 @@ static int process_turrets(sblist* list) {
 						from = go->pos;
 						from.x += bunker5_pos[b5].x*SCALE;
 						from.y += bunker5_pos[b5].y*SCALE;
-						enemy_fire_bullet(*itemid, bunker5_dir[b5], 28, EW_FLAME, &from);
+						enemy_fire_bullet(bunker5_dir[b5], 28, EW_FLAME, &from);
 					}
 					res = 1;
 				}
