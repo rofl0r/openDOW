@@ -1382,22 +1382,19 @@ static int process_turrets(sblist* list) {
 					case OBJ_BUNKER2:
 						if(tickcounter % 8) break;
 						ew = EW_GUN;
-						bunkerpos = bunker2_pos;
-						bunkerdir = bunker5_dir;
-						b = go->objspecific.enemy.curr_step;
-						count = b+1;
-						if(++go->objspecific.enemy.curr_step >= 8) go->objspecific.enemy.curr_step = 0;
 						dist = 128;
-						goto bunkerloop;
+						bunkerpos = bunker2_pos;
+						goto bunker_circle_shoot;
 					case OBJ_BUNKER4:
 						if(tickcounter % /*(fps*3.5)/8*/ 24) break;
 						ew = EW_GRENADE;
+						dist = 32;
 						bunkerpos = bunker4_pos;
+						bunker_circle_shoot:;
 						bunkerdir = bunker5_dir;
 						b = go->objspecific.enemy.curr_step;
 						count = b+1;
 						if(++go->objspecific.enemy.curr_step >= 8) go->objspecific.enemy.curr_step = 0;
-						dist = 32;
 						goto bunkerloop;
 					case OBJ_BUNKER3:
 						ew = EW_GUN;
