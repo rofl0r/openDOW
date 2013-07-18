@@ -1337,6 +1337,7 @@ static int process_turrets(sblist* list) {
 				break;
 			case OBJ_BUNKER1:
 			case OBJ_BUNKER2:
+			case OBJ_BUNKER3:
 			case OBJ_BUNKER5: {
 				const vec2f *bunkerpos;
 				const enum direction16 *bunkerdir;
@@ -1381,6 +1382,14 @@ static int process_turrets(sblist* list) {
 					if(++go->objspecific.enemy.curr_step >= 8) go->objspecific.enemy.curr_step = 0;
 					dist = 128;
 					goto bunkerloop;
+				} else if(go->objtype == OBJ_BUNKER3) {
+					ew = EW_GUN;
+					bunkerpos = bunker2_pos;
+					bunkerdir = bunker5_dir;
+					b = 0;
+					count = 8;
+					dist = 128;
+					sec = 1;
 				} else if(go->objtype == OBJ_BUNKER5) {
 					ew = EW_FLAME;
 					bunkerpos = bunker5_pos;
