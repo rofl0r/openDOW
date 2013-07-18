@@ -1338,6 +1338,7 @@ static int process_turrets(sblist* list) {
 			case OBJ_BUNKER1:
 			case OBJ_BUNKER2:
 			case OBJ_BUNKER3:
+			case OBJ_BUNKER4:
 			case OBJ_BUNKER5: {
 				const vec2f *bunkerpos;
 				const enum direction16 *bunkerdir;
@@ -1359,44 +1360,63 @@ static int process_turrets(sblist* list) {
 					[0] = VEC(15,-2), [1] = VEC(27,3), [2] = VEC(31,12), [3] = VEC(28,23),
 					[4] = VEC(15,27), [5] = VEC(2,23), [6] = VEC(0,12), [7] = VEC(4,2),
 				};
+				static const vec2f bunker4_pos[] = {
+					[0] = VEC(13,0), [1] = VEC(25,1), [2] = VEC(29,10), [3] = VEC(26,21),
+					[4] = VEC(13,25), [5] = VEC(0,21), [6] = VEC(-2,10), [7] = VEC(2,0),
+				};
 				static const vec2f bunker1_pos[] = {
 					[0] = VEC(6,-6), [1] = VEC(18,-6), [2] = VEC(26,2), [3] = VEC(26,12),
 					[4] = VEC(26,16), [5] = VEC(20,24), [6] = VEC(6,24), [7] = VEC(0,20),
 					[8] = VEC(0,12), [9] = VEC(0,2),
 				};
 				unsigned b, dist = 28;
-				if(go->objtype == OBJ_BUNKER1) {
-					ew = EW_GRENADE;
-					bunkerpos = bunker1_pos;
-					bunkerdir = bunker1_dir;
-					b = 0;
-					count = 10;
-					sec = 2;
-				} else if(go->objtype == OBJ_BUNKER2) {
-					if(tickcounter % 8) break;
-					ew = EW_GUN;
-					bunkerpos = bunker2_pos;
-					bunkerdir = bunker5_dir;
-					b = go->objspecific.enemy.curr_step;
-					count = b+1;
-					if(++go->objspecific.enemy.curr_step >= 8) go->objspecific.enemy.curr_step = 0;
-					dist = 128;
-					goto bunkerloop;
-				} else if(go->objtype == OBJ_BUNKER3) {
-					ew = EW_GUN;
-					bunkerpos = bunker2_pos;
-					bunkerdir = bunker5_dir;
-					b = 0;
-					count = 8;
-					dist = 128;
-					sec = 1;
-				} else if(go->objtype == OBJ_BUNKER5) {
-					ew = EW_FLAME;
-					bunkerpos = bunker5_pos;
-					bunkerdir = bunker5_dir;
-					b = 0;
-					count = 8;
-					sec = 3;
+				switch(go->objtype) {
+					case OBJ_BUNKER1:
+						ew = EW_GRENADE;
+						bunkerpos = bunker1_pos;
+						bunkerdir = bunker1_dir;
+						b = 0;
+						count = 10;
+						sec = 2;
+						break;
+					case OBJ_BUNKER2:
+						if(tickcounter % 8) break;
+						ew = EW_GUN;
+						bunkerpos = bunker2_pos;
+						bunkerdir = bunker5_dir;
+						b = go->objspecific.enemy.curr_step;
+						count = b+1;
+						if(++go->objspecific.enemy.curr_step >= 8) go->objspecific.enemy.curr_step = 0;
+						dist = 128;
+						goto bunkerloop;
+					case OBJ_BUNKER4:
+						if(tickcounter % /*(fps*3.5)/8*/ 24) break;
+						ew = EW_GRENADE;
+						bunkerpos = bunker4_pos;
+						bunkerdir = bunker5_dir;
+						b = go->objspecific.enemy.curr_step;
+						count = b+1;
+						if(++go->objspecific.enemy.curr_step >= 8) go->objspecific.enemy.curr_step = 0;
+						dist = 32;
+						goto bunkerloop;
+					case OBJ_BUNKER3:
+						ew = EW_GUN;
+						bunkerpos = bunker2_pos;
+						bunkerdir = bunker5_dir;
+						b = 0;
+						count = 8;
+						dist = 128;
+						sec = 1;
+						break;
+					case OBJ_BUNKER5:
+						ew = EW_FLAME;
+						bunkerpos = bunker5_pos;
+						bunkerdir = bunker5_dir;
+						b = 0;
+						count = 8;
+						sec = 3;
+						break;
+					default:;
 				}
 				if(tickcounter > (uint32_t) go->objspecific.enemy.curr_step + fps*sec) {
 					go->objspecific.enemy.curr_step = tickcounter;
