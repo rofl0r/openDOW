@@ -1086,8 +1086,23 @@ static int remove_offscreen_objects(sblist *list) {
 }
 
 static int is_death_anim(enum animation_id anim) {
-	return anim == ANIM_ENEMY_BOMBER_DIE || anim == ANIM_ENEMY_GUNNER_DIE || 
-	       anim == ANIM_ENEMY_BURNT || anim == ANIM_P1_DIE || anim == ANIM_P2_DIE;
+	switch(anim) {
+		case ANIM_ENEMY_BOMBER_DIE:
+		case ANIM_ENEMY_GUNNER_DIE:
+		case ANIM_ENEMY_BURNT:
+		case ANIM_P1_DIE:
+		case ANIM_P2_DIE:
+		case ANIM_GUNTURRET_MOVABLE_MAN_DESTROYED:
+		case ANIM_GUNTURRET_MOVABLE_MACHINE_DESTROYED:
+		case ANIM_BUNKER_DESTROYED:
+		case ANIM_JEEP_DESTROYED:
+		case ANIM_TANK_BIG_DESTROYED:
+		case ANIM_TANK_SMALL_DESTROYED:
+		case ANIM_TRANSPORTER_DESTROYED:
+			return 1;
+		default: 
+			return 0;
+	}
 }
 
 // removes bullets and other objects if they collide. return 1 if anything happened
