@@ -758,6 +758,8 @@ static int init_enemy(const struct enemy_spawn *spawn) {
 		case OBJ_BUNKER4: case OBJ_BUNKER5:
 			add_bunker(id);
 			break;
+		case OBJ_GUNTURRET_MOVABLE_MACHINE:
+		case OBJ_GUNTURRET_MOVABLE_MAN:
 		case OBJ_FLAMETURRET: case OBJ_GUNTURRET_FIXED_NORTH:
 		case OBJ_GUNTURRET_FIXED_SOUTH:
 			add_turret(id);
@@ -830,6 +832,15 @@ static vec2f get_gameobj_center(int obj_id) {
 
 static enum direction get_direction_from_vec(vec2f *vel);
 static enum animation_id get_anim_from_direction(enum direction dir, int player, int throwing);
+
+static enum direction16 get_direction16_from_direction(enum direction dir) {
+	static const enum direction16 dir16_transl_tab[] = {
+		[DIR_N] = DIR16_N, [DIR_NO] = DIR16_NO, [DIR_O] = DIR16_O, [DIR_SO] = DIR16_SO, 
+		[DIR_S] = DIR16_S, [DIR_SW] = DIR16_SW, [DIR_W] = DIR16_W, [DIR_NW] = DIR16_NW,
+	};
+	assert(dir != DIR_INVALID);
+	return dir16_transl_tab[dir];
+}
 
 static enum weapon_id get_active_weapon_id(int player_no) {
 	return player_weapons[player_no][weapon_active[player_no]];
@@ -1308,11 +1319,37 @@ static void process_soldiers(void) {
 	}
 }
 
+static enum animation_id get_turret_anim_from_dir(int objid, enum direction dir) {
+	static const enum animation_id man_anim[] = {
+		[DIR_N] = ANIM_GUNTURRET_MOVABLE_MAN_N,
+		[DIR_NO] = ANIM_GUNTURRET_MOVABLE_MAN_NO,
+		[DIR_O] = ANIM_GUNTURRET_MOVABLE_MAN_O,
+		[DIR_SO] = ANIM_GUNTURRET_MOVABLE_MAN_SO,
+		[DIR_S] = ANIM_GUNTURRET_MOVABLE_MAN_S,
+		[DIR_SW] = ANIM_GUNTURRET_MOVABLE_MAN_SW,
+		[DIR_W] = ANIM_GUNTURRET_MOVABLE_MAN_W,
+		[DIR_NW] = ANIM_GUNTURRET_MOVABLE_MAN_NW,
+	};
+	static const enum animation_id mach_anim[] = {
+		[DIR_N] = ANIM_GUNTURRET_MOVABLE_MACHINE_N,
+		[DIR_NO] = ANIM_GUNTURRET_MOVABLE_MACHINE_NO,
+		[DIR_O] = ANIM_GUNTURRET_MOVABLE_MACHINE_O,
+		[DIR_SO] = ANIM_GUNTURRET_MOVABLE_MACHINE_SO,
+		[DIR_S] = ANIM_GUNTURRET_MOVABLE_MACHINE_S,
+		[DIR_SW] = ANIM_GUNTURRET_MOVABLE_MACHINE_SW,
+		[DIR_W] = ANIM_GUNTURRET_MOVABLE_MACHINE_W,
+		[DIR_NW] = ANIM_GUNTURRET_MOVABLE_MACHINE_NW,
+	};
+	const enum animation_id *lut = objs[objid].objtype == OBJ_GUNTURRET_MOVABLE_MAN ? man_anim : mach_anim;
+	return lut[dir];
+}
+
 static int process_turrets(sblist* list) {
 	int res = 0;
 	uint8_t *itemid;
 	sblist_iter(list, itemid) {
 		struct gameobj *go = &objs[*itemid];
+		if(is_death_anim(go->animid)) continue;
 		enum direction16 dir = DIR16_S;
 		enum enemy_weapon ew = EW_GUN;
 		int steps = 92;
@@ -1322,6 +1359,7 @@ static int process_turrets(sblist* list) {
 				dir = DIR16_N;
 			case OBJ_GUNTURRET_FIXED_SOUTH:
 				from = get_gameobj_center(*itemid);
+				shottest:
 				if(rand()%8 == 0) {
 					shot:
 					enemy_fire_bullet(dir, steps, ew, &from);
@@ -1350,6 +1388,17 @@ static int process_turrets(sblist* list) {
 					goto shot;
 				}
 				break;
+			case OBJ_GUNTURRET_MOVABLE_MAN:
+			case OBJ_GUNTURRET_MOVABLE_MACHINE: {
+				from = get_gameobj_center(*itemid);
+				vec2f p_center = get_gameobj_center(player_ids[0]);
+				vec2f vel = velocity(&from, &p_center);
+				enum direction dir8 = get_direction_from_vec(&vel);
+				dir = get_direction16_from_direction(dir8);
+				switch_anim(*itemid, get_turret_anim_from_dir(*itemid, dir8));
+				goto shottest;
+				break;
+			}
 			case OBJ_BUNKER1:
 			case OBJ_BUNKER2:
 			case OBJ_BUNKER3:
