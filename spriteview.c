@@ -1140,7 +1140,7 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 		uint8_t *target_id;
 		sblist_iter_counter2(target_list, lj, target_id) {
 			struct gameobj *target = &objs[*target_id];
-			if(is_death_anim(target->animid)) continue;
+			if(is_death_anim(target->animid) && target_list != &go_vehicles) continue;
 			vec2f temp = get_gameobj_center(*target_id);
 			float dist1 = vecdist(&bullet_center, &temp) - bullet_radius[bullet_subtybe] * SCALE;
 			vec2f newpos = vecadd(&bullet_center, &bullet->vel);
