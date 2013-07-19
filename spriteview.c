@@ -1399,6 +1399,7 @@ static int process_turrets(sblist* list) {
 				goto shottest;
 				break;
 			}
+			case OBJ_TANK_SMALL:
 			case OBJ_BUNKER1:
 			case OBJ_BUNKER2:
 			case OBJ_BUNKER3:
@@ -1433,6 +1434,14 @@ static int process_turrets(sblist* list) {
 					[4] = VEC(26,16), [5] = VEC(20,24), [6] = VEC(6,24), [7] = VEC(0,20),
 					[8] = VEC(0,12), [9] = VEC(0,2),
 				};
+				static const enum direction16 tank_dir[] = {
+					[0] = DIR16_WSW, [1] = DIR16_OSO, [2] = DIR16_WSW, [3] = DIR16_OSO, 
+					[4] = DIR16_WSW, [5] = DIR16_OSO, [6] = DIR16_SSW, [7] = DIR16_SSO,
+				};
+				static const vec2f tank_pos[] = {
+					[0] = VEC(10,8), [1] = VEC(38,8), [2] = VEC(10,20), [3] = VEC(38,20),
+					[4] = VEC(10,32), [5] = VEC(38,32), [6] = VEC(16,40), [7] = VEC(32,40),
+				};
 				unsigned b, dist = 28;
 				switch(go->objtype) {
 					case OBJ_BUNKER1:
@@ -1443,19 +1452,28 @@ static int process_turrets(sblist* list) {
 						count = 10;
 						sec = 2;
 						break;
+					case OBJ_TANK_SMALL:
+						if(tickcounter % 8) break;
+						ew = EW_GUN;
+						dist = 128;
+						bunkerpos = tank_pos;
+						bunkerdir = tank_dir;
+						// FIXME: the last 2 shoots (6+7) should be fired at the same time
+						goto bunker_circle_shoot;
 					case OBJ_BUNKER2:
 						if(tickcounter % 8) break;
 						ew = EW_GUN;
 						dist = 128;
 						bunkerpos = bunker2_pos;
+						bunkerdir = bunker5_dir;
 						goto bunker_circle_shoot;
 					case OBJ_BUNKER4:
 						if(tickcounter % /*(fps*3.5)/8*/ 24) break;
 						ew = EW_GRENADE;
 						dist = 32;
 						bunkerpos = bunker4_pos;
-						bunker_circle_shoot:;
 						bunkerdir = bunker5_dir;
+						bunker_circle_shoot:;
 						b = go->objspecific.enemy.curr_step;
 						count = b+1;
 						if(++go->objspecific.enemy.curr_step >= 8) go->objspecific.enemy.curr_step = 0;
@@ -1598,6 +1616,7 @@ static void game_tick(int force_redraw) {
 	process_soldiers();
 	if(tickcounter % 4 == 0 && process_turrets(&go_turrets)) need_redraw = 1;
 	if(tickcounter % 4 == 0 && process_turrets(&go_bunkers)) need_redraw = 1;
+	if(tickcounter % 4 == 0 && process_turrets(&go_vehicles)) need_redraw = 1;
 
 	if(move_gameobjs()) need_redraw = 1;
 	
