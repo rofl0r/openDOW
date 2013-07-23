@@ -6,7 +6,7 @@ enum tune_index {
 	TUNE_FIGHTING = 0,
 	TUNE_MAP,
 	TUNE_2,
-	TUNE_3,
+	TUNE_LEVEL_FINISHED,
 	TUNE_4,
 	TUNE_HIGHSCORE,
 	TUNE_6,
