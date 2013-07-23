@@ -1121,6 +1121,60 @@ static int is_death_anim(enum animation_id anim) {
 	}
 }
 
+static int overlap(int id1, int id2) {
+	struct gameobj *o1 = &objs[id1];
+	struct gameobj *o2 = &objs[id2];
+	const struct palpic* p1 = spritemaps[o1->spritemap_id];
+	const struct palpic* p2 = spritemaps[o2->spritemap_id];
+	
+	vec2f vec = velocity(&o1->pos, &o2->pos);
+	float mh = o1->pos.y < o2->pos.y ? palpic_getspriteheight(p1) : palpic_getspriteheight(p2);
+	float mw = o1->pos.x < o2->pos.x ? palpic_getspritewidth(p1) : palpic_getspritewidth(p2);
+	mh*=SCALE, mw*=SCALE;
+	return fabs(vec.x) < mw && fabs(vec.y) < mh;
+}
+
+static int masks_collide(int id1, int id2) {
+	struct gameobj *a = &objs[id1];
+	struct gameobj *b = &objs[id2];
+	const struct palpic* pa = spritemaps[a->spritemap_id];
+	const struct palpic* pb = spritemaps[b->spritemap_id];
+	int ax = a->pos.x/SCALE, ay = a->pos.y/SCALE,
+	    aw = palpic_getspritewidth(pa), ah = palpic_getspriteheight(pa);
+	int bx = b->pos.x/SCALE, by = b->pos.y/SCALE,
+	    bw = palpic_getspritewidth(pb), bh = palpic_getspriteheight(pb);
+    
+	/* x: normalized start position */
+	int xx = MIN(ax, bx), xy = MIN(ay, by);
+	/* normalize coordinates to 0 */
+	ax -= xx, ay -= xy, bx -= xx, by -= xy;
+	/* o: upper left point of the overlapping region */
+	int ox = MAX(ax, bx), oy = MAX(ay, by);
+	/* e: lower right point of the overlapping region */
+	int ex = MIN(ax+aw, bx+bw), ey = MIN(ay+ah, by+bh);
+	/* vector o -> e */
+	int oex = ex - ox, oey = ey - oy;
+	/* (s)tart and (e)nd coordinates of the overlapping regions in both rects */
+	int asx = ox - ax, asy = oy - ay;
+	int bsx = ox - bx, bsy = oy - by;
+	int aex = asx + oex, bex = bsx + oex;
+	int aey = asy + oey, bey = bsy + oey;
+	assert(asx >= 0); assert(asy >= 0);
+	assert(bsx >= 0); assert(bsy >= 0);
+	if(!aex || !bex || !aey || !bey) return 0;
+	assert(aex > 0); assert(bex > 0);
+	assert(aey > 0); assert(bey > 0);
+	int xa, ya, xb, yb;
+	const uint8_t *da = palpic_getspritedata(pa, get_sprite_number(id1)), 
+	              *db = palpic_getspritedata(pb, get_sprite_number(id2));
+	assert(da); assert(db);
+	for(ya = asy, yb = bsy; ya < aey && yb < bey; ya++, yb++)
+		for(xa = asx, xb = bsx; xa < aex && xb < bex ; xa++, xb++)
+			if(da[ya*aw+xa] && db[yb*bw+xb]) return 1;
+	return 0;
+}
+
+
 // removes bullets and other objects if they collide. return 1 if anything happened
 static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 	uint8_t *bullet_id;
@@ -1131,6 +1185,7 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 		BS_FLAME = 1,
 		BS_GRENADE_EXPL = 2,
 		BS_BIG_EXPL = 3,
+		BS_TOUCH,
 	} bullet_subtybe = BS_BULLET;
 	
 	sblist_iter_counter2s(bullet_list, li, bullet_id) {
@@ -1142,6 +1197,8 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 			bullet_subtybe = BS_GRENADE_EXPL;
 		} else if(bullet->objtype == OBJ_BIG_EXPLOSION) {
 			bullet_subtybe = BS_BIG_EXPL;
+		} else if(bullet_list == &go_vehicles || bullet_list == &go_enemies) {
+			bullet_subtybe = BS_TOUCH;
 		}
 		
 		vec2f bullet_center = get_gameobj_center(*bullet_id);
@@ -1150,13 +1207,20 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 		}
 		
 		const float bullet_radius[] = { [BS_BULLET] = 1.f, [BS_FLAME] = 6.f, 
-		                                [BS_GRENADE_EXPL] = 16.f, [BS_BIG_EXPL] = 19.f };
+		                                [BS_GRENADE_EXPL] = 16.f, [BS_BIG_EXPL] = 19.f, [BS_TOUCH] = 8.f, };
 
 		size_t lj;
 		uint8_t *target_id;
 		sblist_iter_counter2(target_list, lj, target_id) {
 			struct gameobj *target = &objs[*target_id];
 			if(is_death_anim(target->animid) && target_list != &go_vehicles) continue;
+			if(bullet_subtybe == BS_TOUCH && 
+			   overlap(*target_id, *bullet_id) &&
+			   masks_collide(*target_id, *bullet_id)) {
+				dprintf(2, "hit2\n");
+				goto hit;
+			}
+			
 			vec2f temp = get_gameobj_center(*target_id);
 			float dist1 = vecdist(&bullet_center, &temp) - bullet_radius[bullet_subtybe] * SCALE;
 			vec2f newpos = vecadd(&bullet_center, &bullet->vel);
@@ -1605,6 +1669,8 @@ static void game_tick(int force_redraw) {
 	if(hit_bullets(&go_enemy_explosions, &go_players)) need_redraw = 1;
 	if(hit_bullets(&go_enemy_bullets, &go_players)) need_redraw = 1;
 	if(hit_bullets(&go_enemy_flames, &go_players)) need_redraw = 1;
+	if(hit_bullets(&go_vehicles, &go_players)) need_redraw = 1;
+	if(hit_bullets(&go_enemies, &go_players)) need_redraw = 1;
 	if(remove_bullets(&go_player_bullets)) need_redraw = 1;
 	if(remove_bullets(&go_flames)) need_redraw = 1;
 	if(remove_bullets(&go_explosions)) need_redraw = 1;
