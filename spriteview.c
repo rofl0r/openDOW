@@ -1197,7 +1197,8 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 			bullet_subtybe = BS_GRENADE_EXPL;
 		} else if(bullet->objtype == OBJ_BIG_EXPLOSION) {
 			bullet_subtybe = BS_BIG_EXPL;
-		} else if(bullet_list == &go_vehicles || bullet_list == &go_enemies) {
+		} else if(bullet_list == &go_vehicles || bullet_list == &go_enemies ||
+			  bullet_list == &go_boss) {
 			bullet_subtybe = BS_TOUCH;
 		}
 		
@@ -1218,6 +1219,7 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 			   overlap(*target_id, *bullet_id) &&
 			   masks_collide(*target_id, *bullet_id)) {
 				dprintf(2, "hit2\n");
+				if(bullet_list == &go_boss) return 2;
 				goto hit;
 			}
 			
@@ -1639,7 +1641,8 @@ static void game_update_caption(void) {
 }
 static void(*update_caption)(void) = game_update_caption;
 
-static void game_tick(int force_redraw) {
+/* returns 1 if level finished */
+static int game_tick(int force_redraw) {
 	int need_redraw = force_redraw;
 	if(mousebutton_down[MB_LEFT] > 1) {
 		const int player_no = 0;
@@ -1671,6 +1674,11 @@ static void game_tick(int force_redraw) {
 	if(hit_bullets(&go_enemy_flames, &go_players)) need_redraw = 1;
 	if(hit_bullets(&go_vehicles, &go_players)) need_redraw = 1;
 	if(hit_bullets(&go_enemies, &go_players)) need_redraw = 1;
+	
+	int ret, level_finished = 0;
+	if((ret = hit_bullets(&go_boss, &go_players)) == 2) level_finished = 1;
+	else if(ret == 1) need_redraw = 1;
+	
 	if(remove_bullets(&go_player_bullets)) need_redraw = 1;
 	if(remove_bullets(&go_flames)) need_redraw = 1;
 	if(remove_bullets(&go_explosions)) need_redraw = 1;
@@ -1720,6 +1728,8 @@ static void game_tick(int force_redraw) {
 	
 	tickcounter++;
 	update_caption();
+	
+	return level_finished;
 }
 
 enum cursor {
@@ -1911,6 +1921,18 @@ static void switch_anim(int obj_id, int aid) {
 enum map_index choose_mission(void);
 //RcB: DEP "mission_select.c"
 #include "enemytag.c"
+
+static void finish_level(void) {
+	font_print(SCREEN_MIN_X, SCREEN_MIN_Y, "level done", 10, SCALE, PRGB(255,255,255));
+	video_update();
+	int x = 5*fps;
+	while(x) {
+		audio_process();
+		SDL_Delay(1000/fps);
+		x--;
+	}
+}
+
 int main() {
 	video_init();
 	clear_screen();
@@ -1918,6 +1940,10 @@ int main() {
 	SDL_EnableKeyRepeat(100, 20);
 	
 	audio_init();
+	
+	mission_select:
+	
+	SDL_ShowCursor(1);
 	
 	/* background music for mission selection screen */
 	music_play(TUNE_MAP);
@@ -2062,7 +2088,12 @@ int main() {
 				need_redraw = 1;
 			}
 		}
-		game_tick(need_redraw);
+		if(game_tick(need_redraw)) {
+			/* completed map */
+			music_play(TUNE_LEVEL_FINISHED);
+			finish_level();
+			goto mission_select;
+		}
 	}
 
 	return 0;
