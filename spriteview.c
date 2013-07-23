@@ -1096,6 +1096,11 @@ static int remove_offscreen_objects(sblist *list) {
 	return res;
 }
 
+static int get_sprite_number(int id) {
+	struct gameobj *o = &objs[id];
+	return o->anim_curr == ANIM_STEP_INIT ? get_next_anim_frame(o->animid, o->anim_curr) : o->anim_curr;
+}
+
 static int is_death_anim(enum animation_id anim) {
 	switch(anim) {
 		case ANIM_ENEMY_BOMBER_DIE:
@@ -1268,8 +1273,8 @@ static void draw_golist(sblist *list) {
 				palette = 0;
 		}
 		blit_sprite(o->pos.x, o->pos.y, &video,
-		            SCALE, spritemaps[o->spritemap_id], 
-		            o->anim_curr == ANIM_STEP_INIT ? get_next_anim_frame(o->animid, o->anim_curr) : o->anim_curr,
+		            SCALE, spritemaps[o->spritemap_id],
+		            get_sprite_number(*itemid),
 		            palette);
 	}
 }
