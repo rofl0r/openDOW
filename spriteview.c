@@ -1918,9 +1918,11 @@ static void switch_anim(int obj_id, int aid) {
 	gameobj_start_anim(obj_id, aid);
 }
 
-enum map_index choose_mission(void);
+enum map_index choose_mission(uint8_t* completed);
 //RcB: DEP "mission_select.c"
 #include "enemytag.c"
+
+static uint8_t mission_completed[MI_MAX];
 
 static void finish_level(void) {
 	font_print(SCREEN_MIN_X, SCREEN_MIN_Y, "level done", 10, SCALE, PRGB(255,255,255));
@@ -1931,6 +1933,7 @@ static void finish_level(void) {
 		SDL_Delay(1000/fps);
 		x--;
 	}
+	mission_completed[current_map] = 1;
 }
 
 int main() {
@@ -1948,7 +1951,7 @@ int main() {
 	/* background music for mission selection screen */
 	music_play(TUNE_MAP);
 
-	if((current_map = choose_mission()) == MI_INVALID) goto dun_goofed;
+	if((current_map = choose_mission(mission_completed)) == MI_INVALID) goto dun_goofed;
 	
 	music_play(TUNE_FIGHTING);
 

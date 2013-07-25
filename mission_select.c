@@ -13,11 +13,12 @@ static void draw_world(const struct palpic *w, int x, int y) {
 
 static unsigned map_ticks;
 static struct { int x, y; } cursor;
-static enum map_index cursor_on_map(int x, int y) {
+static enum map_index cursor_on_map(int x, int y, uint8_t*completed) {
 	enum map_index i, ret = MI_INVALID;
 	vec2f c = { .x = cursor.x - x*SCALE, .y = cursor.y - y*SCALE};
 	vec2f p;
 	for(i = 0; i < MI_MAX; i++) {
+		if(completed[i]) continue;
 		p = vecadd(&maps[i]->worldmap_coords, &VEC(2,2));
 		p.x *= SCALE;
 		p.y *= SCALE;
@@ -28,10 +29,11 @@ static enum map_index cursor_on_map(int x, int y) {
 	return ret;
 }
 
-static void draw_blinky(const struct palpic *b, int x, int y) {
+static void draw_blinky(const struct palpic *b, int x, int y, uint8_t*completed) {
 	enum map_index i;
 	vec2f p;
 	for(i = 0; i < MI_MAX; i++) {
+		if(completed[i]) continue;
 		p = maps[i]->worldmap_coords;
 		blit_sprite((x+p.x)*SCALE, (y+p.y)*SCALE, &video, SCALE, b, map_ticks%7, 0);
 	}
@@ -63,12 +65,12 @@ static void draw_frame() {
 	blit_sprite((FACE_X+FACE_W)*SCALE, FACE_Y*SCALE, &video, SCALE, spritemaps[SI_PICFRAME_VERT], 1, 0);
 }
 
-static void draw_stuff(const struct palpic *world, int x, int y) {
+static void draw_stuff(const struct palpic *world, int x, int y, uint8_t *completed) {
 	clear_screen();
 	draw_world(world, x, y);
 	const struct palpic *blinky = spritemaps[SI_MAPBLINK];
-	draw_blinky(blinky, x, y);
-	enum map_index m = cursor_on_map(x, y);
+	draw_blinky(blinky, x, y, completed);
+	enum map_index m = cursor_on_map(x, y, completed);
 	if(m != MI_INVALID) {
 		const struct map *map = maps[m];
 		draw_frame();
@@ -78,16 +80,16 @@ static void draw_stuff(const struct palpic *world, int x, int y) {
 	video_update();
 }
 
-static void map_tick(const struct palpic *world, int x, int y) {
+static void map_tick(const struct palpic *world, int x, int y, uint8_t *completed) {
 	static unsigned tc;
-	draw_stuff(world, x, y);
+	draw_stuff(world, x, y, completed);
 	if(tc%6==0) map_ticks++;
 	tc++;
 	if (audio_process() == -1) music_restart();
 	SDL_Delay(20);
 }
 #include <stdio.h>
-enum map_index choose_mission() {
+enum map_index choose_mission(uint8_t* completed) {
 	const struct palpic *world = spritemaps[SI_WORLDMAP];
 	int x = (320 - palpic_getspritewidth(world))/2;
 	int y = ((240 - palpic_getspriteheight(world))/2)+16;
@@ -104,7 +106,7 @@ enum map_index choose_mission() {
 					break;
 				case SDL_MOUSEBUTTONDOWN:
 					dprintf(2, "click on %d,%d\n", cursor.x/SCALE-x, cursor.y/SCALE-y);
-					if((ret = cursor_on_map(x, y)) != MI_INVALID) goto dun_goofed;
+					if((ret = cursor_on_map(x, y, completed)) != MI_INVALID) goto dun_goofed;
 					break;
 				case SDL_QUIT:
 					goto dun_goofed;
@@ -127,7 +129,7 @@ enum map_index choose_mission() {
 			}
 			
 		}
-		map_tick(world, x, y);
+		map_tick(world, x, y, completed);
 	}
 	dun_goofed:
 	clear_screen();
