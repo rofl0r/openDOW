@@ -1198,7 +1198,7 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 		} else if(bullet->objtype == OBJ_BIG_EXPLOSION) {
 			bullet_subtybe = BS_BIG_EXPL;
 		} else if(bullet_list == &go_vehicles || bullet_list == &go_enemies ||
-			  bullet_list == &go_boss) {
+			  bullet_list == &go_boss || bullet_list == &go_mines) {
 			bullet_subtybe = BS_TOUCH;
 		}
 		
@@ -1253,6 +1253,9 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 							// grenade explosion has no effect on vehicles and bunkers.
 							if(target_list == &go_vehicles || target_list == &go_bunkers)
 								goto next_bullet;
+						} else if(bullet->objtype == OBJ_MINE_CROSSED || bullet->objtype == OBJ_MINE_FLAT) {
+							init_big_explosion(&target->pos);
+							goto remove_bullet;
 						}
 						enum animation_id death_anim = (bullet_subtybe == BS_FLAME && target_list == &go_enemies) ?
 						                               ANIM_ENEMY_BURNT : get_die_anim(*target_id);
@@ -1674,6 +1677,7 @@ static int game_tick(int force_redraw) {
 	if(hit_bullets(&go_enemy_flames, &go_players)) need_redraw = 1;
 	if(hit_bullets(&go_vehicles, &go_players)) need_redraw = 1;
 	if(hit_bullets(&go_enemies, &go_players)) need_redraw = 1;
+	if(hit_bullets(&go_mines, &go_players)) need_redraw = 1;
 	
 	int ret, level_finished = 0;
 	if((ret = hit_bullets(&go_boss, &go_players)) == 2) level_finished = 1;
