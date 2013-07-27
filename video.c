@@ -29,6 +29,27 @@ void video_update(void) {
 }
 
 #include "sdl_rgb.h"
+
+void video_save_rect(int x, int y, int w, int h, void* buf) {
+	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
+	sdl_rgb_t *out = (sdl_rgb_t *) buf;
+	unsigned pitch = surface->pitch/4;
+	int ix, iy;
+	for(iy = y; iy < VMODE_H && iy < y+h; iy++) for (ix = x; ix < VMODE_W && ix < x+w; ix++) {
+		*out++ = ptr[iy*pitch + ix];
+	}
+}
+
+void video_restore_rect(int x, int y, int w, int h, const void* buf) {
+	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
+	const sdl_rgb_t *in = (const sdl_rgb_t *) buf;
+	unsigned pitch = surface->pitch/4;
+	int ix, iy;
+	for(iy = y; iy < VMODE_H && iy < y+h; iy++) for (ix = x; ix < VMODE_W && ix < x+w; ix++) {
+		ptr[iy*pitch + ix] = *in++;
+	}
+}
+
 void video_darken_screen(void) {
 	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
 	unsigned pitch = surface->pitch/4;
