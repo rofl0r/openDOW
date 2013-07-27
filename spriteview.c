@@ -78,6 +78,7 @@ static vec2f get_sprite_center(const struct palpic *p) {
 static int player_ids[2];
 static int player_kills[2];
 static int player_score[2];
+static int player_cash[2];
 static enum weapon_id player_weapons[2][WP_MAX];
 static int weapon_count[2];
 static enum weapon_id weapon_active[2]; // index into player_weapons[playerno]
@@ -479,6 +480,11 @@ static int scroll_map() {
 	return ret;
 }
 
+static void init_player_once(int player_no) {
+	player_score[player_no] = 0;
+	player_cash[player_no] = 10000;
+}
+
 static int init_player(int player_no) {
 	assert(player_no == 0 || player_no == 1);
 	int pid = gameobj_alloc();
@@ -486,13 +492,15 @@ static int init_player(int player_no) {
 		     SI_PLAYERS, player_no == 0 ? ANIM_P1_MOVE_N : ANIM_P2_MOVE_N, player_no == 0 ? OBJ_P1 : OBJ_P2);
 	if(pid == -1) return -1;
 	player_ids[player_no] = pid;
-	player_score[pid] = 0;
 	player_weapons[player_no][0] = WP_COLT45;
 	weapon_count[player_no] = 1;
 	weapon_active[player_no] = 0;
+
+	// FIXME: remove this once the weapon shop is implemented
 	size_t i = 0;
 	for(; i < AMMO_MAX; i++)
 		player_ammo[player_no][i] = 50000;
+	
 	add_player(pid);
 	return pid;
 }
@@ -1980,6 +1988,7 @@ static void finish_level(void) {
 	game_delay(3*fps);
 	
 	mission_completed[current_map] = 1;
+	player_cash[0] += dollars;
 }
 
 int main() {
@@ -1989,6 +1998,7 @@ int main() {
 	SDL_EnableKeyRepeat(100, 20);
 	
 	audio_init();
+	init_player_once(0);
 	
 	mission_select:
 	
@@ -1998,6 +2008,10 @@ int main() {
 	music_play(TUNE_MAP);
 
 	if((current_map = choose_mission(mission_completed)) == MI_INVALID) goto dun_goofed;
+	
+	player_cash[0] += maps[current_map]->rewardk*500;
+	
+	// TODO weapon_shop();
 	
 	music_play(TUNE_FIGHTING);
 
