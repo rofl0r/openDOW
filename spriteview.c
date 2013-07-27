@@ -1960,14 +1960,34 @@ static void finish_level(void) {
 	font_print(SCREEN_MIN_X+48*SCALE, SCREEN_MIN_Y+35*SCALE, STRLSZ("your mission"), SCALE, PRGB(255,255,255));
 	video_update_region(SCREEN_MIN_X, SCREEN_MIN_Y, SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
 	game_delay(2*fps);
-	font_print(SCREEN_MIN_X+40*SCALE, SCREEN_MIN_Y+65*SCALE, STRLSZ("revenge bonus"), SCALE, PRGB(255,255,255));
+	uint32_t bgbuf0[8*SCALE*((95-40)*SCALE)];
+	video_save_rect(SCREEN_MIN_X+40*SCALE,SCREEN_MIN_Y+65*SCALE,(95-40)*SCALE,8*SCALE,bgbuf0);
+	
+	font_print(SCREEN_MIN_X+40*SCALE, SCREEN_MIN_Y+65*SCALE, STRLSZ("mission bonus"), SCALE, PRGB(255,255,255));
+	
 	font_print(SCREEN_MIN_X+32*SCALE, SCREEN_MIN_Y+89*SCALE, STRLSZ("1."), SCALE, PRGB(255,255,255));
 	uint32_t bgbuf[8*SCALE*((159-64)*SCALE)];
 	video_save_rect(SCREEN_MIN_X+64*SCALE,SCREEN_MIN_Y+89*SCALE,(159-64)*SCALE,8*SCALE,bgbuf);
+	
 	char buf[16];
-	// FIXME: figure out where initial $ value comes from. it's 50% of the map reward + something yet unknown
-#define UNK 0
-	int dollars = maps[current_map]->rewardk*500+UNK;
+	int dollars = player_cash[0];
+	snprintf(buf, sizeof buf, "     $%.6d", dollars);
+	font_print(SCREEN_MIN_X+64*SCALE, SCREEN_MIN_Y+89*SCALE, buf, 12, SCALE, PRGB(255,255,255));
+	video_update_region(SCREEN_MIN_X, SCREEN_MIN_Y, SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
+	game_delay(1*fps);
+	
+	// TODO: play mission bonus sound
+	dollars += maps[current_map]->rewardk*500;
+	video_restore_rect(SCREEN_MIN_X+64*SCALE,SCREEN_MIN_Y+89*SCALE,(159-64)*SCALE,8*SCALE,bgbuf);
+	snprintf(buf, sizeof buf, "     $%.6d", dollars);
+	font_print(SCREEN_MIN_X+64*SCALE, SCREEN_MIN_Y+89*SCALE, buf, 12, SCALE, PRGB(255,255,255));
+	video_update_region(SCREEN_MIN_X, SCREEN_MIN_Y, SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
+	game_delay(1*fps);
+	
+	
+	video_restore_rect(SCREEN_MIN_X+40*SCALE,SCREEN_MIN_Y+65*SCALE,(95-40)*SCALE,8*SCALE,bgbuf0);
+	font_print(SCREEN_MIN_X+40*SCALE, SCREEN_MIN_Y+65*SCALE, STRLSZ("revenge bonus"), SCALE, PRGB(255,255,255));
+	
 	snprintf(buf, sizeof buf, "%.4d $%.6d", player_kills[0], dollars);
 	font_print(SCREEN_MIN_X+64*SCALE, SCREEN_MIN_Y+89*SCALE, buf, 12, SCALE, PRGB(255,255,255));
 	video_update_region(SCREEN_MIN_X, SCREEN_MIN_Y, SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
@@ -1988,7 +2008,7 @@ static void finish_level(void) {
 	game_delay(3*fps);
 	
 	mission_completed[current_map] = 1;
-	player_cash[0] += dollars;
+	player_cash[0] = dollars;
 }
 
 int main() {
@@ -2040,6 +2060,7 @@ int main() {
 	while(1) {
 		unsigned need_redraw = 0;
 		int weapon_inc = 0;
+		//if(tickcounter>64) { player_kills[0] = 150; finish_level();}
 		while (SDL_PollEvent(&sdl_event)) {
 			need_redraw = 0;
 			switch (sdl_event.type) {
