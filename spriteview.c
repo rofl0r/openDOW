@@ -77,6 +77,7 @@ static vec2f get_sprite_center(const struct palpic *p) {
 
 static int player_ids[2];
 static int player_kills[2];
+static int player_score[2];
 static enum weapon_id player_weapons[2][WP_MAX];
 static int weapon_count[2];
 static enum weapon_id weapon_active[2]; // index into player_weapons[playerno]
@@ -198,7 +199,7 @@ static void draw_status_bar(void) {
 	            &video, SCALE, &weapon_sprites.header, wid, 0);
 	
 	char buf[16];
-	snprintf(buf, 16, "%.6u", objs[player_ids[0]].objspecific.playerdata.score);
+	snprintf(buf, 16, "%.6u", player_score[0]);
 	font_print(SCREEN_MIN_X + 8, SCREEN_MAX_Y + 8, buf, 6, 1 * SCALE, PRGB(255,255,255));
 }
 
@@ -485,7 +486,7 @@ static int init_player(int player_no) {
 		     SI_PLAYERS, player_no == 0 ? ANIM_P1_MOVE_N : ANIM_P2_MOVE_N, player_no == 0 ? OBJ_P1 : OBJ_P2);
 	if(pid == -1) return -1;
 	player_ids[player_no] = pid;
-	objs[pid].objspecific.playerdata.score = 0;
+	player_score[pid] = 0;
 	player_weapons[player_no][0] = WP_COLT45;
 	weapon_count[player_no] = 1;
 	weapon_active[player_no] = 0;
@@ -1246,7 +1247,7 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 								audio_play_wave_resource(wavesounds[WS_DROPSHOT]);
 								goto remove_bullet;
 							}
-							objs[player_ids[0]].objspecific.playerdata.score += 50;
+							player_score[0] += 50;
 							player_kills[0]++;
 						} else if (bullet_list == &go_rockets) {
 							init_rocket_explosion(&target->pos);
