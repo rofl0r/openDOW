@@ -76,6 +76,7 @@ static vec2f get_sprite_center(const struct palpic *p) {
 }
 
 static int player_ids[2];
+static int player_kills[2];
 static enum weapon_id player_weapons[2][WP_MAX];
 static int weapon_count[2];
 static enum weapon_id weapon_active[2]; // index into player_weapons[playerno]
@@ -1246,6 +1247,7 @@ static int hit_bullets(sblist *bullet_list, sblist *target_list) {
 								goto remove_bullet;
 							}
 							objs[player_ids[0]].objspecific.playerdata.score += 50;
+							player_kills[0]++;
 						} else if (bullet_list == &go_rockets) {
 							init_rocket_explosion(&target->pos);
 							goto remove_bullet;
@@ -1928,15 +1930,54 @@ enum map_index choose_mission(uint8_t* completed);
 
 static uint8_t mission_completed[MI_MAX];
 
-static void finish_level(void) {
-	font_print(SCREEN_MIN_X, SCREEN_MIN_Y, "level done", 10, SCALE, PRGB(255,255,255));
-	video_update();
-	int x = 5*fps;
-	while(x) {
+static void game_delay(int s) {
+	/* wait for s frames while continuing to play music */
+	int x = s;
+	while(x){
 		audio_process();
 		SDL_Delay(1000/fps);
 		x--;
+		tickcounter++;
 	}
+}
+
+static void finish_level(void) {
+	music_play(TUNE_TITLE);
+	video_darken_screen();
+	video_update_region(SCREEN_MIN_X, SCREEN_MIN_Y, SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
+#define STRLSZ(x) (x), sizeof(x)-1
+	font_print(SCREEN_MIN_X+40*SCALE, SCREEN_MIN_Y+13*SCALE, STRLSZ("congratulations"), SCALE, PRGB(255,255,255));
+	font_print(SCREEN_MIN_X+24*SCALE, SCREEN_MIN_Y+24*SCALE, STRLSZ("you have completed"), SCALE, PRGB(255,255,255));
+	font_print(SCREEN_MIN_X+48*SCALE, SCREEN_MIN_Y+35*SCALE, STRLSZ("your mission"), SCALE, PRGB(255,255,255));
+	video_update_region(SCREEN_MIN_X, SCREEN_MIN_Y, SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
+	game_delay(2*fps);
+	font_print(SCREEN_MIN_X+40*SCALE, SCREEN_MIN_Y+65*SCALE, STRLSZ("revenge bonus"), SCALE, PRGB(255,255,255));
+	font_print(SCREEN_MIN_X+32*SCALE, SCREEN_MIN_Y+89*SCALE, STRLSZ("1."), SCALE, PRGB(255,255,255));
+	uint32_t bgbuf[8*SCALE*((159-64)*SCALE)];
+	video_save_rect(SCREEN_MIN_X+64*SCALE,SCREEN_MIN_Y+89*SCALE,(159-64)*SCALE,8*SCALE,bgbuf);
+	char buf[16];
+	// FIXME: figure out where initial $ value comes from. it's 50% of the map reward + something yet unknown
+#define UNK 0
+	int dollars = maps[current_map]->rewardk*500+UNK;
+	snprintf(buf, sizeof buf, "%.4d $%.6d", player_kills[0], dollars);
+	font_print(SCREEN_MIN_X+64*SCALE, SCREEN_MIN_Y+89*SCALE, buf, 12, SCALE, PRGB(255,255,255));
+	video_update_region(SCREEN_MIN_X, SCREEN_MIN_Y, SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
+	game_delay(1*fps);
+	tickcounter = 0;
+	while(player_kills[0]) {
+		dollars+=10;
+		player_kills[0]--;
+		video_restore_rect(SCREEN_MIN_X+64*SCALE,SCREEN_MIN_Y+89*SCALE,(159-64)*SCALE,8*SCALE,bgbuf);
+		snprintf(buf, sizeof buf, "%.4d $%.6d", player_kills[0], dollars);
+		font_print(SCREEN_MIN_X+64*SCALE, SCREEN_MIN_Y+89*SCALE, buf, 12, SCALE, PRGB(255,255,255));
+		video_update_region(SCREEN_MIN_X, SCREEN_MIN_Y, SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
+		if(tickcounter % 4 == 0) audio_play_wave_resource(wavesounds[WS_COUNTDOWN]);
+		// FIXME: when no music is played, sound does not play either... maybe add "empty song"?
+		game_delay(1);
+	}
+	music_play(TUNE_LEVEL_FINISHED);
+	game_delay(3*fps);
+	
 	mission_completed[current_map] = 1;
 }
 
@@ -1960,7 +2001,6 @@ int main() {
 	music_play(TUNE_FIGHTING);
 
 	SDL_ShowCursor(0);
-
 	
 	int startx = 10;
 	int starty = 10;
@@ -2097,7 +2137,6 @@ int main() {
 		}
 		if(game_tick(need_redraw)) {
 			/* completed map */
-			music_play(TUNE_LEVEL_FINISHED);
 			finish_level();
 			goto mission_select;
 		}
