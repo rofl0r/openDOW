@@ -9,7 +9,7 @@ enum tune_index {
 	TUNE_LEVEL_FINISHED,
 	TUNE_4,
 	TUNE_HIGHSCORE,
-	TUNE_6,
+	TUNE_TITLE, // played at title screen and when a map is finished
 	TUNE_7,
 	TUNE_INVALID,
 	TUNE_MAX = TUNE_INVALID
