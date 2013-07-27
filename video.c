@@ -29,6 +29,19 @@ void video_update(void) {
 }
 
 #include "sdl_rgb.h"
+void video_darken_screen(void) {
+	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
+	unsigned pitch = surface->pitch/4;
+	unsigned x, y;
+	for(y = 0; y < VMODE_H; y++) for (x = 0; x < VMODE_W; x++) {
+		sdl_rgb_t col = ptr[y*pitch + x];
+		col.colors.r /= 2;
+		col.colors.g /= 2;
+		col.colors.b /= 2;
+		ptr[y*pitch + x] = col;
+	}
+}
+
 void clear_screen(void) {
 	sdl_rgb_t *ptr = (sdl_rgb_t *) surface->pixels;
 	unsigned pitch = surface->pitch/4;

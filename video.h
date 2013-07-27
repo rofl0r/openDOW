@@ -16,6 +16,7 @@ void toggle_fullscreen(void);
 void clear_screen(void);
 void video_update_region(int x, int y, int w, int h);
 void video_update(void);
+void video_darken_screen(void);
 
 //RcB: DEP "video.c"
 
