@@ -26,6 +26,13 @@ enum __attribute__ ((__packed__)) sprite_index {
 	SI_GUNTURRET,
 	SI_BOSSES,
 	SI_MISC,
+	SI_WS_BOLT,
+	SI_WS_VBAR1,
+	SI_WS_VBAR3,
+	SI_WS_HBAR6,
+	SI_WS_HBAR10,
+	SI_WS_COSTCREDIT,
+	SI_WS_VIEWEXIT,
 	SI_MAX,
 	SI_INVALID = SI_MAX,
 };

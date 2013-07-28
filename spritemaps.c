@@ -24,6 +24,13 @@
 #include "sprites/gunturret.c"
 #include "sprites/bosses.c"
 #include "sprites/misc.c"
+#include "sprites/ws_bolt.c"
+#include "sprites/ws_vbar1.c"
+#include "sprites/ws_vbar3.c"
+#include "sprites/ws_hbar6.c"
+#include "sprites/ws_hbar10.c"
+#include "sprites/ws_costcredit.c"
+#include "sprites/ws_viewexit.c"
 
 #define spritemap_entry(x, y) [ x ] = &(y .header)
 const struct palpic *spritemaps[] = { 
@@ -51,4 +58,11 @@ const struct palpic *spritemaps[] = {
 	spritemap_entry(SI_GUNTURRET, gunturret),
 	spritemap_entry(SI_BOSSES, bosses),
 	spritemap_entry(SI_MISC, misc),
+	spritemap_entry(SI_WS_BOLT, ws_bolt),
+	spritemap_entry(SI_WS_VBAR1, ws_vbar1),
+	spritemap_entry(SI_WS_VBAR3, ws_vbar3),
+	spritemap_entry(SI_WS_HBAR6, ws_hbar6),
+	spritemap_entry(SI_WS_HBAR10, ws_hbar10),
+	spritemap_entry(SI_WS_COSTCREDIT, ws_costcredit),
+	spritemap_entry(SI_WS_VIEWEXIT,	ws_viewexit),
 };
