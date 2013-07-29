@@ -29,7 +29,6 @@
 
 #ifndef IN_KDEVELOP_PARSER
 #include "../lib/include/bitarray.h"
-#include "weapon_sprites.c"
 
 #endif
 
@@ -197,7 +196,7 @@ static void draw_status_bar(void) {
 			ptr[y*pitch + x] = SRGB_BLACK;
 		
 	blit_sprite(((320 / 2) - (59 / 2)) * SCALE, (200 + (40/2) - (16/2)) * SCALE,
-	            &video, SCALE, &weapon_sprites.header, wid, 0);
+	            &video, SCALE, spritemaps[SI_WEAPONS], wid, 0);
 	
 	char buf[16];
 	snprintf(buf, 16, "%.6u", player_score[0]);

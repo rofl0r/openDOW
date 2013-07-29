@@ -31,6 +31,7 @@
 #include "sprites/ws_hbar10.c"
 #include "sprites/ws_costcredit.c"
 #include "sprites/ws_viewexit.c"
+#include "sprites/weapon_sprites.c"
 
 #define spritemap_entry(x, y) [ x ] = &(y .header)
 const struct palpic *spritemaps[] = { 
@@ -65,4 +66,5 @@ const struct palpic *spritemaps[] = {
 	spritemap_entry(SI_WS_HBAR10, ws_hbar10),
 	spritemap_entry(SI_WS_COSTCREDIT, ws_costcredit),
 	spritemap_entry(SI_WS_VIEWEXIT,	ws_viewexit),
+	spritemap_entry(SI_WEAPONS, weapon_sprites),
 };
