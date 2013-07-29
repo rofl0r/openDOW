@@ -2010,6 +2010,8 @@ static void finish_level(void) {
 	player_cash[0] = dollars;
 }
 
+#include "weapon_shop.c"
+
 int main() {
 	video_init();
 	clear_screen();
@@ -2030,7 +2032,7 @@ int main() {
 	
 	player_cash[0] += maps[current_map]->rewardk*500;
 	
-	// TODO weapon_shop();
+	weapon_shop();
 	
 	music_play(TUNE_FIGHTING);
 
