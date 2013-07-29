@@ -32,7 +32,7 @@ enum __attribute__ ((__packed__)) sprite_index {
 	SI_WS_HBAR6,
 	SI_WS_HBAR10,
 	SI_WS_COSTCREDIT,
-	SI_WS_VIEWEXIT,
+	SI_WEAPONSHOP,
 	SI_WEAPONS,
 	SI_MAX,
 	SI_INVALID = SI_MAX,

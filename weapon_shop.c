@@ -91,21 +91,15 @@ static void draw_ws_grid() {
 static void draw_ws_text_sprites() {
 	blit_sprite(GRID_START_X+31*SCALE, GRID_START_Y+186*SCALE, &video, SCALE, spritemaps[SI_WS_COSTCREDIT], 0, 0);
 	blit_sprite(GRID_START_X+150*SCALE, GRID_START_Y+186*SCALE, &video, SCALE, spritemaps[SI_WS_COSTCREDIT], 1, 0);
-	blit_sprite(GRID_START_X+3*SCALE, GRID_START_Y+121*SCALE, &video, SCALE, spritemaps[SI_WS_VIEWEXIT], 0, 0);
-	blit_sprite(GRID_START_X+259*SCALE, GRID_START_Y+121*SCALE, &video, SCALE, spritemaps[SI_WS_VIEWEXIT], 1, 0);
 }
 
 static void draw_ws_weapons() {
 	unsigned img = 0;
+	const struct palpic* p = spritemaps[SI_WEAPONSHOP];
 	unsigned y,yy,x,xx;
 	for(yy= 0, y = GRID_START_Y+5*SCALE; yy < 6; y+=23*SCALE, yy++) {
 		for(xx = 0, x = GRID_START_X+3*SCALE; xx < 5; x+=64*SCALE, xx++) {
-			if(yy == 5 && (xx == 0 || xx == 4)) continue;
-			const struct palpic* p;
-			if(img == 8) img++; /* m16 with launcher not implemented */
-			if(img > 19) p = spritemaps[SI_WEAPONS];
-			else p = spritemaps[SI_WEAPONS];
-			blit_sprite(x, y, &video, SCALE, p, img > 19 ? img - 20 : img , 0);
+			blit_sprite(x, y, &video, SCALE, p, img, 0);
 			img++;
 		}
 	}
