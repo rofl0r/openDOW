@@ -168,23 +168,6 @@ static const struct {
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
 		/* sprite #008 */
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
-		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 6, 1, 1, 2, 2, 2, 1, 6, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 2, 1, o, o, o, o, o, o, o, o, o, o, o, o, o,
-		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 6, 1, 6, o, o, 6, 1, 1, 6, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 2, o, 2, o, o, o, o, o, o, o, o, o, o, o, o, o,
-		 o, o, o, o, o, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 3, 3, 3, 3, 3, 3, 3, 1, o, 1, 2, 3, 4, 4, 4, 4, 4, 4, 5, 4, 3, 2, 1, o, 2, o, o, o, o, o, o, o, o, o, o, o, o, o,
-		 o, o, o, o, o, 3, 2, 3, 4, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2, 1, 1, 2, 1, 2, 4, 5, 4, 2, 2, 1, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 2, 1, 2, 3, 3, 3, 3, 2, 3, 4, 4, o, o, o, o, o,
-		 o, o, o, o, o, 4, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 2, 1, 6, 1, 2, 2, 1, 6, 6, 6, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, o, o, o, o, o,
-		 o, o, o, o, o, 5, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 1, 1, 6, 6, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
-		 o, o, o, o, o, 4, 2, 2, 2, 2, 2, 1, 2, 1, 1, 1, 1, 6, 6, o, 2, 1, 1, o, o, 1, 2, 6, 2, 2, 2, 2, 2, 2, 1, 2, 1, 3, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, o, o, o, o, o, o, o, o, o, o, o,
-		 o, o, o, o, o, 4, 2, 2, 1, 2, 1, 1, 1, 1, 6, 6, o, o, o, 1, 3, 2, 1, 2, 2, 1, 6, 1, 1, 2, 2, o, 1, 1, 1, 3, 1, 2, 1, 3, 4, 4, 4, 5, 5, 4, 3, 2, o, o, o, o, o, o, o, o, o, o, o,
-		 o, o, o, o, o, 3, 1, 1, 1, 1, 1, 6, 6, o, o, o, o, o, o, 2, 3, 2, o, o, o, o, 1, 1, 2, 3, 1, o, o, 2, 6, 1, 6, 1, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1, o, o, o, o, o, o, o, o, o, o, o,
-		 o, o, o, o, o, 1, 1, 1, 6, 6, o, o, o, o, o, o, o, o, 1, 3, 2, 1, o, o, o, o, 6, 2, 1, 3, 2, 1, 2, 1, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
-		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 2, 2, 2, o, o, o, o, o, o, 2, 1, 2, 3, 1, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
-		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 1, 1, o, o, o, o, o, o, 1, 2, 1, 2, 2, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
-		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 6, 2, 2, 2, 1, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
-		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 2, 1, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
-		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
-		/* sprite #009 */
-		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1, 2, 3, 3, 2, 8, 9, 3, 9, 8, 1, 2, 3, 3, 2, o, o, o, o, o, o, o, o, o, o, o, o, o, 1, o, o, o,
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, 6, 1, 8, 8, 1, 2, 3, 4, 4, 4, 4, 4, 4, 3, 2, 1, 2, 2, 2, 6, 1, 6, 1, 6, 1, 6, 6, 1, 1, 1, o, o, o, o, o, o, o, o, o, o, o, o, 2, o, o, o,
 		 o, o, o, o, o, o, o, o, o, 6, 1, 8, 8, 9, 3, 9, 8, 1, 2, 2, 2, 2, 1, 2, 1, 6, 1, 6, 6, 6, 8, 9, 3, 3, 3, 9, 8, 1, 2, 3, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 3, 4, 2, o, o,
@@ -200,7 +183,7 @@ static const struct {
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 6, 1, 6, 1, 2, 2, 1, 6, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 6, 1, 1, 6, 1, 1, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 6, 1, 1, 6, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
-		/* sprite #010 */
+		/* sprite #009 */
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 6, 6, 1, 6, 1, 3, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 1, o, o, o, o, o,
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 1, 2, 2, 5, 5, 5, 4, 2, 1, 6, o, o, o, o, o, 3, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 1, 4, o, o, o, o, o,
@@ -217,7 +200,7 @@ static const struct {
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 1, 2, 1, 1, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 1, 1, 1, 6, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 6, 6, 1, 1, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
-		/* sprite #011 */
+		/* sprite #010 */
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 1, 1, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 2, o, o, o, o, o, o, o, o,
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 1, 4, 1, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 2, o, o, o, o, o, o, o, o,
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2, 2, 3, 3, 3, 2, 1, o, o, o, o, o, o, o, o,
@@ -234,7 +217,7 @@ static const struct {
 		 o, 1, 1, 6, 1, 1, 6, 6, o, o, o, o, o, o, o, o, o, o, o, o, 6, 1, 1, 6, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 1, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
-		/* sprite #012 */
+		/* sprite #011 */
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 3, 4, 5, 4, 5, 5, 4, 3, 4, 3, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 9, 3, 3, 3, 9, 3, 9, 2, 4, 2, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 1, 8, 1, 8, 1, o, o, o, 2, 1, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 4, o, o, o, o, o, o,
@@ -251,6 +234,23 @@ static const struct {
 		 o, 1, 2, 1, 1, 6, o, o, o, o, o, o, o, o, 6, 8,10, 8, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, 8, 9, 8, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
 		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, 8, 8, 8, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
+		/* sprite #012 */
+		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 1, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
+		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 1, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
+		10, 5, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 1, o, o, o, 3, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 6, 1, o, o, o, o, o, o, o, o,
+		 9, 8, 5, 8, o, o, o, o, o, o, o, o, 1, o, o, o, o, o, o, 2, 4, 5, 5, 5, 5, 4, 4, 3, o, o, 1, 2, 2, 4, 3, 3, 5, 5, 5, 3, o, o, o, o, o, o, o, o, o, o, 1, o, o, o, o, o, o, o, o,
+		 o, 9, 8, 5, 8, 4, 8, 9,10, 5, 5, 2, 3, 3, 2, 2, 2, 3, 4, 1, 1, 1, o, o, o, 1, 2, 2, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 5, 5, 5, 3, 2, 1, 2, 3, 4, 3, 2, 1, 2, o, 6, 2, o, o, 4,
+		 o, 8, 8, 8,10,10, 9, 8, 3, 3, 3, 3, 6, 6, 6, 6, 6, 6, 1, 6, 6, 1, 2, 2, 4, 5, 4,11, 1, 1, 1, 1, o, o, 1, o, o, 1, o, o, 1, o, o, 1, o, o, 1, o, o, 1, o, 1, 1, 1, 6,11, 1, 1, 1,
+		 o, 8, 9, 8, 8, 8, 8, 8, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 6, 6, 1, 1, 1, 1, 2, 2,11, 1, 6, 6, 6, 6, 1, 1, 6, 1, 1, 6, 6, 6, 6, 6, 6, 6, 6, 1, 1, 6, 1, 1, 1, 6, o, 1, o, o, 6, 1,
+		 o, 8,10, 8, 9, 8, o, o, o, o, o, o, o, 1, 1, 6, 2, 1, 1, 1, 2, 6, 1, 6, 1, 6, 6, 6, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
+		 o, 8, 9, 8,10,10, 8, o, o, o, o, o, o, o, o, o, o, 8, 8, o, o, 6, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
+		 o, 8, 8, o, o, o, o, o, o, o, o, o, o, o, o, o, o,10, 8, 6, 6, 1, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
+		 o, 8, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 8, 9, 8, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
+		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 9,10, 8, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
+		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, 8, 8, 8, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
+		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
+		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
+		 o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
 		/* sprite #013 */
 		 1, 3, 3, 3, 3, 3, 3, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o,
 		 3, 4, 3, 4, 3, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 3, 3, 3, 2, 2, 2, 2, 2, 3, 3, 3, 2, o, o,
