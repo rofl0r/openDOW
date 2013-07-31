@@ -80,7 +80,7 @@ static int player_score[2];
 static int player_cash[2];
 static enum weapon_id player_weapons[2][WP_MAX];
 static int weapon_count[2];
-static enum weapon_id weapon_active[2]; // index into player_weapons[playerno]
+static int weapon_active[2]; // index into player_weapons[playerno]
 static int player_ammo[2][AMMO_MAX];
 static enum weapon_id get_active_weapon_id(int player_no);
 static void switch_anim(int obj_id, int aid);
@@ -491,15 +491,8 @@ static int init_player(int player_no) {
 		     SI_PLAYERS, player_no == 0 ? ANIM_P1_MOVE_N : ANIM_P2_MOVE_N, player_no == 0 ? OBJ_P1 : OBJ_P2);
 	if(pid == -1) return -1;
 	player_ids[player_no] = pid;
-	player_weapons[player_no][0] = WP_COLT45;
-	weapon_count[player_no] = 1;
 	weapon_active[player_no] = 0;
 
-	// FIXME: remove this once the weapon shop is implemented
-	size_t i = 0;
-	for(; i < AMMO_MAX; i++)
-		player_ammo[player_no][i] = 50000;
-	
 	add_player(pid);
 	return pid;
 }
@@ -2122,14 +2115,14 @@ int main() {
 							weapon_inc = 1;
 							goto toggle_weapon;
 						case SDLK_KP_MINUS:
-							if((int)player_weapons[player_no][0] == 0)
-								weapon_inc = WP_MAX-1;
-							else weapon_inc = -1;
+							weapon_inc = -1;
 							toggle_weapon:
-							player_weapons[player_no][0] += weapon_inc;
-							if(player_weapons[player_no][0] == WP_INVALID)
-								player_weapons[player_no][0] = 0;
-							printf("%s\n", weapon_name(player_weapons[player_no][0]));
+							weapon_active[player_no] += weapon_inc;
+							if(weapon_active[player_no] < 0)
+								weapon_active[player_no] = weapon_count[player_no] - 1;
+							else if(weapon_active[player_no] >= weapon_count[player_no])
+								weapon_active[player_no] = 0;
+							printf("%s\n", weapon_name(player_weapons[player_no][weapon_active[player_no]]));
 							need_redraw = 1;
 							break;
 						default:
