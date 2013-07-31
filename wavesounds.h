@@ -14,6 +14,8 @@ enum __attribute__((__packed__)) wavesound_id {
 	WS_SCREAM2,
 	WS_DROPSHOT,
 	WS_COUNTDOWN,
+	WS_FAIL,
+	WS_SUCCESS,
 };
 
 extern const WAVE_HEADER_COMPLETE* wavesounds[];

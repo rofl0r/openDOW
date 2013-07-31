@@ -8,6 +8,8 @@
 #include "sounds/scream2.c"
 #include "sounds/dropshot.c"
 #include "sounds/countdown.c"
+#include "sounds/fail.c"
+#include "sounds/success.c"
 
 #define WAVSOUND(x, y) [x] = &(y .header)
 const WAVE_HEADER_COMPLETE* wavesounds[] = {
@@ -21,5 +23,7 @@ const WAVE_HEADER_COMPLETE* wavesounds[] = {
 	WAVSOUND(WS_SCREAM2, scream2),
 	WAVSOUND(WS_DROPSHOT, dropshot),
 	WAVSOUND(WS_COUNTDOWN, countdown),
+	WAVSOUND(WS_FAIL, fail),
+	WAVSOUND(WS_SUCCESS, success),
 };
 
