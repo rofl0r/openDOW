@@ -76,6 +76,7 @@ enum __attribute__((__packed__)) weapon_id {
 extern const struct weapon weapons[];
 extern const struct ammo ammunition[];
 const char* weapon_name(enum weapon_id id);
+const char* ammo_name(enum ammo_id id);
 //RcB: DEP "weapon.c"
 
 #endif

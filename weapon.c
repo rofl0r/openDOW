@@ -54,27 +54,28 @@ const struct weapon weapons[] = {
 // range 1000+ entspricht der diagonale von einem eck zum andern
 
 #define WEAPN(x) [x] = #x
-const char *weapon_names[] = {
-	WEAPN(WP_COLT45),
-	WEAPN(WP_BROWNING),
-	WEAPN(WP_SA80),
-	WEAPN(WP_MP5),
-	WEAPN(WP_UZI),
-	WEAPN(WP_STEYR),
-	WEAPN(WP_AK47),
-	WEAPN(WP_M16A2),
-	WEAPN(WP_M203),
-	WEAPN(WP_RPK),
-	WEAPN(WP_L7A2),
-	WEAPN(WP_HK21),
-	WEAPN(WP_M60),
-	WEAPN(WP_MG42),
-	WEAPN(WP_M134),
-	WEAPN(WP_RPG7),
-	WEAPN(WP_LAW),
-	WEAPN(WP_MAW),
-	WEAPN(WP_ABC),
-	WEAPN(WP_GRENADES),
+#define STR(x, y) [x] = y
+static const char *weapon_names[] = {
+	STR(WP_COLT45, "COLT.45"),
+	STR(WP_BROWNING, "BROWNING HP"),
+	STR(WP_SA80, "SA80"),
+	STR(WP_MP5, "HKMP5"),
+	STR(WP_UZI, "UZI"),
+	STR(WP_STEYR, "STEYR AUG"),
+	STR(WP_AK47, "AKM"),
+	STR(WP_M16A2, "M16"),
+	STR(WP_M203, "M16+M203"),
+	STR(WP_RPK, "RPK"),
+	STR(WP_L7A2, "L7A2"),
+	STR(WP_HK21, "HK21"),
+	STR(WP_M60, "M60"),
+	STR(WP_MG42, "MG42"),
+	STR(WP_M134, "M134 MINIGUN"),
+	STR(WP_RPG7, "RPG-7"),
+	STR(WP_LAW, "LAW"),
+	STR(WP_MAW, "MAW"),
+	STR(WP_ABC, "FLAME THROWER"),
+	STR(WP_GRENADES, "APG"),
 };
 
 const char* weapon_name(enum weapon_id id) {
@@ -82,3 +83,20 @@ const char* weapon_name(enum weapon_id id) {
 	return weapon_names[id];
 }
 
+static const char *ammo_names[] = {
+	STR(AMMO_45ACP, ".45 ACP"),
+	STR(AMMO_9MMPARABELLUM, "9MM PAR"),
+	STR(AMMO_556, "5.54"),
+	STR(AMMO_762, "7.62"),
+	STR(AMMO_10MM, "MINIGUN"),
+	STR(AMMO_ROCKET83MM, "MAW"),
+	STR(AMMO_ROCKET40MM, "RPG7"),
+	STR(AMMO_K200GRENADE40MM, "M203"),
+	STR(AMMO_GAS, "GAS"),
+	STR(AMMO_GRENADE, "APG"),
+};
+
+const char* ammo_name(enum ammo_id id) {
+	if(id >= AMMO_MAX) return 0;
+	return ammo_names[id];
+}
