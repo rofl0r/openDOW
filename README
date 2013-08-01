@@ -1,0 +1,117 @@
+=== prerequisites ===
+
+- a POSIX compliant OS and libc (for example linux with musl libc).
+  if you're still using winblows, bad luck, you should strongly consider to 
+  switch to linux NOW rather than later.
+- a working C99 compiler
+- perl (needed for the build system)
+- SDL and SDL_audio library and headers.
+  this means you need the -dev(el) version of the package for your distro.
+
+there's an alternate audio backend using libao, which has a much nicer API
+than SDL_audio, however it seems to trigger some in-kernel ALSA bugs
+which will lead to high CPU consumption depending on the second the game
+was started (i.e. if you start the game at second X, it may consume 10%,
+if you start it at second Y, it may consume 70%).
+
+=== build instructions ===
+
+mkdir /tmp/openDOW-000
+cd /tmp/openDOW-000/
+git clone https://github.com/rofl0r/openDOW
+git clone https://github.com/rofl0r/libulz lib
+git clone https://github.com/rofl0r/c-flod
+git clone https://github.com/rofl0r/rcb
+ln -s rcb.pl rcb/rcb
+cd openDOW/
+echo "CFLAGS+=-DAUDIO_BACKEND=AUDIO_BACKEND_SDL" > config.mak
+PATH="/tmp/openDOW-000/rcb:$PATH" make
+
+=== supported compilers ===
+
+GCC
+clang
+
+=== how to play ===
+
+run ./spriteview.out (main game executable will be renamed at
+some point)
+
+use wasd to move the player, and the mouse to aim and fire.
+switch weapons with numpad +/-.
+at some point it is planned to make the layout configurable
+and add support for the original behaviour without mouse aiming
+so it could be used via a joystick.
+
+== current state and TODO ==
+
+at current, all maps are finished as far as the background
+and foreground tiles are concerned, as well as all of the game 
+mechanics (besides dying).
+
+the biggest part of the work is to recreate the spawn positions
+and routes taken by enemy soldiers. there's roughly 500 of 'em
+per map.
+at current, only australias "spawnmap" is implemented. the other
+maps are partially playable, but they use australias spawnmap.
+that means enemies will spawn in places they're not supposed to
+be, like on top of a wall, and move through the wall.
+
+spawnmaps can be created by moving the player through the screen
+step-by-step, carefully comparing to the original in an emulator.
+
+when you are on the same "spawn line", you can press "e" to enter
+the spawn editor and summon an enemy.
+- use shift+numpad+/- to change its shape;
+- use "d" to change its direction then, enter one of
+  w,o,s,n,nw,no,sw,so,nnw,wnw,nno,ono,ssw,wsw,sso,oso
+  (o means "ost", the german equivalent to "east").
+- use + and - on the numeric keypad to change the velocity of the
+  enemy. (it will start running around, once offscreen, it will 
+  respawn in the start position)
+- use "g" to change its weapon type to grenade or back to gun
+- press "s" to shoot at the current position
+- press "p" to stop the enemy at the current position
+- press crtl+numpad+ to insert a direction/speed change,
+  "i" to insert the current position,
+  then enter the new direction using "d".
+- press alt+numpad+ to enter a new shoot "slot", and "s" to save
+  the current position as the position to shoot.
+
+if something is unclear, you should look at the implementation
+of enemytag.c.
+
+the editor takes a bit getting used to, but once you used it for
+a while it's pretty quick.
+after the enemy takes the same route and shots as the original,
+press "e" again to exit the editor. that will output a C struct
+to stdout, which you can copy paste into a spawnmap .c file
+based on maps/spawn_australia.c.
+
+=== contributing ===
+
+if you're a C++ programmer, go away now.
+if you're using MSVC, go away now.
+
+OpenDOW uses C99, and C99 only.
+
+i will not ever make any compromise just to make it compile on the
+crippled M$ compiler.
+
+there's not really much to help in terms of code anyway.
+almost anything is done. what really needs help is adding spawnmaps
+for the ~500 enemies per map.
+
+i will only accept code contributions with small, nice and clean commits,
+where every commits just does a single thing.
+there's no chance i will ever merge a huge diff touching 500 lines
+in several different compilation units.
+
+i also will not add ifdef hells just to make the code compile on
+crippled platform X.
+
+so if you still want to contribute, clone the repo on github,
+create a new branch for your changes, commit your work and then file
+a pull request. please use commit messages that make sense and serve
+as a good documentation for your changes.
+
