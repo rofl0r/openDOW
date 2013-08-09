@@ -3,6 +3,7 @@
 
 //RcB: DEP "music.c"
 enum tune_index {
+	TUNE_EMPTY = -1,
 	TUNE_FIGHTING = 0,
 	TUNE_MAP,
 	TUNE_2,
