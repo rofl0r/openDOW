@@ -1931,11 +1931,16 @@ enum map_index choose_mission(uint8_t* completed);
 
 static uint8_t mission_completed[MI_MAX];
 
+#include <limits.h>
+
 static void game_delay(int s) {
-	/* wait for s frames while continuing to play music */
+	/* wait for s frames while continuing to play music, 
+	 * if s == -1 return as soon as music finished */
 	int x = s;
+	if(x == -1) x = INT_MAX;
 	while(x){
-		audio_process();
+		int r = audio_process();
+		if(s == -1 && r == -1) return;
 		SDL_Delay(1000/fps);
 		x--;
 		tickcounter++;
@@ -1944,6 +1949,7 @@ static void game_delay(int s) {
 
 static void finish_level(void) {
 	music_play(TUNE_TITLE);
+	game_delay(2*fps);
 	video_darken_screen();
 	video_update_region(SCREEN_MIN_X, SCREEN_MIN_Y, SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
 #define STRLSZ(x) (x), sizeof(x)-1
@@ -1951,7 +1957,10 @@ static void finish_level(void) {
 	font_print(SCREEN_MIN_X+24*SCALE, SCREEN_MIN_Y+24*SCALE, STRLSZ("you have completed"), SCALE, PRGB(255,255,255));
 	font_print(SCREEN_MIN_X+48*SCALE, SCREEN_MIN_Y+35*SCALE, STRLSZ("your mission"), SCALE, PRGB(255,255,255));
 	video_update_region(SCREEN_MIN_X, SCREEN_MIN_Y, SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
-	game_delay(2*fps);
+	game_delay(-1);
+	/* FIXME: for some reason there's a crack noise when switching to "empty" */
+	music_play(TUNE_EMPTY);
+	
 	uint32_t bgbuf0[8*SCALE*((95-40)*SCALE)];
 	video_save_rect(SCREEN_MIN_X+40*SCALE,SCREEN_MIN_Y+65*SCALE,(95-40)*SCALE,8*SCALE,bgbuf0);
 	
@@ -1966,15 +1975,20 @@ static void finish_level(void) {
 	snprintf(buf, sizeof buf, "     $%.6d", dollars);
 	font_print(SCREEN_MIN_X+64*SCALE, SCREEN_MIN_Y+89*SCALE, buf, 12, SCALE, PRGB(255,255,255));
 	video_update_region(SCREEN_MIN_X, SCREEN_MIN_Y, SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
-	game_delay(1*fps);
+
+	game_delay(2*fps);
 	
-	// TODO: play mission bonus sound
+	
 	dollars += maps[current_map]->rewardk*500;
 	video_restore_rect(SCREEN_MIN_X+64*SCALE,SCREEN_MIN_Y+89*SCALE,(159-64)*SCALE,8*SCALE,bgbuf);
 	snprintf(buf, sizeof buf, "     $%.6d", dollars);
 	font_print(SCREEN_MIN_X+64*SCALE, SCREEN_MIN_Y+89*SCALE, buf, 12, SCALE, PRGB(255,255,255));
 	video_update_region(SCREEN_MIN_X, SCREEN_MIN_Y, SCREEN_MAX_X - SCREEN_MIN_X, VMODE_H);
-	game_delay(1*fps);
+	
+	
+	audio_play_wave_resource(wavesounds[WS_MISSIONBONUS]);
+	
+	game_delay(4.2*fps);
 	
 	
 	video_restore_rect(SCREEN_MIN_X+40*SCALE,SCREEN_MIN_Y+65*SCALE,(95-40)*SCALE,8*SCALE,bgbuf0);
