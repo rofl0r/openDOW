@@ -65,7 +65,8 @@ struct AudioPlayer {
 	pthread_mutex_t sound_mutex;
 	enum thread_status thread_music_status;
 	int free_waveslot;
-	int play_waveslot; 
+	int play_waveslot;
+	int empty_track_active;
 };
 
 static struct AudioPlayer playa;
@@ -86,6 +87,16 @@ static int handle_overflow(int *sample) {
 	return 0;
 }
 
+#define MUSIC_FINISHED() (!playa.empty_track_active && CoreMixer_get_complete(&playa.hardware.core))
+#define GEN_MUSIC() do{ \
+			if(!playa.empty_track_active) playa.hardware.core.accurate(&playa.hardware.core); \
+			else { assert(sizeof(playa.wave_buffer) >= 1024*3); \
+			       memset(playa.wave_buffer, 0, 1024*3); playa.out_wave.pos = 1024*3;}  \
+		      } while (0)
+#define MUSIC_AVAIL() (playa.out_wave.pos)
+#define GET_MUSIC_WORD() (playa.empty_track_active ? 0 : ByteArray_readShort(out))
+#define MUSIC_REWIND_WORD() do { if(!playa.empty_track_active) ByteArray_set_position_rel(out, -2); } while (0)
+
 static void *thread_func(void* data) {
 	(void) data;
 	while(1) {
@@ -101,14 +112,14 @@ static void *thread_func(void* data) {
 			continue;
 		}
 		munlock();
-		if(CoreMixer_get_complete(&playa.hardware.core)) {
+		if(MUSIC_FINISHED()) {
 			mlock();
 			playa.thread_music_status = TS_DONE;
 			munlock();
 			continue;
 		}
-		playa.hardware.core.accurate(&playa.hardware.core);
-		if(playa.out_wave.pos) {
+		GEN_MUSIC();
+		if(MUSIC_AVAIL()) {
 			//dprintf(2, "writing %zu bytes...\n", (size_t) playa.out_wave.pos);
 			slock();
 			if(playa.play_waveslot != -1) {
@@ -142,10 +153,10 @@ static void *thread_func(void* data) {
 							int interpolated = u == 0 ? chan[c] : 
 								chan[c] + ((next[c]-chan[c]) * ((float)u/(float)upsample_factor));
 							interpolated = (float) interpolated * 0.3; // decrease volume to avoid overflow
-							int music = ByteArray_readShort(out);
+							int music = GET_MUSIC_WORD();
 							int sample = music + interpolated;
 							if(handle_overflow(&sample)) dprintf(2, "overflow\n");
-							ByteArray_set_position_rel(out, -2);
+							MUSIC_REWIND_WORD();
 							ByteArray_writeShort(out, sample);
 							processed_m += 2;
 						}
@@ -205,7 +216,13 @@ int audio_open_music_resource(const unsigned char* data, size_t data_size, int t
 		} while(!done);
 		mlock();
 	}
+	playa.empty_track_active = 0;
 	munlock();
+	if(track == -1) { /* "empty" track */
+		playa.empty_track_active = 1;
+		memset(playa.wave_buffer, 0, sizeof(playa.wave_buffer));
+		return 0;
+	}
 	ByteArray_open_mem(&playa.music_stream, (void*) data, data_size);
 	CorePlayer_load(&playa.player.core, &playa.music_stream);
 	assert(playa.player.core.version);
