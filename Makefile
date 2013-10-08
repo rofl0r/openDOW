@@ -1,4 +1,4 @@
-LINKLIBS="-lpthread"
+LINKLIBS="-lpthread -lm"
 
 FNAME=spriteview
 
