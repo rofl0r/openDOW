@@ -1421,7 +1421,9 @@ static enum animation_id get_turret_anim_from_dir(int objid, enum direction dir)
 	return lut[dir];
 }
 
+static int editor_mode;
 static int process_turrets(sblist* list) {
+	if(editor_mode) return 0;
 	int res = 0;
 	uint8_t *itemid;
 	sblist_iter(list, itemid) {
@@ -2146,7 +2148,9 @@ int main() {
 				case SDL_KEYUP:
 					switch(sdl_event.key.keysym.sym) {
 						case SDLK_e:
+							editor_mode = 1;
 							enemy_tag_loop();
+							editor_mode = 0;
 							update_caption = game_update_caption;
 							break;
 						case SDLK_c: 
