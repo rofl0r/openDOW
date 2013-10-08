@@ -1,6 +1,7 @@
 #include "spawnmaps.h"
 
 #include "maps/spawn_australia.c"
+#include "maps/spawn_russia.c"
 
 const struct enemy_spawn_screen *spawn_maps[MI_MAX] = {
 	[MI_ITALY] = spawn_screens_australia, // FIXME
@@ -14,5 +15,5 @@ const struct enemy_spawn_screen *spawn_maps[MI_MAX] = {
 	[MI_SAFRICA] = spawn_screens_australia, // FIXME
 	[MI_FRANCE] = spawn_screens_australia, // FIXME
 	[MI_AUSTRALIA] = spawn_screens_australia,
-	[MI_RUSSIA] = spawn_screens_australia, // FIXME
+	[MI_RUSSIA] = spawn_screens_russia, // FIXME
 };
