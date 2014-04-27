@@ -1,4 +1,7 @@
 #include "wavesounds.h"
+#if AUDIO_BACKEND == AUDIO_BACKEND_NONE
+#define WAVSOUND(x, y) [x] = 0
+#else
 #include "sounds/pistol.c"
 #include "sounds/gun.c"
 #include "sounds/machinegun.c"
@@ -11,8 +14,8 @@
 #include "sounds/missionbonus.c"
 #include "sounds/fail.c"
 #include "sounds/success.c"
-
 #define WAVSOUND(x, y) [x] = &(y .header)
+#endif
 const WAVE_HEADER_COMPLETE* wavesounds[] = {
 	[WS_NONE] = 0,
 	WAVSOUND(WS_PISTOL, pistol),
