@@ -1,7 +1,9 @@
 #ifndef VIDEO_H
 #define VIDEO_H
 
+#ifndef SCALE
 #define SCALE 2
+#endif
 #define VMODE_W 320*SCALE
 #define VMODE_H 240*SCALE
 
