@@ -132,6 +132,7 @@ enum __attribute__ ((__packed__)) animation_id {
 #define ANIM(a, b, c) [a] = {b, b + c - 1}
 
 extern const struct anim animations[];
-//RcB: DEP "anim.c"
+
+#pragma RcB2 DEP "anim.c"
 
 #endif

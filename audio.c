@@ -1,21 +1,13 @@
 #include "audio.h"
 
 #if AUDIO_BACKEND == AUDIO_BACKEND_AO
-//RcB: SKIPON "AUDIO_BACKEND=AUDIO_BACKEND_SDL"
-//RcB: SKIPON "AUDIO_BACKEND=AUDIO_BACKEND_NONE"
 #include "../c-flod/backends/aowriter.h"
-//RcB: SKIPOFF "AUDIO_BACKEND=AUDIO_BACKEND_NONE"
-//RcB: SKIPOFF "AUDIO_BACKEND=AUDIO_BACKEND_SDL"
 #define BACKEND_STRUCT AoWriter
 #define BACKEND_INIT AoWriter_init
 #define BACKEND_CLOSE AoWriter_close
 #define BACKEND_WRITE AoWriter_write
 #elif AUDIO_BACKEND == AUDIO_BACKEND_SDL
-//RcB: SKIPON "AUDIO_BACKEND=AUDIO_BACKEND_AO"
-//RcB: SKIPON "AUDIO_BACKEND=AUDIO_BACKEND_NONE"
 #include "../c-flod/backends/sdlwriter.h"
-//RcB: SKIPOFF "AUDIO_BACKEND=AUDIO_BACKEND_NONE"
-//RcB: SKIPOFF "AUDIO_BACKEND=AUDIO_BACKEND_AO"
 #define BACKEND_STRUCT SdlWriter
 #define BACKEND_INIT SdlWriter_init
 #define BACKEND_CLOSE SdlWriter_close
@@ -30,18 +22,16 @@ int audio_open_music(const char* filename, int track) { return 0; }
 void audio_play_wave_resource(const WAVE_HEADER_COMPLETE* wave) {}
 int audio_process(void) { return -1; }
 #else
-//RcB: SKIPON "AUDIO_BACKEND=AUDIO_BACKEND_NONE"
 #include "../c-flod/backends/wave_format.h"
 #include "../c-flod/neoart/flod/core/CorePlayer.h"
 #include "../c-flod/neoart/flod/whittaker/DWPlayer.h"
 #include "../c-flod/flashlib/ByteArray.h"
 #include "../c-flod/neoart/flod/core/Amiga.h"
-//RcB: SKIPOFF "AUDIO_BACKEND=AUDIO_BACKEND_NONE"
 #include <assert.h>
 #include <pthread.h>
 #include <errno.h>
 #include "../lib/include/timelib.h"
-//RcB: LINK "-lpthread"
+#pragma RcB2 LINK "-lpthread"
 
 enum thread_status {
 	TS_WAITING,

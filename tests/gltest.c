@@ -1,5 +1,5 @@
-//RcB: LINK "-lGL"
-//RcB: LINK "-lSDL"
+#pragma RcB2 LINK "-lGL"
+#pragma RcB2 LINK "-lSDL"
 #include <SDL/SDL_opengl.h>
 #include <SDL/SDL.h>
 #include <stdio.h>

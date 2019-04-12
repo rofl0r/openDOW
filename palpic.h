@@ -89,7 +89,7 @@ struct vo_desc {
 void blit_sprite(int x_pos, int y_pos, struct vo_desc *video, 
 	         unsigned scale, const struct palpic* pic, uint16_t spritenum, const prgb *palette);
 
-//RcB: DEP "palpic.c"
+#pragma RcB2 DEP "palpic.c"
 
 #endif
 

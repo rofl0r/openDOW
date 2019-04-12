@@ -7,7 +7,7 @@
 #include "../palpic.h"
 #include "leptonica/allheaders.h"
 #include <string.h>
-//RcB: LINK "-llept"
+#pragma RcB2 LINK "-llept"
 
 #include "../temp.c"
 #define sprite temp

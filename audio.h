@@ -10,9 +10,7 @@
 
 #include <stddef.h>
 #if AUDIO_BACKEND != AUDIO_BACKEND_NONE
-//RcB: SKIPON "AUDIO_BACKEND=AUDIO_BACKEND_NONE"
 #include "../c-flod/backends/wave_format.h"
-//RcB: SKIPOFF "AUDIO_BACKEND=AUDIO_BACKEND_NONE"
 #else
 #define WAVE_HEADER_COMPLETE int
 #endif
@@ -26,5 +24,6 @@ void audio_play_wav(const char* filename);
 void audio_play_wave_resource(const WAVE_HEADER_COMPLETE* wave);
 void audio_close(void);
 
-//RcB: DEP "audio.c"
+#pragma RcB2 DEP "audio.c"
+
 #endif

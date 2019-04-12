@@ -7,5 +7,6 @@
 extern const struct palpic *map_fg_sprites[];
 extern const struct palpic *map_bg_sprites[];
 
-//RcB: DEP "mapsprites.c"
+#pragma RcB2 DEP "mapsprites.c"
+
 #endif

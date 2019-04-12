@@ -22,6 +22,6 @@ void video_darken_screen(void);
 void video_save_rect(int x, int y, int w, int h, void* buf);
 void video_restore_rect(int x, int y, int w, int h, const void* buf);
 
-//RcB: DEP "video.c"
+#pragma RcB2 DEP "video.c"
 
 #endif

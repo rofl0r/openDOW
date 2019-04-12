@@ -68,6 +68,6 @@ enum __attribute__ ((__packed__)) direction16 {
 	DIR16_INVALID = DIR16_MAX
 };
 
-//RcB: DEP "direction.c"
+#pragma RcB2 DEP "direction.c"
 
 #endif

@@ -20,13 +20,12 @@ enum __attribute__((__packed__)) wavesound_id {
 #include "audio.h"
 
 #if AUDIO_BACKEND != AUDIO_BACKEND_NONE
-//RcB: SKIPON "AUDIO_BACKEND=AUDIO_BACKEND_NONE"
 #include "../c-flod/backends/wave_format.h"
-//RcB: SKIPOFF "AUDIO_BACKEND=AUDIO_BACKEND_NONE"
 #else
 #define WAVE_HEADER_COMPLETE int
 #endif
 extern const WAVE_HEADER_COMPLETE* wavesounds[];
-//RcB: DEP "wavesounds.c"
+
+#pragma RcB2 DEP "wavesounds.c"
 
 #endif

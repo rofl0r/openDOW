@@ -76,6 +76,6 @@ extern gameobj objs[OBJ_MAX];
 extern uint8_t obj_slot_used[OBJ_MAX];
 extern uint8_t obj_count;
 
-//RcB: DEP "gameobj.c"
+#pragma RcB2 DEP "gameobj.c"
 
 #endif

@@ -2,7 +2,7 @@
 #include <assert.h>
 
 #include <SDL/SDL.h>
-//RcB: LINK "-lSDL"
+#pragma RcB2 LINK "-lSDL"
 #include "../sdl_rgb.h"
 #include "../vec2f.h"
 #define VMODE_W 320

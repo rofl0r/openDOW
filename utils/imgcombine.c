@@ -1,5 +1,5 @@
 #include <leptonica/allheaders.h>
-//RcB: LINK "-llept"
+#pragma RcB2 LINK "-llept"
 #include <stdio.h>
 #include <assert.h>
 

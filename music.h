@@ -1,7 +1,8 @@
 #ifndef MUSIC_H
 #define MUSIC_H
 
-//RcB: DEP "music.c"
+#pragma RcB2 DEP "music.c"
+
 enum tune_index {
 	TUNE_EMPTY = -1,
 	TUNE_FIGHTING = 0,

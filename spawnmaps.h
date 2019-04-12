@@ -6,5 +6,6 @@
 
 extern const struct enemy_spawn_screen *spawn_maps[MI_MAX];
 
-//RcB: DEP "spawnmaps.c"
+#pragma RcB2 DEP "spawnmaps.c"
+
 #endif

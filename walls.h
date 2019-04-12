@@ -11,5 +11,6 @@ enum __attribute__ ((__packed__)) walltype {
 
 extern const enum walltype walls[MT_MAX][210];
 
-//RcB: DEP "walls.c"
+#pragma RcB2 DEP "walls.c"
+
 #endif

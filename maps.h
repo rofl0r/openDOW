@@ -25,5 +25,6 @@ extern const struct map_screen *map_screens[];
 extern const mapscreen_index *map_bonus_layer_indices[];
 extern const struct map_fglayer *map_bonus_screens[];
 
-//RcB: DEP "maps.c"
+#pragma RcB2 DEP "maps.c"
+
 #endif

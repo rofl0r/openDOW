@@ -77,6 +77,7 @@ extern const struct weapon weapons[];
 extern const struct ammo ammunition[];
 const char* weapon_name(enum weapon_id id);
 const char* ammo_name(enum ammo_id id);
-//RcB: DEP "weapon.c"
+
+#pragma RcB2 DEP "weapon.c"
 
 #endif

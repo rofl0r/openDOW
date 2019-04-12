@@ -6,7 +6,7 @@
 #include <leptonica/allheaders.h>
 #define assert(x) if(!(x)) __asm__("int3");
 
-//RcB: LINK "-llept"
+#pragma RcB2 LINK "-llept"
 /* leptonica:
 enum {
     COLOR_RED = 0,

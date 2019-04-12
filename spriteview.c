@@ -43,7 +43,7 @@ unsigned long mousebutton_down[] = {
 	[MB_RIGHT] = 0,
 };
 
-//RcB: LINK "-lSDL"
+#pragma RcB2 LINK "-lSDL"
 #if 0
 static void get_last_move_event(SDL_Event* e) {
 #define numpeek 32
@@ -1928,7 +1928,7 @@ static void switch_anim(int obj_id, int aid) {
 }
 
 enum map_index choose_mission(uint8_t* completed);
-//RcB: DEP "mission_select.c"
+#pragma RcB2 DEP "mission_select.c"
 #include "enemytag.c"
 
 static uint8_t mission_completed[MI_MAX];

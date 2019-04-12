@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <SDL/SDL.h>
-//RcB: LINK "-lSDL"
+#pragma RcB2 LINK "-lSDL"
 #include "../vec2f.h"
 #define VMODE_W 1200
 #define VMODE_H 800

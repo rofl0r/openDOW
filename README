@@ -1,7 +1,7 @@
 === prerequisites ===
 
 - a POSIX compliant OS and libc (for example linux with musl libc).
-  if you're still using winblows, bad luck, you should strongly consider to 
+  if you're still using winblows, bad luck, you should strongly consider to
   switch to linux NOW rather than later.
 - a working C99 compiler
 - perl (needed for the build system)
@@ -21,8 +21,8 @@ cd /tmp/openDOW-000/
 git clone https://github.com/rofl0r/openDOW
 git clone https://github.com/rofl0r/libulz lib
 git clone https://github.com/rofl0r/c-flod
-git clone https://github.com/rofl0r/rcb
-ln -s rcb.pl rcb/rcb
+git clone https://github.com/rofl0r/rcb2
+ln -s rcb2.py rcb2/rcb2
 cd openDOW/
 echo "CFLAGS+=-DAUDIO_BACKEND=AUDIO_BACKEND_SDL" > config.mak
 PATH="/tmp/openDOW-000/rcb:$PATH" make
@@ -46,7 +46,7 @@ so it could be used via a joystick.
 == current state and TODO ==
 
 at current, all maps are finished as far as the background
-and foreground tiles are concerned, as well as all of the game 
+and foreground tiles are concerned, as well as all of the game
 mechanics (besides dying).
 
 the biggest part of the work is to recreate the spawn positions
@@ -67,7 +67,7 @@ the spawn editor and summon an enemy.
   w,o,s,n,nw,no,sw,so,nnw,wnw,nno,ono,ssw,wsw,sso,oso
   (o means "ost", the german equivalent to "east").
 - use + and - on the numeric keypad to change the velocity of the
-  enemy. (it will start running around, once offscreen, it will 
+  enemy. (it will start running around, once offscreen, it will
   respawn in the start position)
 - use "g" to change its weapon type to grenade or back to gun
 - press "s" to shoot at the current position

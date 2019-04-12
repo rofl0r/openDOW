@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
-//RcB: LINK "-llept"
+#pragma RcB2 LINK "-llept"
 
 __attribute__((noreturn)) void syntax(void) {
 	dprintf(2, "imgdiff [-dim=x,y,w,h] file1 file2 outfile.png\n"

@@ -42,6 +42,6 @@ enum __attribute__ ((__packed__)) sprite_index {
 
 extern const struct palpic *spritemaps[];
 
-//RcB: DEP "spritemaps.c"
+#pragma RcB2 DEP "spritemaps.c"
 
 #endif
