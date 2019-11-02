@@ -7,6 +7,8 @@
 #define assert(x) if(!(x)) __asm__("int3");
 
 #pragma RcB2 LINK "-llept"
+#pragma RcB2 LINK "-llept -lpng -ljpeg -ltiff -lgif -lz"
+
 /* leptonica:
 enum {
     COLOR_RED = 0,
