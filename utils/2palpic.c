@@ -38,6 +38,15 @@ static unsigned get_sprite_start(unsigned sprite_nr, unsigned row_nr, unsigned s
 	return res;
 }
 
+static int usage(char *a0) {
+	printf("syntax: %s [-t] [-s WxH] infile outfile\n"
+	       "where WxH denotes the dimensions of a single picture in the spritesheet\n"
+	       "-t, if given, means the first color in the bitmap is the transparent color\n"
+	       "if -s is omitted, the file will be considered a single sprite\n"
+	       "if the file extension is .c, a C file will be written, else a binary ppic\n", a0);
+	return 1;
+}
+
 #define STRSZ(lit) lit, sizeof(lit) - 1
 #define LIT_SIZE(lit) ( sizeof(lit) - 1)
 int main(int argc, char** argv) {
@@ -48,29 +57,34 @@ int main(int argc, char** argv) {
 	struct Pix* infile;
 	struct Pix* pix32;
 
-	unsigned startarg = 1;
-	for(; startarg < (unsigned) argc; startarg++)
-		if(!memcmp(argv[startarg], STRSZ("-sprite="))) break;
-	if(startarg == argc) {
-		printf("syntax: %s [-t] -sprite=WxH infile outfile\n"
-		       "where WxH denotes the dimensions of a single picture in the spritesheet\n"
-		       "-t, if given, means the first color in the bitmap is the transparent color\n", argv[0]);
-		return 1;
+	unsigned sprite_w = 0, sprite_h = 0;
+	unsigned sprite_count;
+
+	int c;
+	while((c = getopt(argc, argv, "s:t")) != EOF) switch(c) {
+	case 't': pp.flags |= PPF_TRANSPARENT; break;
+	case 's': {
+		char* str_w = optarg;
+		char* str_h = strchr(str_w, 'x');
+		*(str_h++) = 0;
+		sprite_w = atoi(str_w);
+		sprite_h = atoi(str_h);
+
+		}; break;
+	default: return usage(argv[0]);
 	}
-	if(startarg == 2 && argv[1][0] == '-' && argv[1][1] == 't' && argv[1][2] == 0)
-		pp.flags |= PPF_TRANSPARENT;
 
-	startarg++;
+	if(!argv[optind] || !argv[optind+1]) return usage(argv[0]);
 
-	char *in_filename = argv[startarg];
+	char *in_filename = argv[optind];
+	char *out_filename = argv[optind+1];
+
 	if(access(in_filename, R_OK) == -1) {
 		perror(in_filename);
 		return 1;
 	}
-	char *out_filename = argv[startarg + 1];
+
 	char* cp;
-	unsigned sprite_w, sprite_h;
-	unsigned sprite_count;
 	int to_c = (cp = strrchr(out_filename, '.')) && cp == out_filename + strlen(out_filename) - 2 && cp[1] == 'c';
 	char struct_name[256];
 	if(to_c) {
@@ -86,12 +100,7 @@ int main(int argc, char** argv) {
 
 	pixGetDimensions(infile, &w, &h, NULL);
 
-	if(startarg > 1) {
-		char* str_w = argv[startarg -1] + LIT_SIZE("-sprite=");
-		char* str_h = strchr(str_w, 'x');
-		*(str_h++) = 0;
-		sprite_w = atoi(str_w);
-		sprite_h = atoi(str_h);
+	if(sprite_w && sprite_h) {
 		sprite_count = (h * w) / (sprite_h * sprite_w);
 		unsigned rest = (h * w) % (sprite_h * sprite_w);
 		if(rest) {
@@ -114,6 +123,8 @@ int main(int argc, char** argv) {
 	/* we always align sprites vertically */
 	pp.height = sprite_h * sprite_count;
 	pp.width = sprite_w;
+
+	pp.spritecount = sprite_count;
 
 	pix32 = pixConvertTo32(infile);
 	prgb* bufptr = (prgb*) pix32->data;
