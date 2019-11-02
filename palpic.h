@@ -19,7 +19,7 @@ typedef union {
 typedef struct palpic {
 	char magic[4];
 	uint8_t version;
-	uint8_t palcount;
+	uint8_t palcount; /* 0 means 256 */
 	uint16_t spritecount;
 	uint16_t width;
 	uint16_t height;
@@ -42,25 +42,29 @@ enum palpic_flags {
 #endif
 
 static inline void palpic_hostformat(struct palpic *p) {
+	p->spritecount = ntohs(p->spritecount);
 	p->width = ntohs(p->width);
-	p->height = ntohs(p->width);
+	p->height = ntohs(p->height);
 }
 
 static inline void palpic_fileformat(struct palpic *p) {
+	p->spritecount = htons(p->spritecount);
 	p->width = htons(p->width);
-	p->height = htons(p->width);
+	p->height = htons(p->height);
 }
 
 static inline prgb* palpic_getpalette(const struct palpic* p) {
 	return (prgb*) (p+1);
 }
 
+#define palpic_getpalcount(P) (P->palcount ? P->palcount : 256)
+
 static inline uint8_t* palpic_getdata(const struct palpic* p) {
-	return (uint8_t*)(p + 1) + (sizeof(prgb) * p->palcount);
+	return (uint8_t*)(p + 1) + (sizeof(prgb) * palpic_getpalcount(p));
 }
 
 static inline uint32_t palpic_getfilesize(const struct palpic* p) {
-	return sizeof(palpic) + (sizeof(prgb) * p->palcount) + (p->width * p->height);
+	return sizeof(palpic) + (sizeof(prgb) * palpic_getpalcount(p)) + (p->width * p->height);
 }
 
 static inline unsigned palpic_getspriteheight(const struct palpic* p) {
